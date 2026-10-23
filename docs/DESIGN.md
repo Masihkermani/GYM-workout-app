@@ -9,6 +9,12 @@ UI UX Pro Max output we started from; where they disagree, **this file wins**.
 
 ## Why we overrode the generated design system
 
+Second correction (monitor review): the first draft used warm cream paper + full-width hairlines +
+numbered "01 —" labels, which is itself a recognisable AI-default look. Light theme is now cool
+chalk-on-steel, numbering is reserved for real sequences, and the identity is carried by the gym
+objects (plates, bar, tally, timetable, stamp), not by "editorial" styling.
+
+
 `ui-ux-pro-max --design-system` returned "Vibrant & Block-based, orange #F97316 + green on slate-800,
 Inter + Playfair, Feature-Rich Showcase landing (hero + 4–6 feature cards + logos)". That is the
 default look of every AI-generated fitness site. We kept its hard rules (contrast ≥ 4.5:1, 44px
@@ -19,7 +25,7 @@ away its aesthetic.
 
 | Real object | Becomes in the UI |
 |---|---|
-| Paper training card on a clipboard | Warm paper surface, ink text, hairline rules, table-like rows |
+| Chalk-dusted steel and the paper card on the clipboard | Cool chalk-grey surface, ink text, ruled table rows inside cards only |
 | Gym rubber floor at night | Dark mode: near-black warm floor, chalk-white text |
 | Olympic calibrated plates (IWF colours) | The **only** colour system. Red 25 kg, blue 20, yellow 15, green 10, white 5 |
 | Whiteboard timetable | Booking grid; open slots are marker-hatched outlines |
@@ -30,17 +36,17 @@ away its aesthetic.
 
 Semantic tokens only in components. Never raw hex in a component file.
 
-### Light — "paper"
+### Light — "chalk on steel" (cool neutrals, deliberately not cream)
 | Token | Hex | Use |
 |---|---|---|
-| `--paper` | `#F2EEE5` | page background |
-| `--paper-2` | `#E8E2D4` | alternate rows, inset panels, hover |
-| `--card` | `#FAF8F3` | the "training card" surface |
-| `--ink` | `#17150F` | primary text, strong rules, primary button in neutral contexts |
-| `--ink-2` | `#4A463C` | secondary text (≈ 8:1 on paper) |
-| `--ink-3` | `#6B6557` | captions, meta (≈ 4.9:1 on paper) — never for body copy |
-| `--rule` | `rgb(23 21 15 / 0.14)` | hairlines |
-| `--rule-strong` | `#17150F` | table headers, card edges |
+| `--paper` | `#EBECE8` | page background (chalk-dusted steel) |
+| `--paper-2` | `#DFE1DC` | alternate rows, inset panels, hover |
+| `--card` | `#F8F8F6` | the "training card" surface |
+| `--ink` | `#141614` | primary text, strong rules, primary button in neutral contexts |
+| `--ink-2` | `#444843` | secondary text (≈ 8:1 on paper) |
+| `--ink-3` | `#5F655E` | captions, meta (≈ 5:1 on paper) — never for body copy |
+| `--rule` | `rgb(20 22 20 / 0.16)` | hairlines |
+| `--rule-strong` | `#141614` | table headers, card edges |
 | `--plate-red` | `#C0211A` | primary action, PRs, destructive is NOT red (see below) |
 | `--plate-blue` | `#1D4C9F` | confirmed booking, info, links |
 | `--plate-yellow` | `#E3AE12` | pending (always with ink text on it) |
@@ -51,23 +57,23 @@ Semantic tokens only in components. Never raw hex in a component file.
 ### Dark — "rubber floor"
 | Token | Hex |
 |---|---|
-| `--paper` | `#131210` |
-| `--paper-2` | `#1C1A16` |
-| `--card` | `#1F1D19` |
-| `--ink` | `#ECE7DC` |
-| `--ink-2` | `#B5AE9F` |
-| `--ink-3` | `#8E8778` |
-| `--rule` | `rgb(236 231 220 / 0.14)` |
-| `--rule-strong` | `#ECE7DC` |
+| `--paper` | `#111311` |
+| `--paper-2` | `#191C19` |
+| `--card` | `#1D201D` |
+| `--ink` | `#E8EAE5` |
+| `--ink-2` | `#AEB3AB` |
+| `--ink-3` | `#8C9289` |
+| `--rule` | `rgb(232 234 229 / 0.15)` |
+| `--rule-strong` | `#E8EAE5` |
 | `--plate-red` | `#E2463B` |
 | `--plate-blue` | `#6A95E6` |
 | `--plate-yellow` | `#F0C232` |
 | `--plate-green` | `#4FAE6A` |
-| `--plate-white` | `#ECE7DC` |
+| `--plate-white` | `#E8EAE5` |
 | `--danger` | `#F07466` |
 
 Text on `--plate-red`/`--plate-blue`/`--plate-green` (light mode) is `#FFFFFF`; text on
-`--plate-yellow` is `--ink` (light) / `#131210` (dark). In dark mode, text on plate fills is `#131210`.
+`--plate-yellow` is `--ink` (light) / `#111311` (dark). In dark mode, text on plate fills is `#111311`.
 Theme follows `prefers-color-scheme`, overridable by a toggle stored in a cookie (`theme=light|dark`).
 
 **Banned:** gradients, glassmorphism, blurred blobs, neon glows, purple, drop shadows on cards
@@ -79,8 +85,11 @@ Theme follows `prefers-color-scheme`, overridable by a toggle stored in a cookie
 - Borders do the work shadows usually do: 1px `--rule` hairlines, 1.5px `--rule-strong` for card edges and table heads.
 - Spacing scale (px): 4, 8, 12, 16, 24, 32, 48, 72. Density: comfortable on mobile, tighter tables on coach desktop.
 - Grid: 4 cols mobile / 8 tablet / 12 desktop; 16px gutter mobile, 24px desktop; max content width 1200px.
-- Section labels look like a ledger: a hairline across the full width with a small numbered label sitting on it:
-  `01 — THIS WEEK` / `۰۱ — این هفته`.
+- Section labels: a short hairline with a small uppercase (en) / bold (fa) label sitting on it: `THIS WEEK` / `این هفته`.
+  **No decorative numbering** (no "01 / 02 / 03"): numbers appear only where order is real information —
+  set 1/2/3, program day A/B/C, booking queue position.
+- Rules live **inside** cards and tables (rows of a training card, the timetable grid). Page sections are
+  separated by space, not by full-width hairlines: we are not a newspaper.
 
 ## Typography
 
