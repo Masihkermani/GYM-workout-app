@@ -30,17 +30,22 @@ const SWATCH: Record<PlateColor, string> = {
   steel: 'bg-plate-steel',
 };
 
-// viewBox geometry (units). The bar is drawn horizontally with the collar at COLLAR_X and plates
-// stacking outward from it, so a 25 kg plate is the tallest thing on screen.
-const H = 120;
+// viewBox geometry (units; 100 units = a 450 mm bumper). The whole bar is drawn, shortened in the
+// middle, and mirrored: the same plates sit on both sleeves, innermost = heaviest, as on a real bar.
+const H = 112;
 const MID = H / 2;
-const PLATE_MAX_H = 112;
-const PLATE_MAX_W = 15;
-const GAP = 1.5;
-const COLLAR_X = 200;
-const COLLAR_W = 8;
-const MIN_WIDTH = 330;
-const TIP = 24; // sleeve end beyond the last plate
+const PLATE_MAX_H = 100; // a 450 mm bumper
+const PLATE_MAX_W = 28; // a 25 kg bumper (thickness is drawn a little fat so plates read as plates)
+const SHAFT_HALF = 36; // visible shaft either side of the centre
+const SHAFT_H = 6;
+const SLEEVE_H = 11;
+const FLANGE_W = 6; // the bar's fixed collar, plates stop against it
+const FLANGE_H = 26;
+const CLAMP_W = 9; // the lock collar that holds the plates on
+const CLAMP_H = 30;
+const SLEEVE_MIN = 62; // sleeve length (from the flange) when the bar is bare
+const TIP = 12; // sleeve end beyond the lock collar
+const PAD = 2;
 
 export interface BarbellDiagramProps {
   weightKg: number;
@@ -52,9 +57,10 @@ export interface BarbellDiagramProps {
 }
 
 /**
- * One loaded end of a barbell: plates per side for the entered weight, greedy from
- * 25/20/15/10/5/2.5/1.25 kg in IWF colours at proportional sizes. When the weight cannot be made
- * with those plates it says so and suggests the nearest loadable weights.
+ * A barbell loaded for the entered weight: the same plates on both sleeves (greedy from
+ * 25/20/15/10/5/2.5/1.25 kg), IWF colours, thickness and diameter in real proportion (450 mm bumpers,
+ * smaller change plates), with the fixed collar, the lock collar and the sleeve visible. When the
+ * weight cannot be made with those plates it says so and suggests the nearest loadable weights.
  */
 export function BarbellDiagram({ weightKg, barKg = 20, compact = false, className }: BarbellDiagramProps) {
   const t = useTranslations('common');
@@ -85,15 +91,20 @@ export function BarbellDiagram({ weightKg, barKg = 20, compact = false, classNam
   }
 
   const plates = load.perSide;
-  let x = COLLAR_X + COLLAR_W + 3;
+  // x measured outward from the centre of the bar, for the right-hand sleeve
+  const flangeEnd = SHAFT_HALF + FLANGE_W;
+  let x = flangeEnd;
   const drawn = plates.map((plate, i) => {
     const w = PLATE_THICKNESS[plate] * PLATE_MAX_W;
     const h = PLATE_HEIGHT[plate] * PLATE_MAX_H;
     const rect = { key: i, plate, x, y: MID - h / 2, w, h };
-    x += w + GAP;
+    x += w;
     return rect;
   });
-  const width = Math.max(MIN_WIDTH, x + TIP);
+  const clampX = x + 1;
+  const sleeveEnd = Math.max(flangeEnd + SLEEVE_MIN, plates.length > 0 ? clampX + CLAMP_W + TIP : 0);
+  const half = sleeveEnd + PAD;
+  const width = half * 2;
   const groups = groupPlates(plates);
   const list = groups
     .map((g) =>
@@ -105,6 +116,45 @@ export function BarbellDiagram({ weightKg, barKg = 20, compact = false, classNam
   const alt = plates.length === 0 ? t('barbell.bareBar') : t('barbell.alt', { plates: list });
 
   const ink = { strokeWidth: 1, vectorEffect: 'non-scaling-stroke' } as const;
+
+  // One sleeve, drawn for the right-hand end around x = 0 at the bar's centre; the left-hand end is
+  // the same group mirrored, so the two sides can never disagree.
+  const sleeve = (
+    <>
+      {/* shaft, then the sleeve it carries the plates on */}
+      <rect x={0} y={MID - SHAFT_H / 2} width={SHAFT_HALF + 1} height={SHAFT_H} className="fill-plate-steel stroke-ink" {...ink} />
+      <rect
+        x={flangeEnd}
+        y={MID - SLEEVE_H / 2}
+        width={sleeveEnd - flangeEnd}
+        height={SLEEVE_H}
+        rx={1}
+        className="fill-plate-steel stroke-ink"
+        {...ink}
+      />
+      {/* fixed collar (flange) */}
+      <rect x={SHAFT_HALF} y={MID - FLANGE_H / 2} width={FLANGE_W} height={FLANGE_H} rx={1} className="fill-plate-black stroke-ink" {...ink} />
+      {drawn.map((r) => (
+        <rect
+          key={r.key}
+          x={r.x}
+          y={r.y}
+          width={r.w}
+          height={r.h}
+          rx={2}
+          className={cn(FILL[PLATE_COLOR[r.plate]], 'stroke-ink')}
+          {...ink}
+        />
+      ))}
+      {/* lock collar holding the plates on */}
+      {plates.length > 0 ? (
+        <>
+          <rect x={clampX} y={MID - CLAMP_H / 2} width={CLAMP_W} height={CLAMP_H} rx={1.5} className="fill-plate-black stroke-ink" {...ink} />
+          <rect x={clampX + CLAMP_W / 2 - 1} y={MID - CLAMP_H / 2 - 4} width={2} height={5} className="fill-plate-steel stroke-ink" {...ink} />
+        </>
+      ) : null}
+    </>
+  );
 
   return (
     <figure className={cn('flex flex-col gap-2', className)}>
@@ -119,36 +169,21 @@ export function BarbellDiagram({ weightKg, barKg = 20, compact = false, classNam
         role="img"
         aria-label={alt}
         viewBox={`0 0 ${width} ${H}`}
-        className="h-24 w-full max-w-sm self-start"
-        preserveAspectRatio="xMinYMid meet"
+        className="h-24 w-full"
+        preserveAspectRatio="xMidYMid meet"
       >
-        {/* bar shaft, running out past the last plate */}
-        <rect x={0} y={MID - 3.5} width={width} height={7} rx={1} className="fill-plate-steel stroke-ink" {...ink} />
-        {/* knurled grip hint */}
-        <rect x={40} y={MID - 4.5} width={90} height={9} className="fill-plate-steel stroke-ink" {...ink} />
-        {/* inner collar */}
-        <rect x={COLLAR_X} y={MID - 13} width={COLLAR_W} height={26} rx={1} className="fill-plate-black stroke-ink" {...ink} />
-        {drawn.map((r) => (
-          <rect
-            key={r.key}
-            x={r.x}
-            y={r.y}
-            width={r.w}
-            height={r.h}
-            rx={1.5}
-            className={cn(FILL[PLATE_COLOR[r.plate]], 'stroke-ink')}
-            {...ink}
-          />
-        ))}
-        {/* spring clip on the sleeve end */}
-        <rect x={x + 3} y={MID - 9} width={6} height={18} rx={1} className="fill-plate-black stroke-ink" {...ink} />
+        {/* the bar is the same left and right: draw one sleeve and its mirror around the centre */}
+        <g transform={`translate(${half} 0)`}>{sleeve}</g>
+        <g transform={`translate(${half} 0) scale(-1 1)`}>{sleeve}</g>
+        {/* grip knurl at the centre */}
+        <rect x={half - 22} y={MID - SHAFT_H / 2 - 1} width={44} height={SHAFT_H + 2} className="fill-plate-steel stroke-ink" {...ink} />
       </svg>
 
       {/* text alternative and legend */}
       {plates.length === 0 ? (
-        <p className="text-sm font-semibold text-ink">{t('barbell.bareBar')}</p>
+        <p className="text-center text-sm font-semibold text-ink">{t('barbell.bareBar')}</p>
       ) : (
-        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm">
           {groups.map((g) => (
             <li key={g.plate} className="flex items-center gap-1.5">
               <span aria-hidden="true" className={cn('size-3 rounded-full border border-ink', SWATCH[PLATE_COLOR[g.plate]])} />

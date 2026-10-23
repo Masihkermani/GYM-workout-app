@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 
-export type ButtonVariant = 'primary' | 'ink' | 'outline' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'blue' | 'ink' | 'outline' | 'neutral' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 const base =
@@ -14,8 +14,12 @@ const base =
 const variants: Record<ButtonVariant, string> = {
   // plate-red: the one primary action per screen
   primary: 'border-plate-red bg-plate-red text-on-red hover:border-plate-red-hover hover:bg-plate-red-hover',
+  // plate-blue: Confirm actions that create a confirmed booking (white text light, dark text dark)
+  blue: 'border-plate-blue bg-plate-blue text-on-blue hover:border-plate-blue-hover hover:bg-plate-blue-hover',
   ink: 'border-ink bg-ink text-paper hover:border-ink-hover hover:bg-ink-hover',
   outline: 'border-ink bg-transparent text-ink hover:bg-paper-2',
+  // secondary actions next to a primary one (Decline, Cancel, Save note): quieter than outline
+  neutral: 'border-ink-3 bg-transparent text-ink-2 hover:bg-paper-2 hover:text-ink',
   ghost: 'border-transparent bg-transparent text-ink hover:bg-paper-2',
   // destructive is oxblood, deliberately not plate-red
   danger: 'border-danger bg-danger text-on-danger hover:border-danger-hover hover:bg-danger-hover',

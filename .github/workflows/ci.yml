@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Lint, types, tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: daftar
+          POSTGRES_PASSWORD: daftar
+          POSTGRES_DB: daftar_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U daftar -d daftar_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://daftar:daftar@localhost:5432/daftar_ci
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # DATABASE_URL is set for the whole job, so the database-backed suites run (they create and
+      # clean up their own rows; the seed is not needed).
+      - name: Unit tests
+        run: npm test
+
+      - name: i18n parity
+        run: npm run i18n:check
+
+      - name: Build
+        run: npm run build
+
+      # Playwright end-to-end tests are not part of CI yet: they need a seeded database, a running
+      # server and the preinstalled Chromium (see README, "Tests").

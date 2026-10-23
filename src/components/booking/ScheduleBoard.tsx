@@ -18,7 +18,6 @@ import { formatPhone } from '@/lib/phone';
 import type { BookingErrorCode } from '@/lib/scheduling';
 import type { DateKey } from '@/lib/time';
 import { bookForClient, moveBooking, setCoachNote } from '@/server/booking';
-import { ActionButton } from './ActionButton';
 import { CoachBookingActions } from './CoachBookingActions';
 import { longDate, timeRange } from './dates';
 import { Timetable } from './Timetable';
@@ -201,7 +200,6 @@ function BookingDetail({
   const [note, setNote] = useState(booking.coachNote ?? '');
   const [moveTo, setMoveTo] = useState('');
   const [error, setError] = useState<BookingErrorCode | null>(null);
-  const [saved, setSaved] = useState(false);
   const [noteBusy, startNote] = useTransition();
   const [moveBusy, startMove] = useTransition();
 
@@ -211,9 +209,10 @@ function BookingDetail({
   const saveNote = () =>
     startNote(async () => {
       const res = await setCoachNote({ locale, bookingId: booking.id, note });
-      // inline, not a toast: a toast would sit behind this modal sheet
-      if (res.ok) setSaved(true);
-      else setError(res.error);
+      if (res.ok) {
+        setError(null);
+        toast({ message: t('coach.noteSaved'), tone: 'success' });
+      } else setError(res.error);
     });
 
   const move = () => {
@@ -277,19 +276,13 @@ function BookingDetail({
           rows={3}
           maxLength={1000}
           value={note}
-          onChange={(e) => {
-            setNote(e.target.value);
-            setSaved(false);
-          }}
+          onChange={(e) => setNote(e.target.value)}
         />
       </Field>
       <div className="flex flex-wrap items-center gap-3">
-        <ActionButton tone="neutral" loading={noteBusy} disabled={note === (booking.coachNote ?? '')} onClick={saveNote}>
+        <Button variant="neutral" size="sm" loading={noteBusy} disabled={note === (booking.coachNote ?? '')} onClick={saveNote}>
           {t('coach.saveNote')}
-        </ActionButton>
-        <p role="status" className="text-sm text-ink-2">
-          {saved ? t('coach.noteSaved') : ''}
-        </p>
+        </Button>
       </div>
 
       {live ? (
@@ -306,9 +299,9 @@ function BookingDetail({
                 </Select>
               </Field>
               <div>
-                <ActionButton tone="neutral" loading={moveBusy} disabled={!moveTo} onClick={move}>
+                <Button variant="neutral" size="sm" loading={moveBusy} disabled={!moveTo} onClick={move}>
                   {t('coach.move')}
-                </ActionButton>
+                </Button>
               </div>
             </>
           )}
@@ -388,9 +381,9 @@ function BookForClient({
         <Textarea rows={2} maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} disabled={pending} />
       </Field>
       {footerHint}
-      <ActionButton tone="confirm" fullWidth loading={pending} disabled={!ready} onClick={submit}>
+      <Button variant="blue" size="sm" fullWidth loading={pending} disabled={!ready} onClick={submit}>
         {t('coach.bookConfirm')}
-      </ActionButton>
+      </Button>
     </div>
   );
 }

@@ -1,9 +1,11 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { CircleAlert, CircleCheck, Info, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/cn';
+import { useTopModal } from './modal-stack';
 
 export type ToastTone = 'info' | 'success' | 'error';
 
@@ -68,11 +70,20 @@ function ToastView({ item, onDismiss }: { item: ToastItem; onDismiss: (id: numbe
   );
 }
 
-/** Transient confirmations ("Saved"). Mount once near the root; the region sits above the mobile tab bar. */
+/**
+ * Transient confirmations ("Saved"). Mount once near the root.
+ *
+ * Two live regions: the page one (above the mobile tab bar) is always mounted, so a toast added
+ * the moment a sheet closes is still announced. While a modal <dialog> is open the page is inert and
+ * sits under the dialog's top layer, so the toasts move into a second region rendered inside the
+ * topmost dialog (top of the screen, clear of the sheet's footer actions). That keeps them visible,
+ * clickable and in the accessibility tree.
+ */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const t = useTranslations('common');
   const [items, setItems] = useState<ToastItem[]>([]);
   const nextId = useRef(1);
+  const modal = useTopModal();
 
   const dismiss = useCallback((id: number) => setItems((all) => all.filter((i) => i.id !== id)), []);
   const toast = useCallback((options: ToastOptions) => {
@@ -82,6 +93,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
   const value = useMemo(() => ({ toast }), [toast]);
 
+  const views = items.map((item) => <ToastView key={item.id} item={item} onDismiss={dismiss} />);
+
   return (
     <ToastContext.Provider value={value}>
       {children}
@@ -89,12 +102,26 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         role="region"
         aria-label={t('toast.region')}
         aria-live="polite"
+        // inert while a modal is open anyway; hiding it avoids a second region with the same name
+        aria-hidden={modal ? true : undefined}
         className="pointer-events-none fixed inset-x-0 bottom-[var(--bottom-bar)] z-[60] flex flex-col items-center gap-2 p-4"
       >
-        {items.map((item) => (
-          <ToastView key={item.id} item={item} onDismiss={dismiss} />
-        ))}
+        {modal ? null : views}
       </div>
+      {modal
+        ? createPortal(
+            <div
+              role="region"
+              aria-label={t('toast.region')}
+              aria-live="polite"
+              className="pointer-events-none fixed inset-x-0 top-0 z-[60] flex flex-col items-center gap-2 p-4 pt-[max(1rem,env(safe-area-inset-top))] md:items-start md:px-6"
+            >
+              {views}
+            </div>,
+            modal,
+            'toast-region-in-modal',
+          )
+        : null}
     </ToastContext.Provider>
   );
 }

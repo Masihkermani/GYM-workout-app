@@ -3,9 +3,9 @@
 import { useOptimistic, useTransition } from 'react';
 import { Check, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
 import { Link } from '@/i18n/navigation';
-import { ActionButton } from './ActionButton';
 import type { ActionResult } from '@/lib/scheduling';
 import { confirmBooking, declineBooking } from '@/server/booking';
 
@@ -66,14 +66,14 @@ export function PendingRequestsList({ items, locale }: { items: PendingItem[]; l
               ) : null}
             </div>
             <div className="flex gap-2">
-              <ActionButton tone="confirm" onClick={() => act(item.id, 'confirm')}>
+              <Button variant="blue" size="sm" onClick={() => act(item.id, 'confirm')}>
                 <Check className="size-4" aria-hidden="true" />
                 {t('coach.confirm')}
-              </ActionButton>
-              <ActionButton tone="neutral" onClick={() => act(item.id, 'decline')}>
+              </Button>
+              <Button variant="neutral" size="sm" onClick={() => act(item.id, 'decline')}>
                 <X className="size-4" aria-hidden="true" />
                 {t('coach.decline')}
-              </ActionButton>
+              </Button>
             </div>
           </div>
         </li>

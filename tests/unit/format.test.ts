@@ -71,6 +71,22 @@ describe('dates (Jalali for fa)', () => {
     expect(formatDate(nowruz, 'fa', { style: 'long' })).toBe('شنبه، ۱ فروردین ۱۴۰۵');
     expect(formatDate(nowruz, 'en', { style: 'long' })).toBe('Saturday, 21 March 2026');
   });
+  it('pins the exact en/fa strings so Node and the browser cannot disagree (hydration)', () => {
+    // Node's ICU renders en-GB long as "Friday, 23 October 2026", Chrome's as "Friday 23 October 2026".
+    // formatDate composes the date from formatToParts, so the glue (comma, spaces) is ours in every engine.
+    const friday = new Date('2026-10-23T09:00:00Z');
+    expect(formatDate(friday, 'en', { style: 'long' })).toBe('Friday, 23 October 2026');
+    expect(formatDate(friday, 'en', { style: 'medium' })).toBe('23 Oct 2026');
+    expect(formatDate(friday, 'en', { style: 'short' })).toBe('23 Oct');
+    expect(formatDate(friday, 'en', { style: 'numeric' })).toBe('2026-10-23');
+    expect(formatDate(friday, 'fa', { style: 'long' })).toBe('جمعه، ۱ آبان ۱۴۰۵');
+    expect(formatDate(friday, 'fa', { style: 'medium' })).toBe('۱ آبان ۱۴۰۵');
+    expect(formatDate(friday, 'fa', { style: 'short' })).toBe('۱ آبان');
+    // the long form has exactly one comma, directly after the weekday
+    expect(formatDate(friday, 'en', { style: 'long' }).split(',')).toHaveLength(2);
+    // and no middle dot, which must never sit next to Persian digits
+    expect(formatDate(friday, 'fa', { style: 'long' })).not.toContain('\u00b7');
+  });
   it('honours the timezone for the date boundary', () => {
     // 2026-03-20T21:00Z is already 00:30 on 21 March in Tehran (UTC+03:30).
     const late = new Date('2026-03-20T21:00:00Z');

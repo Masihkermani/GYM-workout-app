@@ -102,7 +102,7 @@ export interface DateFormatOptions {
   /**
    *  short   `1 Farvardin` / `21 Mar`
    *  medium  `1 Farvardin 1405` / `21 Mar 2026`
-   *  long    `شنبه، ۱ فروردین ۱۴۰۵` / `Saturday, 21 March 2026`
+   *  long    `شنبه، ۱ فروردین ۱۴۰۵` / `Saturday, 21 March 2026` (comma after the weekday, in every engine)
    *  numeric `1405/01/01` / `2026-03-21`
    */
   style?: DateStyle;
@@ -123,27 +123,34 @@ function dtf(locale: string, timeZone: string, options: Intl.DateTimeFormatOptio
 export function formatDate(value: DateInput, locale: string, opts: DateFormatOptions = {}): string {
   const { timeZone = DEFAULT_TIME_ZONE, style = 'medium' } = opts;
   const date = toDate(value);
+  const fa = isFa(locale);
+  // Dates are composed from formatToParts, never taken as the engine's finished pattern string:
+  // CLDR patterns differ between ICU builds (Node renders en-GB long as "Friday, 23 October 2026",
+  // Chrome as "Friday 23 October 2026"), and that difference is a hydration mismatch in any client
+  // component that formats a date. The parts (names, digits) are stable; the glue below is ours.
+  const parts = (options: Intl.DateTimeFormatOptions) => {
+    const list = dtf(locale, timeZone, options).formatToParts(date);
+    return (type: Intl.DateTimeFormatPartTypes) => list.find((p) => p.type === type)?.value ?? '';
+  };
   switch (style) {
-    case 'short':
-      return dtf(locale, timeZone, { day: 'numeric', month: 'short' }).format(date);
+    case 'short': {
+      const get = parts({ day: 'numeric', month: 'short' });
+      return `${get('day')} ${get('month')}`;
+    }
     case 'long': {
-      const f = dtf(locale, timeZone, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      if (!isFa(locale)) return f.format(date); // "Saturday, 21 March 2026"
+      const get = parts({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       // CLDR orders Persian as "1405 Farvardin 1, Saturday"; people write «شنبه، ۱ فروردین ۱۴۰۵».
-      const parts = f.formatToParts(date);
-      const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
-      return `${get('weekday')}\u060c ${get('day')} ${get('month')} ${get('year')}`;
+      return `${get('weekday')}${fa ? '\u060c' : ','} ${get('day')} ${get('month')} ${get('year')}`;
     }
     case 'numeric': {
-      const parts = dtf(locale, timeZone, { year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
-      const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
-      return isFa(locale)
-        ? `${get('year')}/${get('month')}/${get('day')}`
-        : `${get('year')}-${get('month')}-${get('day')}`;
+      const get = parts({ year: 'numeric', month: '2-digit', day: '2-digit' });
+      return fa ? `${get('year')}/${get('month')}/${get('day')}` : `${get('year')}-${get('month')}-${get('day')}`;
     }
     case 'medium':
-    default:
-      return dtf(locale, timeZone, { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+    default: {
+      const get = parts({ day: 'numeric', month: 'short', year: 'numeric' });
+      return `${get('day')} ${get('month')} ${get('year')}`;
+    }
   }
 }
 

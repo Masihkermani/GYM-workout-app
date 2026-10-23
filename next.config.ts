@@ -6,6 +6,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   // Parallel agents run separate dev servers with their own NEXT_DIST_DIR.
   distDir: process.env.NEXT_DIST_DIR ?? '.next',
+  // Self-contained server (`.next/standalone/server.js` + only the traced node_modules) for the Docker image.
+  output: 'standalone',
   reactStrictMode: true,
   poweredByHeader: false,
   devIndicators: false,

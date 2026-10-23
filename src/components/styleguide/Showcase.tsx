@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { CalendarDays, Dumbbell, Plus } from 'lucide-react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Avatar } from '@/components/ui/Avatar';
 import { BarbellDiagram } from '@/components/ui/BarbellDiagram';
 import { Button, ButtonLink, type ButtonSize, type ButtonVariant } from '@/components/ui/Button';
@@ -36,6 +36,13 @@ const COPY = {
     people: 'Avatars and direction',
     overlays: 'Tabs, sheet, dialog',
     barbell: 'Barbell diagram',
+    labels: 'Section labels',
+    labelPlain: 'This week',
+    labelQueue: 'Queue position',
+    confirm: 'Confirm',
+    decline: 'Decline',
+    openMounted: 'Sheet mounted open',
+    sheetToast: 'The toast appears above this sheet.',
     heading: 'Pick a slot',
     body: 'Pick a slot. I will confirm within a few hours.',
     name: 'Full name',
@@ -86,6 +93,13 @@ const COPY = {
     people: 'آواتار و جهت',
     overlays: 'تب، برگه، گفتگو',
     barbell: 'نمودار هالتر',
+    labels: 'برچسب بخش‌ها',
+    labelPlain: 'این هفته',
+    labelQueue: 'نوبت در صف',
+    confirm: 'تأیید',
+    decline: 'رد کردن',
+    openMounted: 'برگه‌ی از پیش باز',
+    sheetToast: 'اعلان بالای همین برگه نمایش داده می‌شود.',
     heading: 'یک ساعت را انتخاب کن',
     body: 'یک ساعت را انتخاب کن؛ تا چند ساعت دیگر تأیید می‌کنم.',
     name: 'نام و نام خانوادگی',
@@ -144,7 +158,7 @@ const SWATCHES = [
 ] as const;
 
 const STAMPS: StampStatus[] = ['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED', 'NO_SHOW', 'OPEN', 'PR'];
-const VARIANTS: ButtonVariant[] = ['primary', 'ink', 'outline', 'ghost', 'danger'];
+const VARIANTS: ButtonVariant[] = ['primary', 'blue', 'ink', 'outline', 'neutral', 'ghost', 'danger'];
 const SIZES: ButtonSize[] = ['sm', 'md', 'lg', 'xl'];
 
 function Block({ title, children }: { title: string; children: ReactNode }) {
@@ -160,12 +174,16 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
 export function Showcase() {
   const locale = useLocale() === 'fa' ? 'fa' : 'en';
   const c = COPY[locale];
+  const tc = useTranslations('common');
+  const kgLabel = tc('units.kg');
   const { toast } = useToast();
 
   const [weight, setWeight] = useState<number | null>(62.5);
   const [reps, setReps] = useState<number | null>(8);
   const [free, setFree] = useState<number | null>(null);
   const [sheet, setSheet] = useState(false);
+  // a sheet that is MOUNTED already open (not toggled): the case React Strict Mode used to close in dev
+  const [mountedSheet, setMountedSheet] = useState(false);
   const [dialog, setDialog] = useState(false);
   const [tally, setTally] = useState(7);
   const [stampKey, setStampKey] = useState(0);
@@ -190,9 +208,19 @@ export function Showcase() {
             <span className="num text-5xl">{formatKg(62.5, locale)}</span>
             <span className="num text-2xl">{formatSet({ sets: 3, reps: 8, weightKg: 30 }, locale)}</span>
             <span className="num text-2xl">
-              {formatDate(sample, locale, { style: 'long' })} · {formatTime(sample, locale)}
+              {formatDate(sample, locale, { style: 'long' })}
+              {locale === 'fa' ? '، ' : ' · '}
+              {formatTime(sample, locale)}
             </span>
           </p>
+        </div>
+      </Block>
+
+      <Block title={c.labels}>
+        <div className="flex flex-col gap-5">
+          <SectionLabel>{c.labelPlain}</SectionLabel>
+          <SectionLabel index={2}>{c.labelQueue}</SectionLabel>
+          <SectionLabel index={10}>{c.labelQueue}</SectionLabel>
         </div>
       </Block>
 
@@ -200,7 +228,7 @@ export function Showcase() {
         <div className="flex flex-wrap items-center gap-3">
           {VARIANTS.map((v) => (
             <Button key={v} variant={v}>
-              {v === 'primary' ? c.primary : v}
+              {v === 'primary' ? c.primary : v === 'blue' ? c.confirm : v === 'neutral' ? c.decline : v}
             </Button>
           ))}
         </div>
@@ -254,8 +282,8 @@ export function Showcase() {
 
       <Block title={c.stepper}>
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <Field label={`${c.weight} (kg)`}>
-            <NumberInput value={weight} onChange={setWeight} min={0} max={500} step={2.5} unit={locale === 'fa' ? 'کیلو' : 'kg'} size="xl" />
+          <Field label={`${c.weight} (${kgLabel})`}>
+            <NumberInput value={weight} onChange={setWeight} min={0} max={500} step={2.5} unit="kg" size="xl" />
           </Field>
           <Field label={c.reps}>
             <NumberInput value={reps} onChange={setReps} min={1} max={100} step={1} size="xl" />
@@ -366,6 +394,9 @@ export function Showcase() {
           <Button variant="outline" onClick={() => setSheet(true)}>
             {c.openSheet}
           </Button>
+          <Button variant="outline" onClick={() => setMountedSheet(true)}>
+            {c.openMounted}
+          </Button>
           <Button variant="outline" onClick={() => setDialog(true)}>
             {c.openDialog}
           </Button>
@@ -381,10 +412,30 @@ export function Showcase() {
             </Button>
           }
         >
-          <Field label={c.goal} optional>
-            <Textarea rows={3} />
-          </Field>
+          <div className="flex flex-col gap-4">
+            <Field label={c.goal} optional>
+              <Textarea rows={3} />
+            </Field>
+            <p className="text-sm text-ink-2">{c.sheetToast}</p>
+            <div>
+              <Button variant="outline" size="sm" onClick={() => toast({ message: c.toastText, tone: 'success' })}>
+                {c.toast}
+              </Button>
+            </div>
+          </div>
         </Sheet>
+        {mountedSheet ? (
+          <Sheet
+            open
+            onOpenChange={(next) => {
+              if (!next) setMountedSheet(false);
+            }}
+            title={c.sheetTitle}
+            description={c.sheetBody}
+          >
+            <p className="text-base text-ink-2">{c.openMounted}</p>
+          </Sheet>
+        ) : null}
         <Dialog
           open={dialog}
           onOpenChange={setDialog}
@@ -405,7 +456,7 @@ export function Showcase() {
       </Block>
 
       <Block title={c.barbell}>
-        <Field label={`${c.weight} (kg)`}>
+        <Field label={`${c.weight} (${kgLabel})`}>
           <NumberInput value={barWeight} onChange={setBarWeight} min={0} step={2.5} unit="kg" />
         </Field>
         <BarbellDiagram weightKg={barWeight ?? 0} />

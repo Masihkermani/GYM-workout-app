@@ -211,6 +211,7 @@ html[lang="fa"] {
 
   /* hover shades derived from the live tokens (so they follow nested theme scopes) */
   --color-plate-red-hover: color-mix(in srgb, var(--plate-red) 84%, var(--ink));
+  --color-plate-blue-hover: color-mix(in srgb, var(--plate-blue) 84%, var(--ink));
   --color-ink-hover: color-mix(in srgb, var(--ink) 85%, var(--paper));
   --color-danger-hover: color-mix(in srgb, var(--danger) 84%, var(--ink));
 

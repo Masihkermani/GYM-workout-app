@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
 import { Flash } from '@/components/ui/Flash';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
@@ -17,7 +18,6 @@ import {
 } from '@/lib/scheduling';
 import { weekStartsOn } from '@/lib/time';
 import { addAvailabilityRule, deleteAvailabilityRule, updateAvailabilityRule } from '@/server/booking';
-import { ActionButton } from './ActionButton';
 import type { WindowDTO } from './types';
 
 /** Weekday order for the locale: Saturday first for fa, Monday first for en. */
@@ -246,8 +246,9 @@ function WindowRow({ rule, weekday, index, dayName, allRules, slotMinutes, buffe
         </div>
         <div className="ms-auto flex items-center gap-2">
           {adding ? (
-            <ActionButton
-              tone="confirm"
+            <Button
+              variant="blue"
+              size="sm"
               loading={busy === 'save'}
               disabled={!dirty}
               onClick={save}
@@ -255,22 +256,23 @@ function WindowRow({ rule, weekday, index, dayName, allRules, slotMinutes, buffe
             >
               <Plus className="size-4" aria-hidden="true" />
               {t('availability.add')}
-            </ActionButton>
+            </Button>
           ) : (
             <>
               {dirty ? (
-                <ActionButton tone="confirm" loading={busy === 'save'} onClick={save}>
+                <Button variant="blue" size="sm" loading={busy === 'save'} onClick={save}>
                   {t('availability.save')}
-                </ActionButton>
+                </Button>
               ) : null}
-              <ActionButton
-                tone="neutral"
+              <Button
+                variant="neutral"
+                size="sm"
                 loading={busy === 'delete'}
                 onClick={() => run('delete', () => deleteAvailabilityRule({ locale, id: rule.id }))}
                 aria-label={t('availability.deleteAria', { day: dayName, n: num })}
               >
                 <Trash2 className="size-4" aria-hidden="true" />
-              </ActionButton>
+              </Button>
             </>
           )}
         </div>

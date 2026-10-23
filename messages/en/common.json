@@ -71,6 +71,9 @@
     "increase": "Increase",
     "decrease": "Decrease"
   },
+  "units": {
+    "kg": "kg"
+  },
   "password": {
     "show": "Show password",
     "hide": "Hide password"

@@ -29,11 +29,31 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  colorScheme: 'light dark',
-};
+// Browser-chrome colours. <meta name="theme-color"> is metadata, not styling, and cannot read CSS
+// variables, so these two hex values mirror `--paper` in src/app/globals.css (light #ebece8, dark
+// #111311). Keep them in sync with the tokens (DESIGN.md "Colour tokens").
+const THEME_COLOR = { light: '#ebece8', dark: '#111311' } as const;
+
+export async function generateViewport(): Promise<Viewport> {
+  // An explicit `theme` cookie wins over the OS preference, so the browser bar must follow it too;
+  // without one, let the browser pick by prefers-color-scheme.
+  const theme = (await cookies()).get(THEME_COOKIE)?.value;
+  return {
+    width: 'device-width',
+    initialScale: 1,
+    colorScheme: 'light dark',
+    // The on-screen keyboard shrinks the layout viewport, so the docked "Log set" bar stays above it
+    // on Android Chrome instead of being covered.
+    interactiveWidget: 'resizes-content',
+    themeColor:
+      theme === 'light' || theme === 'dark'
+        ? THEME_COLOR[theme]
+        : [
+            { media: '(prefers-color-scheme: light)', color: THEME_COLOR.light },
+            { media: '(prefers-color-scheme: dark)', color: THEME_COLOR.dark },
+          ],
+  };
+}
 
 export default async function LocaleLayout({
   children,

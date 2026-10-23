@@ -1,0 +1,73 @@
+# Daftar on one machine: the app and PostgreSQL 16.
+#
+#   cp .env.example .env        # then set POSTGRES_PASSWORD (and NEXT_PUBLIC_SITE_URL)
+#   docker compose up -d --build
+#
+# The app listens on 127.0.0.1:${APP_PORT:-3000} only: put a reverse proxy with HTTPS in front of it
+# (README, "Deploy"). The session cookie is `Secure` in production, so login does not work over plain
+# http except on localhost.
+#
+# Demo data (coach, clients, exercise library) is NOT loaded automatically. The first time:
+#   docker compose --profile tools run --rm seed
+# The seeded passwords are public: change them (README, "Seeded accounts").
+name: daftar
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-daftar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (letters and digits only, it goes into a URL)}
+      POSTGRES_DB: ${POSTGRES_DB:-daftar}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+        # set these in .env if the default npm registry / Prisma binaries host is not reachable
+        npm_config_registry: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
+        PRISMA_ENGINES_MIRROR: ${PRISMA_ENGINES_MIRROR:-https://binaries.prisma.sh}
+    image: daftar:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    # everything in .env is passed through; DATABASE_URL below wins over a dev value left in .env
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-daftar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-daftar}
+    ports:
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+
+  # One-off tools container (profile "tools", never started by `up`): loads the demo data.
+  seed:
+    profiles: ["tools"]
+    build:
+      context: .
+      target: build
+      args:
+        npm_config_registry: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
+        PRISMA_ENGINES_MIRROR: ${PRISMA_ENGINES_MIRROR:-https://binaries.prisma.sh}
+    depends_on:
+      db:
+        condition: service_healthy
+      # healthy = the entrypoint has applied the migrations and the server answers
+      app:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-daftar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-daftar}
+    command: ["npm", "run", "db:seed"]
+
+volumes:
+  pgdata:

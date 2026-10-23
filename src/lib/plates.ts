@@ -18,26 +18,44 @@ export const PLATE_COLOR: Record<PlateKg, PlateColor> = {
   1.25: 'steel',
 };
 
-/** Relative plate diameter (1 = 25 kg plate) so the diagram reads like a real bar. */
-export const PLATE_HEIGHT: Record<PlateKg, number> = {
-  25: 1,
-  20: 0.96,
-  15: 0.9,
-  10: 0.82,
-  5: 0.6,
-  2.5: 0.46,
-  1.25: 0.38,
+/**
+ * Real plate diameters in mm. The IWF/IPF bumpers (25, 20, 15, 10 kg) are all 450 mm; only their
+ * thickness tells them apart. The small change plates are much smaller discs.
+ */
+export const PLATE_DIAMETER_MM: Record<PlateKg, number> = {
+  25: 450,
+  20: 450,
+  15: 450,
+  10: 450,
+  5: 230,
+  2.5: 190,
+  1.25: 160,
 };
 
-/** Relative plate thickness. */
+/** Relative plate diameter (1 = a 450 mm bumper): proportional to the real diameters above. */
+export const PLATE_HEIGHT: Record<PlateKg, number> = {
+  25: PLATE_DIAMETER_MM[25] / 450,
+  20: PLATE_DIAMETER_MM[20] / 450,
+  15: PLATE_DIAMETER_MM[15] / 450,
+  10: PLATE_DIAMETER_MM[10] / 450,
+  5: PLATE_DIAMETER_MM[5] / 450,
+  2.5: PLATE_DIAMETER_MM[2.5] / 450,
+  1.25: PLATE_DIAMETER_MM[1.25] / 450,
+};
+
+/**
+ * Relative plate thickness (1 = the 25 kg bumper). A 25 kg bumper is about twice as thick as a
+ * 5 kg change plate; the lighter bumpers step down in between. Drawn slightly exaggerated against the
+ * diameter so a plate still reads as a plate at phone size.
+ */
 export const PLATE_THICKNESS: Record<PlateKg, number> = {
   25: 1,
-  20: 0.95,
-  15: 0.85,
-  10: 0.75,
-  5: 0.55,
-  2.5: 0.45,
-  1.25: 0.38,
+  20: 0.82,
+  15: 0.68,
+  10: 0.54,
+  5: 0.5,
+  2.5: 0.39,
+  1.25: 0.29,
 };
 
 export type PlateFailure = 'below-bar' | 'unreachable';

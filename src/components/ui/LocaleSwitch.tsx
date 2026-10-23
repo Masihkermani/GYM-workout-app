@@ -9,8 +9,12 @@ import { cn } from '@/lib/cn';
 
 export interface LocaleSwitchProps {
   className?: string;
-  /** `inline` = text link style; `button` = outlined 44px target. */
-  variant?: 'inline' | 'button';
+  /**
+   * `inline` = text link style; `button` = outlined 44px target; `rail` = a row of the shell's
+   * account block (icon in the same 32px leading slot as the avatar and the logout icon, so the three
+   * rows line up at the start edge in both directions).
+   */
+  variant?: 'inline' | 'button' | 'rail';
 }
 
 function SwitchLink({ query, className, variant = 'inline' }: LocaleSwitchProps & { query: string }) {
@@ -31,10 +35,17 @@ function SwitchLink({ query, className, variant = 'inline' }: LocaleSwitchProps 
       className={cn(
         'inline-flex min-h-11 items-center gap-2 rounded-[var(--r)] px-3 text-sm font-semibold text-ink tx hover:bg-paper-2',
         variant === 'button' && 'border-[1.5px] border-ink',
+        variant === 'rail' && 'px-2',
         className,
       )}
     >
-      <Languages className="size-5" aria-hidden="true" />
+      {variant === 'rail' ? (
+        <span className="flex size-8 shrink-0 items-center justify-center">
+          <Languages className="size-5" aria-hidden="true" />
+        </span>
+      ) : (
+        <Languages className="size-5" aria-hidden="true" />
+      )}
       <span>{t('locale.switchName')}</span>
     </Link>
   );

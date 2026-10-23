@@ -7,7 +7,6 @@ import { Dialog } from '@/components/ui/Dialog';
 import { Flash } from '@/components/ui/Flash';
 import { useToast } from '@/components/ui/Toast';
 import type { BookingErrorCode } from '@/lib/scheduling';
-import { ActionButton } from './ActionButton';
 import { cancelBooking } from '@/server/booking';
 
 /**
@@ -49,15 +48,16 @@ export function CancelBooking({
 
   return (
     <>
-      <ActionButton
-        tone="neutral"
+      <Button
+        variant="neutral"
+        size="sm"
         onClick={() => {
           setError(null);
           setOpen(true);
         }}
       >
         {t(`${mode}.button`)}
-      </ActionButton>
+      </Button>
       <Dialog
         open={open}
         onOpenChange={(next) => !pending && setOpen(next)}

@@ -73,7 +73,7 @@ export async function Shell({ kind, children }: { kind: 'client' | 'coach'; chil
   const account = (
     <div className="flex flex-col gap-2">
       {user ? (
-        <div className="flex items-center gap-3 px-2">
+        <div className="flex items-center gap-2 px-2">
           <Avatar name={user.name} size="sm" />
           <span className="min-w-0 truncate text-sm font-semibold" title={t('nav.signedInAs', { name: user.name })}>
             {user.name}
@@ -81,7 +81,7 @@ export async function Shell({ kind, children }: { kind: 'client' | 'coach'; chil
         </div>
       ) : null}
       <div className="flex items-center justify-between gap-1">
-        <LocaleSwitch />
+        <LocaleSwitch variant="rail" />
         <ThemeToggle />
       </div>
       <LogoutButton locale={locale} label={t('nav.logout')} />

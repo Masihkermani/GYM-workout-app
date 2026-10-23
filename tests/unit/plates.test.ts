@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { computePlates, groupPlates, PLATE_SIZES_KG } from '@/lib/plates';
+import {
+  computePlates,
+  groupPlates,
+  PLATE_DIAMETER_MM,
+  PLATE_HEIGHT,
+  PLATE_SIZES_KG,
+  PLATE_THICKNESS,
+} from '@/lib/plates';
 
 describe('computePlates', () => {
   it('bare bar: no plates', () => {
@@ -59,5 +66,26 @@ describe('groupPlates', () => {
       { plate: 10, count: 1 },
       { plate: 2.5, count: 1 },
     ]);
+  });
+});
+
+describe('plate geometry (what the barbell diagram draws)', () => {
+  it('bumpers (25/20/15/10) share the real 450 mm diameter; change plates are smaller discs', () => {
+    for (const p of [25, 20, 15, 10] as const) expect(PLATE_DIAMETER_MM[p]).toBe(450);
+    expect(PLATE_HEIGHT[25]).toBe(1);
+    expect(PLATE_HEIGHT[10]).toBe(1);
+    expect(PLATE_HEIGHT[5]).toBeLessThan(0.6);
+    expect(PLATE_HEIGHT[2.5]).toBeLessThan(PLATE_HEIGHT[5]);
+    expect(PLATE_HEIGHT[1.25]).toBeLessThan(PLATE_HEIGHT[2.5]);
+  });
+  it('heights are proportional to the real diameters', () => {
+    for (const p of PLATE_SIZES_KG) expect(PLATE_HEIGHT[p]).toBeCloseTo(PLATE_DIAMETER_MM[p] / 450, 10);
+  });
+  it('a 25 kg plate is about twice as thick as a 5 kg plate, and thickness never grows as weight drops', () => {
+    expect(PLATE_THICKNESS[25] / PLATE_THICKNESS[5]).toBeCloseTo(2, 1);
+    const sizes = [...PLATE_SIZES_KG];
+    for (let i = 1; i < sizes.length; i++) {
+      expect(PLATE_THICKNESS[sizes[i]]).toBeLessThanOrEqual(PLATE_THICKNESS[sizes[i - 1]]);
+    }
   });
 });

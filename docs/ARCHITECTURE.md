@@ -302,8 +302,10 @@ Coach `/[locale]/coach`:
 
 ## Scripts
 
-`dev`, `build`, `start`, `lint`, `typecheck` (`tsc --noEmit`), `test` (vitest), `test:e2e` (playwright),
-`db:migrate`, `db:seed`, `db:reset`, `i18n:check`.
+`dev`, `build`, `start`, `lint`, `typecheck` (`tsc --noEmit --incremental false`), `test` (vitest), `test:e2e` (playwright),
+`test:e2e:prod` (build, then playwright against `next start`), `db:migrate`, `db:seed`, `db:reset`, `i18n:check`.
+
+Deployment: `Dockerfile` + `docker-compose.yml` (standalone output, `prisma migrate deploy` on start), CI in `.github/workflows/ci.yml`; see README.
 
 ## Working rules for parallel agents
 

@@ -1,0 +1,39 @@
+# VCS, CI and editor files
+.git
+.github
+.claude
+.vscode
+.idea
+
+# dependencies and build output are produced inside the image
+node_modules
+.next*
+out
+build
+
+# secrets and local environment: never bake these into an image
+.env
+.env.*
+!.env.example
+
+# tests, QA artifacts, design material and docs are not needed at runtime
+tests
+test-results
+playwright-report
+coverage
+.qa
+design-preview
+design-system
+docs
+*.md
+!data/exercises/LICENSE-exercises.md
+
+# the image's own build files
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# misc
+*.log
+*.tsbuildinfo
+.DS_Store

@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react';
 import { Check, UserX, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
-import { ActionButton } from './ActionButton';
 import { Dialog } from '@/components/ui/Dialog';
 import { useToast } from '@/components/ui/Toast';
 import type { ActionResult, BookingStatusCode } from '@/lib/scheduling';
@@ -34,7 +33,7 @@ export function CoachBookingActions({
   locale: string;
   /** Offer to flip COMPLETED <-> NO_SHOW (the booking sheet does; dashboards stay quiet). */
   allowCorrect?: boolean;
-  /** Called after an action succeeds (the booking sheet closes itself so the toast is not hidden behind it). */
+  /** Called after an action succeeds (the booking sheet closes itself: the booking just changed, so its details are stale). */
   onDone?: () => void;
 }) {
   const t = useTranslations('booking');
@@ -64,14 +63,14 @@ export function CoachBookingActions({
   if (status === 'PENDING' && !started) {
     return (
       <div className="flex flex-wrap gap-2 pt-1">
-        <ActionButton tone="confirm" loading={busy === 'confirm'} disabled={disabled} onClick={() => run('confirm', () => confirmBooking(arg))}>
+        <Button variant="blue" size="sm" loading={busy === 'confirm'} disabled={disabled} onClick={() => run('confirm', () => confirmBooking(arg))}>
           <Check className="size-4" aria-hidden="true" />
           {t('coach.confirm')}
-        </ActionButton>
-        <ActionButton tone="neutral" loading={busy === 'decline'} disabled={disabled} onClick={() => run('decline', () => declineBooking(arg))}>
+        </Button>
+        <Button variant="neutral" size="sm" loading={busy === 'decline'} disabled={disabled} onClick={() => run('decline', () => declineBooking(arg))}>
           <X className="size-4" aria-hidden="true" />
           {t('coach.decline')}
-        </ActionButton>
+        </Button>
       </div>
     );
   }
@@ -80,8 +79,9 @@ export function CoachBookingActions({
     const toCompleted = status === 'NO_SHOW';
     return (
       <div className="pt-1">
-        <ActionButton
-          tone="neutral"
+        <Button
+          variant="neutral"
+          size="sm"
           loading={busy === (toCompleted ? 'completed' : 'noShow')}
           disabled={disabled}
           onClick={() =>
@@ -89,7 +89,7 @@ export function CoachBookingActions({
           }
         >
           {toCompleted ? t('coach.changeToCompleted') : t('coach.changeToNoShow')}
-        </ActionButton>
+        </Button>
       </div>
     );
   }
@@ -97,14 +97,14 @@ export function CoachBookingActions({
   if ((status === 'PENDING' || status === 'CONFIRMED') && started) {
     return (
       <div className="flex flex-wrap gap-2 pt-1">
-        <ActionButton tone="confirm" loading={busy === 'completed'} disabled={disabled} onClick={() => run('completed', () => markCompleted(arg))}>
+        <Button variant="blue" size="sm" loading={busy === 'completed'} disabled={disabled} onClick={() => run('completed', () => markCompleted(arg))}>
           <Check className="size-4" aria-hidden="true" />
           {t('coach.markCompleted')}
-        </ActionButton>
-        <ActionButton tone="neutral" loading={busy === 'noShow'} disabled={disabled} onClick={() => run('noShow', () => markNoShow(arg))}>
+        </Button>
+        <Button variant="neutral" size="sm" loading={busy === 'noShow'} disabled={disabled} onClick={() => run('noShow', () => markNoShow(arg))}>
           <UserX className="size-4" aria-hidden="true" />
           {t('coach.markNoShow')}
-        </ActionButton>
+        </Button>
       </div>
     );
   }
@@ -112,10 +112,10 @@ export function CoachBookingActions({
   if (status === 'CONFIRMED') {
     return (
       <div className="pt-1">
-        <ActionButton tone="neutral" disabled={disabled} onClick={() => setAskCancel(true)}>
+        <Button variant="neutral" size="sm" disabled={disabled} onClick={() => setAskCancel(true)}>
           <X className="size-4" aria-hidden="true" />
           {t('coach.cancelBooking')}
-        </ActionButton>
+        </Button>
         <Dialog
           open={askCancel}
           onOpenChange={(next) => busy === null && setAskCancel(next)}

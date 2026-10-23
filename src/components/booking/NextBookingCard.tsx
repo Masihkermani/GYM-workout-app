@@ -30,7 +30,13 @@ export async function NextBookingCard({ userId, locale }: { userId: string; loca
         icon={CalendarDays}
         title={t('next.emptyTitle')}
         description={t('next.emptyBody')}
-        action={<ButtonLink href="/app/book">{t('next.book')}</ButtonLink>}
+        // outline, not the plate-red primary: this card sits above the training card on the Today screen,
+        // whose "Start workout" is the one plate-red action there (DESIGN.md: one red action per screen)
+        action={
+          <ButtonLink href="/app/book" variant="outline">
+            {t('next.book')}
+          </ButtonLink>
+        }
       />
     );
   }

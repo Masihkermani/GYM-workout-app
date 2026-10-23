@@ -2,10 +2,14 @@ import { defineConfig, devices } from '@playwright/test';
 
 const port = Number(process.env.E2E_PORT ?? 3100);
 const baseURL = process.env.E2E_BASE_URL ?? `http://localhost:${port}`;
+// `npm run test:e2e:prod` sets E2E_PROD=1: build first, then run against `next start` (the real
+// production server, minified bundles, no Strict Mode double effects, no dev-only styleguide).
+const server = process.env.E2E_PROD ? 'start' : 'dev';
 
 export default defineConfig({
   testDir: './tests/e2e',
-  outputDir: './test-results',
+  // Parallel agents / CI jobs set PW_OUTPUT_DIR so their traces and screenshots do not collide.
+  outputDir: process.env.PW_OUTPUT_DIR ?? './test-results',
   timeout: 60_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
@@ -23,7 +27,7 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `npm run dev -- -p ${port}`,
+        command: `npm run ${server} -- -p ${port}`,
         url: `${baseURL}/fa/login`,
         reuseExistingServer: true,
         timeout: 120_000,

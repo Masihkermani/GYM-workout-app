@@ -18,8 +18,12 @@ export interface NumberInputProps {
   step?: number;
   /** Max digits after the separator. Defaults to the decimals in `step` (at least 2 for fractional steps). */
   decimals?: number;
-  /** Unit shown after the number ("kg"). */
-  unit?: string;
+  /**
+   * Unit shown after the number. `'kg'` resolves to the localised label (`common.units.kg`: «کیلو» in
+   * Persian), so a Latin unit can never leak into fa; any other string is shown as given (pass an
+   * already-translated word).
+   */
+  unit?: 'kg' | (string & {});
   /** `md` = 44px controls; `xl` = giant 56px steppers and a 72px condensed number for the set logger. */
   size?: 'md' | 'xl';
   /** Submitted as a hidden input holding the normalised Latin value, whatever digits were typed. */
@@ -73,6 +77,7 @@ export function NumberInput(props: NumberInputProps) {
   const t = useTranslations('common');
   const locale = useLocale();
   const aria = useControlAria(props);
+  const unitLabel = unit === 'kg' ? t('units.kg') : unit;
 
   const stepDecimals = decimalsOf(step);
   const maxDecimals = props.decimals ?? (stepDecimals > 0 ? Math.max(stepDecimals, 2) : 0);
@@ -235,10 +240,10 @@ export function NumberInput(props: NumberInputProps) {
           className={cn(
             'focus-bare w-full min-w-0 bg-transparent px-2 text-center text-ink placeholder:text-ink-3',
             xl ? 'num h-[5rem] text-5xl sm:text-6xl' : 'h-11 text-lg font-semibold',
-            unit && !xl && 'pe-12 ps-12',
+            unitLabel && !xl && 'pe-12 ps-12',
           )}
         />
-        {unit ? (
+        {unitLabel ? (
           <span
             aria-hidden="true"
             className={cn(
@@ -248,7 +253,7 @@ export function NumberInput(props: NumberInputProps) {
                 : 'absolute inset-y-0 end-3 flex items-center text-sm font-semibold',
             )}
           >
-            {unit}
+            {unitLabel}
           </span>
         ) : null}
       </div>

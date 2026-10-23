@@ -19,7 +19,8 @@ export interface SectionLabelProps {
 
 /**
  * Section heading: a small label (uppercase + tracked in English, bold in Persian) sitting on a
- * short hairline. Sections are separated by spacing, not by full-width rules.
+ * short hairline. Sections are separated by spacing, not by full-width rules. An `index` renders as
+ * `2 · Label` in English and `۲ | برچسب` (hairline divider, no dot) in Persian.
  */
 export function SectionLabel({ children, index, as: Tag = 'h2', action, className }: SectionLabelProps) {
   const locale = useLocale();
@@ -30,7 +31,13 @@ export function SectionLabel({ children, index, as: Tag = 'h2', action, classNam
           {index != null ? (
             <>
               <span className="num">{formatNumber(index, locale, { grouping: false })}</span>
-              <span aria-hidden="true"> · </span>
+              {locale === 'fa' ? (
+                // DESIGN.md rule 9: never a middle dot next to Persian digits (the zero «۰» is a dot too).
+                // A hairline divider with logical margins separates the number from the label instead.
+                <span aria-hidden="true" className="mx-2 inline-block h-3 w-px translate-y-0.5 bg-ink-3" />
+              ) : (
+                <span aria-hidden="true"> · </span>
+              )}
             </>
           ) : null}
           {children}

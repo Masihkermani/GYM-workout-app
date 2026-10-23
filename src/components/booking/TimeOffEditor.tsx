@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { CalendarOff, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Field } from '@/components/ui/Field';
 import { Flash } from '@/components/ui/Flash';
@@ -12,7 +13,6 @@ import { formatDate, formatNumber } from '@/lib/format';
 import type { BookingErrorCode } from '@/lib/scheduling';
 import { type DateKey } from '@/lib/time';
 import { addTimeOff, deleteTimeOff } from '@/server/booking';
-import { ActionButton } from './ActionButton';
 import { noonOf } from './dates';
 import { DatePicker } from './DatePicker';
 import type { TimeOffDTO } from './types';
@@ -97,15 +97,16 @@ export function TimeOffEditor({
                     </p>
                   ) : null}
                 </div>
-                <ActionButton
-                  tone="neutral"
+                <Button
+                  variant="neutral"
+                  size="sm"
                   loading={busy === item.id}
                   onClick={() => remove(item.id)}
                   aria-label={t('timeOff.deleteAria', { range: range(item) })}
                 >
                   <Trash2 className="size-4" aria-hidden="true" />
                   {t('timeOff.delete')}
-                </ActionButton>
+                </Button>
               </li>
             ))}
           </ul>
@@ -137,10 +138,10 @@ export function TimeOffEditor({
         <Field label={t('timeOff.reason')} optional>
           <Input maxLength={120} value={reason} onChange={(e) => setReason(e.target.value)} />
         </Field>
-        <ActionButton tone="confirm" fullWidth loading={busy === 'add'} onClick={add}>
+        <Button variant="blue" size="sm" fullWidth loading={busy === 'add'} onClick={add}>
           <Plus className="size-4" aria-hidden="true" />
           {t('timeOff.add')}
-        </ActionButton>
+        </Button>
       </section>
     </div>
   );
