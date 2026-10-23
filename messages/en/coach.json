@@ -1,1 +1,397 @@
-{}
+{
+  "shared": {
+    "copied": "Copied",
+    "cancel": "Cancel",
+    "save": "Save",
+    "done": "Done",
+    "retry": "Retry"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "time": {
+    "today": "Today",
+    "daysAgo": "{count, plural, one {# day ago} other {# days ago}}"
+  },
+  "errors": {
+    "required": "This field is required.",
+    "phoneInvalid": "That isn't a valid phone number. Try 0912 123 4567.",
+    "phoneTaken": "An account with this number already exists.",
+    "nameShort": "The name needs at least 2 characters.",
+    "nameLong": "The name can be at most 60 characters.",
+    "passwordShort": "The password needs at least 8 characters.",
+    "passwordLong": "That password is too long.",
+    "passwordWrong": "The current password is wrong.",
+    "passwordSame": "The new password must differ from the current one.",
+    "passwordMismatch": "The two new passwords don't match.",
+    "textLong": "That text is too long.",
+    "numberInvalid": "That isn't a valid number.",
+    "outOfRange": "Use a number from {min} to {max}.",
+    "timezoneInvalid": "That isn't a valid time zone. Try Asia/Tehran.",
+    "stepsTooMany": "At most {max, number} steps.",
+    "taxonomyInvalid": "Pick one of the listed options.",
+    "inUse": "This exercise has logged sets or program entries, so it can't be deleted. Archive it instead.",
+    "notFound": "That item no longer exists.",
+    "rateLimited": "Too many failed attempts. Try again in a few minutes.",
+    "generic": "Something went wrong. Try again."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": {
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "evening": "Good evening, {name}",
+      "night": "Good night, {name}"
+    },
+    "stats": {
+      "sessions": "Sessions this week",
+      "clients": "Active clients",
+      "pending": "Pending requests"
+    },
+    "today": "Today",
+    "recent": "Latest sets",
+    "pending": "Pending requests",
+    "week": "This week",
+    "idle": "{days, plural, one {No workout in # day} other {No workout in # days}}",
+    "toSchedule": "Schedule",
+    "toClients": "Clients"
+  },
+  "clients": {
+    "title": "Clients",
+    "subtitle": "Everyone you train, with their next session and last workout.",
+    "search": {
+      "label": "Search clients",
+      "placeholder": "Name or phone number",
+      "clear": "Clear search"
+    },
+    "filter": {
+      "label": "Filter by status",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "col": {
+      "name": "Name",
+      "phone": "Phone",
+      "next": "Next session",
+      "last": "Last workout",
+      "program": "Program",
+      "status": "Status"
+    },
+    "none": "None",
+    "never": "No workouts yet",
+    "noNext": "No upcoming session",
+    "nextShort": "Next: {when}",
+    "count": "{count, plural, one {# client} other {# clients}}",
+    "empty": {
+      "title": "No clients yet",
+      "body": "Add the first client with a temporary password, then hand them the login details."
+    },
+    "noResults": {
+      "title": "No clients match",
+      "body": "Try a shorter name or number, or set the status filter to All."
+    },
+    "add": {
+      "button": "Add client",
+      "title": "New client",
+      "description": "Creates an account with a temporary password. After saving, hand the login details to the client.",
+      "name": "Full name",
+      "phone": "Phone number",
+      "phoneHint": "Persian or Latin digits. Iranian mobile (0912…) or international (+49…).",
+      "password": "Temporary password",
+      "passwordHint": "At least 8 characters. The client can change it on their profile.",
+      "generate": "Generate a random password",
+      "submit": "Create account",
+      "createdTitle": "{name} was added",
+      "createdBody": "Hand over these login details now. The password isn't shown again once you close this sheet.",
+      "shareHint": "After logging in, the client can change the password under Me.",
+      "copy": "Copy login details",
+      "another": "Add another",
+      "openProfile": "Open profile",
+      "clipPhone": "Phone",
+      "clipPassword": "Temporary password"
+    },
+    "lastShort": "Last workout: {when}"
+  },
+  "client": {
+    "metaTitle": "Client",
+    "back": "All clients",
+    "newProgram": "New program",
+    "details": "Details",
+    "fact": {
+      "phone": "Phone",
+      "since": "Member since",
+      "language": "Language",
+      "goal": "Goal",
+      "noGoal": "No goal written yet"
+    },
+    "activeLabel": "Account active",
+    "activeHintOn": "The client can log in and book sessions.",
+    "activeHintOff": "The client can't log in. Their history is kept.",
+    "activeOn": "{name} is active again.",
+    "activeOff": "{name} is now inactive.",
+    "deactivate": {
+      "title": "Deactivate {name}?",
+      "body": "They are signed out on every device and can't log in until you reactivate them. Programs and workout history stay.",
+      "confirm": "Deactivate"
+    },
+    "notes": {
+      "label": "Coach notes",
+      "private": "Private: only you see this",
+      "placeholder": "e.g. right knee hurts on deep squats; prefers morning sessions",
+      "autosave": "Changes save automatically.",
+      "saving": "Saving…",
+      "saved": "Saved at {time}",
+      "error": "Couldn't save."
+    },
+    "reset": {
+      "button": "Reset password",
+      "title": "Reset {name}'s password?",
+      "body": "A new random temporary password is created. The current one stops working and the client is signed out everywhere.",
+      "confirm": "Reset password",
+      "doneTitle": "New temporary password",
+      "doneBody": "This is shown only once. Copy it and give it to the client.",
+      "copy": "Copy password"
+    }
+  },
+  "exercises": {
+    "title": "Exercises",
+    "subtitle": "The exercise library. Edit Persian names and steps here.",
+    "filter": {
+      "search": "Search",
+      "searchPlaceholder": "English or Persian name",
+      "bodyPart": "Body part",
+      "equipment": "Equipment",
+      "show": "Show",
+      "showActive": "Active",
+      "showArchived": "Archived",
+      "showAll": "All",
+      "custom": "Custom exercises only",
+      "reset": "Clear filters",
+      "any": "Any"
+    },
+    "col": {
+      "name": "Exercise",
+      "bodyPart": "Body part",
+      "equipment": "Equipment",
+      "target": "Target muscle",
+      "flags": "Labels"
+    },
+    "flag": {
+      "custom": "Custom",
+      "archived": "Archived"
+    },
+    "noPersian": "No Persian name",
+    "editAria": "Edit {name}",
+    "empty": {
+      "title": "No exercises found",
+      "body": "Change the search or the filters."
+    },
+    "pager": {
+      "label": "Pages",
+      "range": "{from}–{to} of {total}",
+      "prev": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {pages}"
+    },
+    "editor": {
+      "saved": "Exercise saved.",
+      "deleted": "Exercise deleted.",
+      "nameFa": "Persian name",
+      "nameEn": "English name",
+      "nameEnLocked": "The English name of a library exercise can't be changed.",
+      "stepsFa": "Steps (Persian)",
+      "stepsEn": "Steps (English)",
+      "stepsHint": "One step per line.",
+      "archive": "Archived",
+      "archiveHint": "Archived exercises disappear from pickers but stay in programs and history.",
+      "usage": "Used in {sets, plural, one {# logged set} other {# logged sets}} and {items, plural, one {# program entry} other {# program entries}}.",
+      "delete": "Delete",
+      "deleteTitle": "Delete “{name}”?",
+      "deleteBody": "Only custom exercises with no sets and no program entries can be deleted. This can't be undone.",
+      "deleteConfirm": "Delete exercise"
+    },
+    "add": {
+      "button": "Custom exercise",
+      "title": "New custom exercise",
+      "description": "For movements that aren't in the library yet.",
+      "nameEn": "English name",
+      "nameFa": "Persian name",
+      "nameFaHint": "If left empty, the English name is shown in Persian too.",
+      "bodyPart": "Body part",
+      "equipment": "Equipment",
+      "target": "Target muscle",
+      "choose": "Choose…",
+      "submit": "Add exercise",
+      "created": "Exercise added."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Your profile, the booking rules and training defaults.",
+    "saved": "Settings saved.",
+    "save": "Save settings",
+    "range": "Allowed: {min} to {max}.",
+    "profile": {
+      "title": "Profile",
+      "description": "Name, introduction and address as shown on the front page."
+    },
+    "booking": {
+      "title": "Booking",
+      "description": "How and when clients can book and cancel.",
+      "scheduleNote": "Weekly hours and time off are edited on the Schedule page.",
+      "scheduleLink": "Open the schedule"
+    },
+    "training": {
+      "title": "Training",
+      "description": "Defaults used when logging sets."
+    },
+    "fields": {
+      "coachName": "Name (English)",
+      "coachNameFa": "Name (Persian)",
+      "bioEn": "Introduction (English)",
+      "bioFa": "Introduction (Persian)",
+      "locationEn": "Address (English)",
+      "locationFa": "Address (Persian)",
+      "slotMinutes": {
+        "label": "Session length",
+        "hint": "Length of one slot on the timetable.",
+        "unit": "min"
+      },
+      "bufferMinutes": {
+        "label": "Break between sessions",
+        "hint": "Rest between two back-to-back slots.",
+        "unit": "min"
+      },
+      "horizonDays": {
+        "label": "Booking window",
+        "hint": "How many days ahead clients can book.",
+        "unit": "days"
+      },
+      "minNoticeHours": {
+        "label": "Minimum notice",
+        "hint": "Slots starting sooner than this are closed.",
+        "unit": "hours"
+      },
+      "cancelWindowHours": {
+        "label": "Cancellation window",
+        "hint": "Clients can cancel until this long before the session.",
+        "unit": "hours"
+      },
+      "timezone": {
+        "label": "Time zone",
+        "hint": "IANA name, like Asia/Tehran. Changing it shifts your weekly hours too."
+      },
+      "requireApproval": {
+        "label": "Bookings need my approval",
+        "hint": "Requests wait as pending until you confirm. Off: a booking is confirmed at once."
+      },
+      "allowSignup": {
+        "label": "Open sign-up",
+        "hint": "Anyone can create an account. Off: only you add clients."
+      },
+      "barKg": {
+        "label": "Bar weight",
+        "hint": "Used by the plate diagram in the set logger.",
+        "unit": "kg"
+      }
+    }
+  },
+  "profile": {
+    "title": "Me",
+    "since": "Member since {date}",
+    "about": {
+      "title": "About you"
+    },
+    "name": "Full name",
+    "goal": "Your goal",
+    "goalHint": "In your own words. Your coach sees it.",
+    "save": "Save",
+    "saved": "Profile saved.",
+    "language": {
+      "title": "Language",
+      "description": "Saved to your account, so it follows you to every device.",
+      "label": "Language"
+    },
+    "theme": {
+      "title": "Appearance"
+    },
+    "password": {
+      "title": "Change password",
+      "description": "After changing it, you're signed out on your other devices.",
+      "current": "Current password",
+      "next": "New password",
+      "nextHint": "At least 8 characters.",
+      "confirm": "New password again",
+      "submit": "Change password",
+      "done": "Password changed."
+    },
+    "logout": "Log out"
+  },
+  "taxonomy": {
+    "bodyPart": {
+      "back": "Back",
+      "cardio": "Cardio",
+      "chest": "Chest",
+      "lower arms": "Forearms",
+      "lower legs": "Lower legs",
+      "neck": "Neck",
+      "shoulders": "Shoulders",
+      "upper arms": "Upper arms",
+      "upper legs": "Upper legs",
+      "waist": "Core"
+    },
+    "equipment": {
+      "assisted": "Assisted",
+      "band": "Band",
+      "barbell": "Barbell",
+      "body weight": "Body weight",
+      "bosu ball": "Bosu ball",
+      "cable": "Cable",
+      "dumbbell": "Dumbbell",
+      "elliptical machine": "Elliptical machine",
+      "ez barbell": "EZ bar",
+      "hammer": "Hammer machine",
+      "kettlebell": "Kettlebell",
+      "leverage machine": "Leverage machine",
+      "medicine ball": "Medicine ball",
+      "olympic barbell": "Olympic barbell",
+      "resistance band": "Resistance band",
+      "roller": "Roller",
+      "rope": "Rope",
+      "skierg machine": "SkiErg",
+      "sled machine": "Sled",
+      "smith machine": "Smith machine",
+      "stability ball": "Stability ball",
+      "stationary bike": "Stationary bike",
+      "stepmill machine": "Stepmill",
+      "tire": "Tire",
+      "trap bar": "Trap bar",
+      "upper body ergometer": "Upper-body ergometer",
+      "weighted": "Weighted",
+      "wheel roller": "Ab wheel"
+    },
+    "target": {
+      "abductors": "Abductors",
+      "abs": "Abs",
+      "adductors": "Adductors",
+      "biceps": "Biceps",
+      "calves": "Calves",
+      "cardiovascular system": "Cardiovascular system",
+      "delts": "Deltoids",
+      "forearms": "Forearms",
+      "glutes": "Glutes",
+      "hamstrings": "Hamstrings",
+      "lats": "Lats",
+      "levator scapulae": "Levator scapulae",
+      "pectorals": "Pectorals",
+      "quads": "Quads",
+      "serratus anterior": "Serratus anterior",
+      "spine": "Spine",
+      "traps": "Traps",
+      "triceps": "Triceps",
+      "upper back": "Upper back"
+    }
+  }
+}

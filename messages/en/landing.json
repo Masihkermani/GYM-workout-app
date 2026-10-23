@@ -1,1 +1,50 @@
-{}
+{
+  "meta": {
+    "title": "{coach} — book a session, log every set",
+    "description": "One-to-one training with {coach}. See this week's open hours, book a session and keep every set in your own log."
+  },
+  "nav": {
+    "login": "Log in",
+    "register": "Create an account",
+    "openLog": "Open your log",
+    "openDashboard": "Open the dashboard"
+  },
+  "hero": {
+    "lede": "I write the program, you log every set, and when the numbers stall we change the plan together.",
+    "byInvitation": "New clients join by invitation."
+  },
+  "how": {
+    "title": "How it works",
+    "pick": {
+      "title": "Pick a slot",
+      "body": "Every hatched block on the timetable is an hour I have free. Tap one and leave a note if you like."
+    },
+    "confirm": {
+      "title": "I confirm",
+      "bodyApproval": "Your request waits for my stamp, usually a few hours. Plans change: cancel {hours, plural, =0 {until the session starts} one {up to # hour before} other {up to # hours before}}.",
+      "bodyInstant": "Your slot is confirmed the moment you book it. Plans change: cancel {hours, plural, =0 {until the session starts} one {up to # hour before} other {up to # hours before}}."
+    },
+    "train": {
+      "title": "Train and log",
+      "body": "After each set, tap in weight and reps. It all stays in your history, so next week you know which number to beat."
+    }
+  },
+  "card": {
+    "title": "A card from the log",
+    "caption": "This is what a training day looks like once you start logging. The names and numbers are samples."
+  },
+  "hours": {
+    "title": "Hours and place",
+    "open": "Open hours",
+    "empty": "No fixed hours yet. The timetable above shows what is free.",
+    "closed": "Closed",
+    "range": "{from} – {to}",
+    "pair": "{a} and {b}",
+    "session": "Session",
+    "sessionValue": "{minutes} minutes",
+    "place": "Place"
+  },
+  "footer": {
+    "note": "Only you and your coach see your sets."
+  }
+}
