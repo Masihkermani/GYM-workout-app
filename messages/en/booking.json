@@ -1,1 +1,259 @@
-{}
+{
+  "date": {
+    "day": "day",
+    "month": "month and year"
+  },
+  "week": {
+    "prev": "Previous week",
+    "next": "Next week",
+    "days": "Days of the week",
+    "timeColumn": "Time",
+    "today": "Today",
+    "weekend": "Weekend",
+    "empty": "No slots this week.",
+    "emptyDay": "No slots on this day.",
+    "openCount": "{count} open"
+  },
+  "slot": {
+    "text": {
+      "open": "Open",
+      "taken": "Taken",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "soon": "Short notice"
+    },
+    "aria": {
+      "open": "Open. Press to book.",
+      "taken": "Taken.",
+      "pending": "Your session, waiting for my answer.",
+      "confirmed": "Your session, confirmed.",
+      "past": "Already passed.",
+      "soon": "Too close to book online."
+    }
+  },
+  "legend": {
+    "title": "Legend",
+    "open": "Open",
+    "taken": "Taken",
+    "pending": "Yours, pending",
+    "confirmed": "Yours, confirmed",
+    "unavailable": "Passed or too close",
+    "confirmedCoach": "Confirmed",
+    "completed": "Done",
+    "noShow": "No-show",
+    "off": "Time off",
+    "awaiting": "Awaiting confirmation"
+  },
+  "book": {
+    "title": "Book a session",
+    "leadApproval": "Pick a slot. I'll confirm within a few hours.",
+    "leadInstant": "Pick a slot. It's yours the moment you confirm.",
+    "quota": "You hold {used} of {max} upcoming sessions.",
+    "mySessions": "My sessions",
+    "gridLabel": "Weekly timetable",
+    "callCoach": "Need something sooner? Call {name}:"
+  },
+  "sheet": {
+    "title": "Confirm booking",
+    "titleSent": "Request sent",
+    "titleBooked": "You're booked",
+    "noteLabel": "Note for me",
+    "noteHint": "Anything I should know? An injury, or what you want to work on.",
+    "approvalNote": "I confirm requests within a few hours. Until then it shows as pending, and you can withdraw it any time.",
+    "instantNote": "No approval needed: the slot is yours once you confirm.",
+    "policy": "{hours, plural, =0 {Cancel for free until the session starts. After that, call me.} one {Cancel for free up to # hour before the session. After that, call me.} other {Cancel for free up to # hours before the session. After that, call me.}}",
+    "confirm": "Book this slot",
+    "stamp": {
+      "sent": "Request sent",
+      "confirmed": "Confirmed"
+    },
+    "doneApproval": "I'll confirm within a few hours. You'll see it here and under My sessions.",
+    "doneInstant": "See you then. It's under My sessions.",
+    "mySessions": "My sessions",
+    "done": "Done",
+    "pickAnother": "Pick another slot",
+    "mineTitle": "Your session",
+    "mineConfirmed": "Confirmed. See you then.",
+    "minePending": "Waiting for my answer.",
+    "manage": "Manage in My sessions"
+  },
+  "errors": {
+    "generic": "Something went wrong. Try again.",
+    "invalid": "That didn't look right. Check it and try again.",
+    "forbidden": "You can't do that.",
+    "notFound": "That booking can't be found.",
+    "clientNotFound": "Choose a client from the list.",
+    "slotTaken": "Just taken. Someone booked this slot a moment ago. Pick another one.",
+    "slotUnavailable": "That slot isn't available any more.",
+    "slotPast": "That time has already passed.",
+    "tooSoon": "That slot is too close to book online. Call me and we'll sort it out.",
+    "outsideHorizon": "That is further ahead than I take bookings.",
+    "tooManyBookings": "You already hold 3 upcoming sessions. Cancel one, or wait until one is done.",
+    "notAllowed": "That isn't possible any more: the booking has changed. Refresh the page.",
+    "cancelWindow": "Too late to cancel online. Call me.",
+    "notStarted": "The session hasn't started yet.",
+    "sameSlot": "That is the current time. Choose another slot.",
+    "invalidTime": "Enter times like 17:00.",
+    "endBeforeStart": "The end must be after the start.",
+    "tooShort": "The window is shorter than one session.",
+    "overlap": "This overlaps another window on the same day.",
+    "rangeInvalid": "The end date must be the start date or later."
+  },
+  "bookings": {
+    "title": "My sessions",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "bookNew": "Book a session",
+    "emptyUpcomingTitle": "Nothing booked",
+    "emptyUpcomingBody": "Pick a slot and I'll confirm it.",
+    "emptyPast": "Finished sessions show up here."
+  },
+  "cancel": {
+    "button": "Cancel session",
+    "title": "Cancel this session?",
+    "body": "The slot goes back on the timetable. You can book again any time.",
+    "confirm": "Cancel session",
+    "keep": "Keep it",
+    "done": "Session cancelled."
+  },
+  "row": {
+    "yourNote": "Your note:",
+    "coachNote": "Coach's note:",
+    "clientNote": "Client's note:",
+    "cancelUntil": "Free cancellation until {when}.",
+    "late": "{hours, plural, =0 {This session has started, so it can't be cancelled online.} one {This session starts within # hour, so it can't be cancelled online.} other {This session starts within # hours, so it can't be cancelled online.}} To change it, call me.",
+    "pendingHint": "I haven't confirmed this yet. You can withdraw the request any time."
+  },
+  "next": {
+    "title": "Next session",
+    "with": "With {name}",
+    "book": "Book a session",
+    "manage": "My sessions",
+    "emptyTitle": "No session booked",
+    "emptyBody": "Pick a slot and I'll confirm it."
+  },
+  "clientPanel": {
+    "title": "Sessions",
+    "emptyTitle": "No sessions yet",
+    "emptyBody": "Book one for this client from the schedule.",
+    "summary": "Completed {completed}, no-show {noShow}, cancelled {cancelled}, upcoming {upcoming}.",
+    "history": "History",
+    "more": "Older sessions not shown: {count}."
+  },
+  "occupancy": {
+    "summary": "This week: {booked} h booked, {open} h still open.",
+    "dayLabel": "{day}: {booked} hours booked, {open} hours open",
+    "open": "{hours} open",
+    "off": "Off",
+    "legend": "Big number: hours booked. Below it: hours still open. Bar: share of the day that is booked."
+  },
+  "preview": {
+    "thisWeek": "This week",
+    "nextWeek": "Next week",
+    "openSlots": "open {count, plural, one {session} other {sessions}}",
+    "cta": "Book a session",
+    "aria": "Open sessions: {summary}",
+    "ariaNone": "No open sessions.",
+    "dayOpen": "{day}: {count}",
+    "none": "No sessions are open right now."
+  },
+  "availability": {
+    "intro": "Weekly hours in your timezone. Sessions are {minutes} minutes long; each window is cut into slots of that length.",
+    "dayOff": "Day off",
+    "add": "Add",
+    "save": "Save",
+    "startAria": "Start of window {n}, {day}",
+    "endAria": "End of window {n}, {day}",
+    "addAria": "Add a window on {day}",
+    "deleteAria": "Remove window {n}, {day}",
+    "slots": "{count, plural, one {# session} other {# sessions}}",
+    "saved": "Hours saved.",
+    "removed": "Window removed.",
+    "offGrid": "Upcoming sessions now outside your hours: {count}. They stay booked; review them in the week view."
+  },
+  "timeOff": {
+    "upcoming": "Current and upcoming",
+    "emptyTitle": "No time off planned",
+    "emptyBody": "Block the days you can't coach. Clients can't book them.",
+    "past": "Past time off: {count}",
+    "addTitle": "Add time off",
+    "from": "From",
+    "to": "To",
+    "reason": "Reason",
+    "add": "Add time off",
+    "added": "Time off added.",
+    "removed": "Time off removed.",
+    "delete": "Remove",
+    "deleteAria": "Remove time off {range}",
+    "affected": "Sessions inside this time off: {count}. They are not cancelled; review them in the week view."
+  },
+  "coach": {
+    "title": "Schedule",
+    "tabsLabel": "Schedule sections",
+    "tabs": {
+      "week": "Week",
+      "availability": "Availability",
+      "timeOff": "Time off"
+    },
+    "gridLabel": "Week schedule",
+    "gridHint": "Press an open slot to book a client, or a session to manage it.",
+    "bookForClient": "Book for a client",
+    "bookForThisClient": "Book a slot",
+    "bookTitle": "Book for a client",
+    "bookBody": "The session is confirmed straight away.",
+    "client": "Client",
+    "pickClient": "Choose a client",
+    "slot": "Slot",
+    "pickSlot": "Choose a slot",
+    "bookNeeds": "Choose a client and a slot.",
+    "bookConfirm": "Book session",
+    "noOpenSlots": "No open slots to move to.",
+    "moveTitle": "Move session",
+    "moveTo": "Move to",
+    "move": "Move",
+    "openProfile": "Open profile",
+    "noteLabel": "Note on this session",
+    "noteHint": "The client sees this note with the session.",
+    "saveNote": "Save note",
+    "noteSaved": "Note saved.",
+    "confirm": "Confirm",
+    "decline": "Decline",
+    "markCompleted": "Completed",
+    "markNoShow": "No-show",
+    "cancelBooking": "Cancel session",
+    "cancelTitle": "Cancel this session?",
+    "cancelBody": "The client will see it as cancelled by you, and the slot opens up again.",
+    "changeToCompleted": "Change to completed",
+    "changeToNoShow": "Change to no-show",
+    "toast": {
+      "confirm": "Confirmed.",
+      "decline": "Cancelled.",
+      "completed": "Marked as completed.",
+      "noShow": "Marked as no-show.",
+      "book": "Booked for {name}.",
+      "move": "Session moved."
+    },
+    "pendingTitle": "Pending requests",
+    "pendingNone": "No pending requests.",
+    "agendaEmptyTitle": "No sessions today",
+    "agendaEmptyBody": "Open slots can still be booked.",
+    "openSchedule": "Open schedule",
+    "cell": {
+      "off": "Time off"
+    },
+    "aria": {
+      "off": "Time off.",
+      "open": "Open. Press to book a client.",
+      "details": "Press for details.",
+      "offGrid": "Outside your current hours."
+    }
+  },
+  "withdraw": {
+    "button": "Withdraw request",
+    "title": "Withdraw this request?",
+    "body": "The slot goes back on the timetable. You can ask for it again any time.",
+    "confirm": "Withdraw request",
+    "keep": "Keep it",
+    "done": "Request withdrawn."
+  }
+}
