@@ -10,6 +10,7 @@ import { formatPhone } from '@/lib/phone';
 import { formatTime } from '@/lib/format';
 import { getCoachSettings } from '@/lib/settings';
 import { dayBoundsUtc, todayKey } from '@/lib/time';
+import { StartSessionButton } from '@/components/training/StartSessionButton';
 import { CoachBookingActions } from './CoachBookingActions';
 import { timeRange } from './dates';
 
@@ -90,6 +91,11 @@ export async function CoachTodayAgenda({ locale }: { locale: string }) {
                   <p className="mt-1 text-sm">
                     <span className="font-semibold">{t('row.clientNote')}</span> <bdi>{b.clientNote}</bdi>
                   </p>
+                ) : null}
+                {b.status === 'CONFIRMED' ? (
+                  <div className="pt-2">
+                    <StartSessionButton bookingId={b.id} clientId={b.client.id} locale={locale} variant="ink" size="sm" />
+                  </div>
                 ) : null}
                 <CoachBookingActions bookingId={b.id} status={b.status} started={started} locale={locale} />
               </div>

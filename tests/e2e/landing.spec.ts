@@ -42,6 +42,22 @@ test.describe('landing page', () => {
     await expect(page.getByRole('contentinfo').getByRole('link', { name: /English|تغییر زبان/ })).toBeVisible();
   });
 
+  test('the public page reads like a coach, not a template: no placeholder, sample or settings talk', async ({ page }) => {
+    await page.goto('/fa');
+    const fa = page.getByRole('main');
+    await expect(fa).toContainText('ده سال است مربی قدرتی‌ام');
+    await expect(fa).toContainText('سعادت‌آباد');
+    await expect(fa).not.toContainText(/نمونه|تنظیمات|placeholder|sample/i);
+    // hours between two Persian numbers say «تا» so the start reads first, at the right
+    await expect(page.getByRole('table')).toContainText(/۰۷:۰۰ تا ۱۱:۰۰/);
+
+    await page.goto('/en');
+    const en = page.getByRole('main');
+    await expect(en).toContainText("I've coached strength for ten years");
+    await expect(en).toContainText('Saadat Abad');
+    await expect(en).not.toContainText(/placeholder|sample|settings/i);
+  });
+
   test('en: LTR, Latin digits, hours as a ledger', async ({ page }) => {
     await page.goto('/en');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');

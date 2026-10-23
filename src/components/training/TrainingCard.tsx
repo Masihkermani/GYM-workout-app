@@ -2,7 +2,8 @@ import { useTranslations } from 'next-intl';
 import { Tally } from '@/components/ui/Tally';
 import { cn } from '@/lib/cn';
 import { sepFor } from './sep';
-import { formatDate, formatLoggedSet, formatNumber, formatSet } from '@/lib/format';
+import { loggedSetLabel } from './sets';
+import { formatDate, formatNumber, formatSet } from '@/lib/format';
 
 /**
  * The signature component (docs/DESIGN.md, "Training card"): the card a coach hands the client.
@@ -49,7 +50,7 @@ function SetCell({ set, locale, label }: { set: TrainingCardSet | null; locale: 
       )}
     >
       <span className="sr-only">
-        {label}: {formatLoggedSet(set.reps, set.weightKg, locale)}
+        {label}: {loggedSetLabel(t, set.reps, set.weightKg, locale)}
         {set.isPr ? `, ${t('card.record')}` : ''}
       </span>
       <span aria-hidden="true" className="num text-base">

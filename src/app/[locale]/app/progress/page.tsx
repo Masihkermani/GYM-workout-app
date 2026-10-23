@@ -6,13 +6,15 @@ import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
 import { requireUser } from '@/lib/auth';
-import { formatDate, formatKg, formatLoggedSet, formatNumber } from '@/lib/format';
+import { formatDate, formatKg, formatNumber } from '@/lib/format';
 import { getCoachSettings } from '@/lib/settings';
 import { round1 } from '@/lib/training/e1rm';
 import { getProgressData } from '@/lib/training/queries';
-import { exerciseName, exerciseSubName } from '@/lib/training/types';
+import { exerciseName } from '@/lib/training/types';
 import { E1rmChart } from '@/components/training/E1rmChart';
+import { loggedSetLabel } from '@/components/training/sets';
 import { ExerciseSelect } from '@/components/training/ExerciseSelect';
+import { ExerciseSubName } from '@/components/training/ExerciseSubName';
 import { StatGrid } from '@/components/training/StatGrid';
 import { VolumeBars } from '@/components/training/VolumeBars';
 
@@ -98,12 +100,8 @@ export default async function ProgressPage({
           </h2>
           <p className="mt-1 text-base text-ink-2">
             <bdi>{exerciseName(sel, locale)}</bdi>
-            {exerciseSubName(sel, locale) ? (
-              <span lang="en" dir="ltr" className="block w-fit text-sm">
-                {exerciseSubName(sel, locale)}
-              </span>
-            ) : null}
           </p>
+          <ExerciseSubName exercise={sel} locale={locale} />
         </div>
         <StatGrid items={stats} />
         {points.length === 0 ? (
@@ -132,7 +130,7 @@ export default async function ProgressPage({
                 >
                   <span className="flex items-center gap-3">
                     <Stamp status="PR" size="sm" />
-                    <span className="num text-xl">{formatLoggedSet(p.reps, p.weightKg, locale)}</span>
+                    <span className="num text-xl">{loggedSetLabel(t, p.reps, p.weightKg, locale)}</span>
                   </span>
                   <span className="flex flex-wrap items-center gap-x-4 text-sm text-ink-2">
                     <span>

@@ -88,8 +88,8 @@ test('coach signs in with Persian digits and sees the dashboard', async ({ page 
   await signIn(page, 'fa', toPersian(COACH.phone), COACH.password);
   await expect(page).toHaveURL(/\/fa\/coach$/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText(/بخیر/);
-  // three small numbers: sessions this week, active clients, pending requests
-  for (const label of ['جلسه‌های این هفته', 'شاگردان فعال', 'درخواست در انتظار']) {
+  // three small numbers: sessions in the next 7 days, active clients, pending requests
+  for (const label of ['جلسه‌های ۷ روز آینده', 'شاگردان فعال', 'درخواست در انتظار']) {
     await expect(page.getByText(label, { exact: true })).toBeVisible();
   }
   await expect(page.getByRole('heading', { name: 'امروز' })).toBeVisible();
@@ -183,11 +183,54 @@ test.describe('with a signed-in coach', () => {
     await page.reload();
     await expect(page.getByLabel('یادداشت‌های مربی')).toHaveValue('زانوی راست حساس است؛ اسکات عمیق نه.');
 
-    // the detail page links to the program builder (the training agent's route)
-    await expect(page.getByRole('link', { name: 'برنامه‌ی جدید' }).first()).toHaveAttribute(
-      'href',
-      `/fa/coach/clients/${clientId}/programs/new`,
-    );
+    // the detail page links to the program builder, once (the header's button; the panel has no second one)
+    const newProgram = page.getByRole('link', { name: 'برنامه‌ی جدید' });
+    await expect(newProgram).toHaveCount(1);
+    await expect(newProgram).toHaveAttribute('href', `/fa/coach/clients/${clientId}/programs/new`);
+    await expect(page.getByRole('link', { name: 'برنامه‌ی تازه' })).toHaveCount(0);
+  });
+
+  test("edits the client's name and phone: a taken number is refused on the field, a new one is stored as E.164", async ({ page }) => {
+    const renamed = 'پریسا آزمون‌پور (ویرایش‌شده)';
+    const newPhone = `0914${String(Date.now()).slice(-7)}`;
+    try {
+      await page.goto(`/fa/coach/clients/${clientId}`);
+      await page.getByRole('button', { name: 'ویرایش مشخصات' }).click();
+      const sheet = page.getByRole('dialog');
+      await expect(sheet.getByLabel('نام و نام خانوادگی')).toHaveValue(NEW_NAME);
+      await expect(sheet.getByLabel('شماره‌ی موبایل')).toHaveValue(toPersian(`${NEW_PHONE.slice(0, 4)} ${NEW_PHONE.slice(4, 7)} ${NEW_PHONE.slice(7)}`));
+
+      // a number another client owns (typed with Persian digits): the error sits on the phone field
+      await sheet.getByLabel('نام و نام خانوادگی').fill(renamed);
+      await sheet.getByLabel('شماره‌ی موبایل').fill(toPersian(SEEDED_CLIENT.phone));
+      await sheet.getByRole('button', { name: 'ذخیره' }).click();
+      const phone = sheet.getByLabel('شماره‌ی موبایل');
+      await expect(sheet.getByText('با این شماره قبلاً حساب ساخته شده است.')).toBeVisible();
+      await expect(phone).toHaveAttribute('aria-invalid', 'true');
+      await expect(phone).toBeFocused();
+      await expect(sheet.getByLabel('نام و نام خانوادگی')).toHaveValue(renamed); // what was typed stays
+      expect((await prisma.user.findUniqueOrThrow({ where: { id: clientId } })).name).toBe(NEW_NAME);
+
+      // an invalid number is its own message
+      await phone.fill('۱۲۳');
+      await sheet.getByRole('button', { name: 'ذخیره' }).click();
+      await expect(sheet.getByText(/شماره‌ی موبایل معتبر نیست/)).toBeVisible();
+
+      // a free number saves, closes the sheet and the page shows the new name
+      await phone.fill(toPersian(newPhone));
+      await sheet.getByRole('button', { name: 'ذخیره' }).click();
+      await expect(page.getByRole('region', { name: 'اعلان‌ها' })).toContainText('مشخصات ذخیره شد.');
+      await expect(page.getByRole('dialog')).toHaveCount(0);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(renamed);
+      const row = await prisma.user.findUniqueOrThrow({ where: { id: clientId } });
+      expect(row.phone).toBe(`+98${newPhone.slice(1)}`);
+      expect(row.name).toBe(renamed);
+      expect(row.role).toBe('CLIENT');
+      await expect(page.getByRole('link', { name: toPersian(`${newPhone.slice(0, 4)} ${newPhone.slice(4, 7)} ${newPhone.slice(7)}`) })).toBeVisible();
+    } finally {
+      // later tests (and cleanup) find this client by its original name and phone
+      await prisma.user.update({ where: { id: clientId }, data: { name: NEW_NAME, phone: `+98${NEW_PHONE.slice(1)}` } });
+    }
   });
 
   test('resets the password: shown once, old one stops working, sessions end', async ({ page, browser }) => {
@@ -222,6 +265,10 @@ test.describe('with a signed-in coach', () => {
     await expect(page.getByRole('region', { name: 'اعلان‌ها' })).toContainText('غیرفعال شد');
     expect((await prisma.user.findUniqueOrThrow({ where: { id: clientId } })).active).toBe(false);
     expect(await canLogin(browser, NEW_PHONE, tempPassword)).toBe(false);
+    // a deactivated client can't be run a session for: the page offers no "Start session"
+    await page.reload();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(NEW_NAME);
+    await expect(page.getByRole('button', { name: 'شروع جلسه' })).toHaveCount(0);
 
     await flip(page, 'حساب فعال');
     await expect.poll(async () => (await prisma.user.findUniqueOrThrow({ where: { id: clientId } })).active).toBe(true);
@@ -406,5 +453,256 @@ test.describe('the client profile (/app/me)', () => {
     await expect(page).toHaveURL(/\/fa\/app\/me$/); // this one stays
     expect(await canLogin(browser, NEW_PHONE, 'brand-new-pass-77')).toBe(true);
     expect(await canLogin(browser, NEW_PHONE, tempPassword)).toBe(false);
+  });
+});
+
+// ------------------------------------------------------------------------------------------------
+// Dashboard: the next 7 days, and a bodyweight set that says what it is
+// ------------------------------------------------------------------------------------------------
+
+test.describe('the dashboard', () => {
+  const FEED_CLIENT = '+989120000006';
+  let feedWorkoutId: string | null = null;
+
+  test.afterAll(async () => {
+    if (feedWorkoutId) await prisma.workoutLog.deleteMany({ where: { id: feedWorkoutId } });
+  });
+
+  test('occupancy is a rolling "next 7 days" that starts today, in both languages', async ({ page }) => {
+    await signIn(page, 'fa', COACH.phone, COACH.password);
+    const week = page.getByTestId('week-occupancy');
+    await expect(page.getByRole('heading', { name: '۷ روز آینده' })).toBeVisible();
+    await expect(week.getByRole('list', { name: '۷ روز آینده' }).getByRole('listitem')).toHaveCount(7);
+    // today is the first column, not whatever day the calendar week happens to start on
+    await expect(week.getByRole('listitem').first()).toHaveAttribute('aria-current', 'date');
+    await expect(week.getByRole('listitem').nth(1)).not.toHaveAttribute('aria-current', 'date');
+    // numbers, not colour alone: every day names its booked and open hours
+    for (const li of await week.getByRole('listitem').all()) {
+      await expect(li).toHaveAttribute('aria-label', /ساعت رزرو.*ساعت آزاد/);
+    }
+    // the window has open hours in it even on a Friday (the coach's day off): it is not seven days of zeros
+    await expect(week.getByText(/ساعت رزرو شده، (?!۰ ساعت)\S+ ساعت هنوز آزاد/)).toBeVisible();
+    // the small figure up top uses the same window and says so
+    await expect(page.getByText('جلسه‌های ۷ روز آینده', { exact: true })).toBeVisible();
+    await expect(page.getByText('جلسه‌های این هفته')).toHaveCount(0);
+
+    await page.goto('/en/coach');
+    await expect(page.getByRole('heading', { name: 'Next 7 days' })).toBeVisible();
+    await expect(page.getByTestId('week-occupancy').getByRole('listitem').first()).toHaveAttribute('aria-current', 'date');
+    await expect(page.getByText('Sessions, next 7 days', { exact: true })).toBeVisible();
+  });
+
+  test('a bodyweight set reads «۶ تکرار» / "6 reps", never a bare number', async ({ page }) => {
+    const client = await prisma.user.findUniqueOrThrow({ where: { phone: FEED_CLIENT } });
+    const pullUp = await prisma.exercise.findFirstOrThrow({ where: { equipment: 'body weight', archived: false }, select: { id: true, nameFa: true } });
+    const w = await prisma.workoutLog.create({
+      data: {
+        clientId: client.id,
+        finishedAt: new Date(),
+        sets: { create: [{ exerciseId: pullUp.id, setIndex: 1, reps: 6, weightKg: 0 }] },
+      },
+    });
+    feedWorkoutId = w.id;
+
+    await signIn(page, 'fa', COACH.phone, COACH.password);
+    const feed = page.getByRole('list', { name: 'آخرین ثبت‌ها' });
+    const row = feed.getByRole('listitem').first();
+    await expect(row).toContainText(client.name);
+    await expect(row).toContainText('۶ تکرار');
+    // no row of the feed is just a digit
+    for (const li of await feed.getByRole('listitem').all()) {
+      const figure = li.locator('.num').first();
+      await expect(figure).not.toHaveText(/^[۰-۹]+$/);
+    }
+
+    await page.goto('/en/coach');
+    await expect(page.getByRole('list', { name: 'Latest logged sets' }).getByRole('listitem').first()).toContainText('6 reps');
+  });
+});
+
+// ------------------------------------------------------------------------------------------------
+// The client page at phone widths
+// ------------------------------------------------------------------------------------------------
+
+test.describe('the client page on a phone', () => {
+  for (const width of [360, 390]) {
+    test(`fa and en do not scroll sideways at ${width}px`, async ({ browser }) => {
+      const ctx = await browser.newContext({ viewport: { width, height: 800 } });
+      const page = await ctx.newPage();
+      await signIn(page, 'fa', COACH.phone, COACH.password);
+      const clients = await prisma.user.findMany({
+        where: { phone: { in: ['+989120000001', '+989120000002', '+989120000004'] } },
+        select: { id: true },
+      });
+      expect(clients.length).toBeGreaterThan(0);
+      for (const { id } of clients) {
+        for (const locale of ['fa', 'en']) {
+          await page.goto(`/${locale}/coach/clients/${id}`);
+          await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+          await expect(page.getByRole('region', { name: /تمرین|Training/ })).toBeVisible(SLOW);
+          const m = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, inner: window.innerWidth }));
+          expect(m.scroll, `/${locale}/coach/clients/${id} at ${width}px`).toBeLessThanOrEqual(m.inner);
+        }
+      }
+      await ctx.close();
+    });
+  }
+});
+
+// ------------------------------------------------------------------------------------------------
+// The coach runs the session: start it for a client, log it, finish it
+// ------------------------------------------------------------------------------------------------
+
+test.describe('the coach runs the session', () => {
+  const CLIENT_PHONE = '+989120000003';
+  let target: { id: string; name: string };
+  let bookingId = '';
+  const workoutIds = new Set<string>();
+
+  test.beforeAll(async () => {
+    target = await prisma.user.findUniqueOrThrow({ where: { phone: CLIENT_PHONE }, select: { id: true, name: true } });
+    // an earlier failed run could have left one open: starting would then offer "continue" instead
+    await prisma.workoutLog.deleteMany({ where: { clientId: target.id, finishedAt: null } });
+  });
+
+  test.afterAll(async () => {
+    await prisma.workoutLog.deleteMany({ where: { OR: [{ id: { in: [...workoutIds] } }, { bookingId: bookingId || '-' }] } });
+    if (bookingId) await prisma.booking.deleteMany({ where: { id: bookingId } });
+  });
+
+  test("starts a session from the client's page, logs a set under the client, finishes, and the booking is completed", async ({ page }) => {
+    // a confirmed session that began an hour ago: the workout started from the page links to it
+    const startsAt = new Date(Date.now() - 3_600_000);
+    bookingId = (
+      await prisma.booking.create({
+        data: { clientId: target.id, startsAt, endsAt: new Date(startsAt.getTime() + 3_600_000), status: 'CONFIRMED' },
+      })
+    ).id;
+
+    await signIn(page, 'fa', COACH.phone, COACH.password);
+    await page.goto(`/fa/coach/clients/${target.id}`);
+
+    // "Start session" is the page's one red action; "New program" is the quiet one
+    const start = page.getByRole('button', { name: 'شروع جلسه' });
+    const redBg = await start.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(redBg).toBe(await page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.style.backgroundColor = 'var(--plate-red)';
+      document.body.append(probe);
+      const c = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return c;
+    }));
+    await start.click();
+
+    const sheet = page.getByRole('dialog');
+    await expect(sheet.getByRole('heading', { name: `شروع جلسه با ${target.name}` })).toBeVisible(SLOW);
+    const options = sheet.getByRole('radio');
+    await expect(options.last()).toBeVisible();
+    await expect(options.last()).not.toBeChecked(); // "free workout" is last; the next program day is preselected
+    expect(await sheet.getByRole('radio', { checked: true }).count()).toBe(1);
+    await expect(sheet.getByText('نوبت این روز')).toBeVisible();
+    await sheet.getByRole('button', { name: 'شروع', exact: true }).click();
+
+    await page.waitForURL(new RegExp(`/fa/coach/clients/${target.id}/workouts/.+`), SLOW);
+    const workoutId = page.url().split('/workouts/')[1];
+    workoutIds.add(workoutId);
+
+    // the header names the client, in the coach shell (no client tab bar)
+    await expect(page.getByTestId('logging-for')).toContainText(target.name);
+    await expect(page.getByRole('link', { name: 'برگشت به شاگرد' })).toBeVisible();
+    await expect(page.locator('[data-tabbar]')).toHaveCount(0);
+    const row = await prisma.workoutLog.findUniqueOrThrow({ where: { id: workoutId } });
+    expect(row.clientId).toBe(target.id);
+    expect(row.bookingId).toBe(bookingId);
+    expect(row.programDayId).not.toBeNull();
+
+    // log a set with Persian digits
+    await page.getByRole('spinbutton', { name: /^وزنه/ }).fill('۳۰');
+    await page.getByRole('spinbutton', { name: 'تکرار' }).fill('۸');
+    await page.getByRole('button', { name: /^ثبت ست/ }).click();
+    await expect(page.getByRole('button', { name: 'ویرایش ست ۱' })).toContainText('۸ × ۳۰ کیلو');
+    await expect.poll(async () => prisma.setLog.count({ where: { workoutId } })).toBe(1);
+    const set = await prisma.setLog.findFirstOrThrow({ where: { workoutId } });
+    expect(set.reps).toBe(8);
+    expect(Number(set.weightKg)).toBe(30);
+
+    // leaving and coming back: the sheet offers to continue the open one instead of starting a second
+    await page.getByRole('link', { name: 'برگشت به شاگرد' }).click();
+    await page.waitForURL(new RegExp(`/fa/coach/clients/${target.id}$`));
+    await page.getByRole('button', { name: 'شروع جلسه' }).click();
+    await expect(page.getByRole('dialog').getByText('یک تمرین باز است')).toBeVisible(SLOW);
+    await page.getByRole('dialog').getByRole('button', { name: 'ادامه‌ی تمرین' }).click();
+    await page.waitForURL(new RegExp(`/workouts/${workoutId}$`), SLOW);
+    expect(await prisma.workoutLog.count({ where: { clientId: target.id, finishedAt: null } })).toBe(1);
+
+    // finish: the summary, and the way on goes back to the client, not to the client's own history
+    await page.getByRole('button', { name: 'پایان تمرین' }).first().click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'پایان تمرین' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'تمرین تمام شد' })).toBeVisible();
+    await expect(page.getByText(`تمرین در دفتر ${target.name} ثبت شد.`)).toBeVisible();
+    await expect(page.getByRole('link', { name: 'دیدن در تاریخچه' })).toHaveCount(0);
+
+    await expect.poll(async () => (await prisma.booking.findUniqueOrThrow({ where: { id: bookingId } })).status).toBe('COMPLETED');
+    expect((await prisma.workoutLog.findUniqueOrThrow({ where: { id: workoutId } })).finishedAt).not.toBeNull();
+
+    await page.getByRole('link', { name: `برگشت به ${target.name}` }).click();
+    await page.waitForURL(new RegExp(`/fa/coach/clients/${target.id}$`));
+    await expect(page.getByRole('region', { name: 'تمرین' }).getByText('۱ ست').first()).toBeVisible();
+
+    // a finished workout is history: its logger URL goes back to the client page
+    await page.goto(`/fa/coach/clients/${target.id}/workouts/${workoutId}`);
+    await expect(page).toHaveURL(new RegExp(`/fa/coach/clients/${target.id}$`));
+  });
+
+  test('a workout opened under the wrong client is a 404, and a client cannot open the coach route', async ({ page, browser }) => {
+    const workout = await prisma.workoutLog.create({ data: { clientId: target.id } });
+    workoutIds.add(workout.id);
+    const other = await prisma.user.findUniqueOrThrow({ where: { phone: '+989120000004' }, select: { id: true } });
+
+    await signIn(page, 'fa', COACH.phone, COACH.password);
+    const wrong = await page.goto(`/fa/coach/clients/${other.id}/workouts/${workout.id}`);
+    expect(wrong?.status()).toBe(404);
+    const missing = await page.goto(`/fa/coach/clients/${target.id}/workouts/does-not-exist`);
+    expect(missing?.status()).toBe(404);
+
+    const ctx = await browser.newContext();
+    const clientPage = await ctx.newPage();
+    await signIn(clientPage, 'fa', SEEDED_CLIENT.phone, SEEDED_CLIENT.password);
+    await clientPage.goto(`/fa/coach/clients/${target.id}/workouts/${workout.id}`);
+    await expect(clientPage).toHaveURL(/\/fa\/app$/); // bounced by the role gate; the page itself also calls requireCoach()
+    await ctx.close();
+  });
+
+  test('on a phone the dock sits at the very bottom (the coach shell has no tab bar) and nothing scrolls sideways', async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+    const page = await ctx.newPage();
+    await signIn(page, 'fa', COACH.phone, COACH.password);
+    await page.goto(`/fa/coach/clients/${target.id}`);
+    await page.getByRole('button', { name: 'شروع جلسه' }).click();
+    const sheet = page.getByRole('dialog');
+    await expect(sheet.getByRole('radio').last()).toBeVisible(SLOW);
+    await sheet.getByRole('radio').last().check(); // free workout
+    await sheet.getByRole('button', { name: 'شروع', exact: true }).click();
+    await page.waitForURL(new RegExp(`/workouts/.+`), SLOW);
+    workoutIds.add(page.url().split('/workouts/')[1]);
+
+    await page.getByRole('button', { name: 'افزودن حرکت' }).first().click();
+    await page.getByRole('searchbox', { name: 'جست‌وجوی حرکت' }).fill('پرس سینه هالتر');
+    await page.getByRole('dialog').getByRole('button', { name: /پرس سینه هالتر/ }).first().click();
+
+    const box = await page.getByRole('button', { name: /^ثبت ست/ }).boundingBox();
+    const viewportHeight = page.viewportSize()!.height;
+    expect(box!.height).toBeGreaterThanOrEqual(56);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(viewportHeight);
+    expect(viewportHeight - (box!.y + box!.height), 'no 3.5rem tab-bar gap under the Log button').toBeLessThanOrEqual(24);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+
+    // an empty workout is deleted from the finish dialog, and that returns to the client page
+    await page.getByRole('button', { name: 'پایان تمرین' }).first().click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'حذف تمرین' }).click();
+    await expect(page).toHaveURL(new RegExp(`/fa/coach/clients/${target.id}$`));
+    await ctx.close();
   });
 });

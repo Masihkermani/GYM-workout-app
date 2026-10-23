@@ -45,14 +45,14 @@
       "night": "Good night, {name}"
     },
     "stats": {
-      "sessions": "Sessions this week",
+      "sessions": "Sessions, next 7 days",
       "clients": "Active clients",
       "pending": "Pending requests"
     },
     "today": "Today",
     "recent": "Latest sets",
     "pending": "Pending requests",
-    "week": "This week",
+    "week": "Next 7 days",
     "idle": "{days, plural, one {No workout in # day} other {No workout in # days}}",
     "toSchedule": "Schedule",
     "toClients": "Clients"
@@ -153,6 +153,12 @@
       "doneTitle": "New temporary password",
       "doneBody": "This is shown only once. Copy it and give it to the client.",
       "copy": "Copy password"
+    },
+    "edit": {
+      "button": "Edit details",
+      "title": "Edit details",
+      "description": "The phone number is the client's login. After you change it they sign in with the new number.",
+      "saved": "Details saved."
     }
   },
   "exercises": {

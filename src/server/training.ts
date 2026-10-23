@@ -23,6 +23,7 @@ import {
   reorderDaysSchema,
   reorderItemsSchema,
   restoreSetSchema,
+  sessionOptionsSchema,
   startWorkoutSchema,
   updateItemSchema,
   updateProgramSchema,
@@ -32,12 +33,15 @@ import {
   type ActionErrorCode,
   type ActionResult,
 } from '@/lib/training/schemas';
-import type { ExerciseContext, ProgramItemDTO, WorkoutSummaryDTO } from '@/lib/training/dto';
+import type { ExerciseContext, ProgramItemDTO, SessionOptionsDTO, WorkoutSummaryDTO } from '@/lib/training/dto';
 import type { ExerciseDTO, SetDTO } from '@/lib/training/types';
 import {
   EXERCISE_SELECT,
   getExerciseContexts,
+  getNextProgramDay,
+  getOpenWorkout,
   getWorkoutSummary,
+  listPrograms,
   toProgramItemDTO,
 } from '@/lib/training/queries';
 
@@ -148,7 +152,11 @@ export async function startWorkoutAction(input: {
 
   return guard(async () => {
     if (isCoach(user)) {
-      const exists = await prisma.user.findFirst({ where: { id: clientId, role: 'CLIENT' }, select: { id: true } });
+      // the coach may run a session for any ACTIVE client; a deactivated account only keeps its history
+      const exists = await prisma.user.findFirst({
+        where: { id: clientId, role: 'CLIENT', active: true },
+        select: { id: true },
+      });
       if (!exists) return fail('notFound');
     }
 
@@ -380,6 +388,7 @@ export async function finishWorkoutAction(input: {
       where: { id: workoutId },
       select: {
         clientId: true,
+        bookingId: true,
         startedAt: true,
         finishedAt: true,
         sets: { select: { createdAt: true }, orderBy: { createdAt: 'desc' }, take: 1 },
@@ -394,15 +403,76 @@ export async function finishWorkoutAction(input: {
       const stale = now.getTime() - workout.startedAt.getTime() > STALE_WORKOUT_MS;
       finishedAt = stale ? (workout.sets[0]?.createdAt ?? workout.startedAt) : now;
     }
-    await prisma.workoutLog.update({
-      where: { id: workoutId },
-      data: { finishedAt, ...(note !== undefined ? { note: note || null } : {}) },
+    // The coach finishing the session they ran also closes its booking. Deliberately narrow: only the
+    // coach (a client's own log is not proof the session happened), only CONFIRMED (never undoes a
+    // cancel, a no-show or a correction), only once the slot has begun (same rule as "mark completed"),
+    // and in the same transaction so the workout and the booking cannot disagree.
+    const completeBooking = isCoach(user) && workout.bookingId !== null;
+    await prisma.$transaction(async (tx) => {
+      await tx.workoutLog.update({
+        where: { id: workoutId },
+        data: { finishedAt, ...(note !== undefined ? { note: note || null } : {}) },
+      });
+      if (completeBooking) {
+        await tx.booking.updateMany({
+          where: { id: workout.bookingId!, status: 'CONFIRMED', startsAt: { lte: now } },
+          data: { status: 'COMPLETED' },
+        });
+      }
     });
     // no revalidatePath here: the page that called this is about to become invalid (finished -> redirect, deleted -> not found)
     // and Next re-renders the calling page when an action revalidates; the client navigates next and every list page is fetched fresh.
     const summary = await getWorkoutSummary(workoutId);
     if (!summary) return fail('notFound');
     return { ok: true, summary };
+  });
+}
+
+/**
+ * For the coach's "Start a session" sheet: the client's program days (next in rotation first
+ * preselected), the workout already linked to the booking and any open workout to continue. Coach only.
+ */
+export async function sessionOptionsAction(input: {
+  clientId: string;
+  bookingId?: string | null;
+}): Promise<ActionResult<{ options: SessionOptionsDTO }>> {
+  const user = await requireUser();
+  if (!isCoach(user)) return fail('forbidden');
+  const parsed = parse(sessionOptionsSchema, input);
+  if (!parsed.ok) return fail('invalid');
+  const { clientId, bookingId } = parsed.data;
+
+  return guard(async () => {
+    const client = await prisma.user.findFirst({
+      where: { id: clientId, role: 'CLIENT', active: true },
+      select: { name: true },
+    });
+    if (!client) return fail('notFound');
+    const settings = await getCoachSettings();
+
+    const [programs, next, open, booking] = await Promise.all([
+      listPrograms(clientId, { active: true }),
+      getNextProgramDay(clientId, settings.timezone),
+      getOpenWorkout(clientId),
+      bookingId
+        ? prisma.booking.findUnique({
+            where: { id: bookingId },
+            select: { clientId: true, workout: { select: { id: true, finishedAt: true } } },
+          })
+        : Promise.resolve(null),
+    ]);
+    if (bookingId && (!booking || booking.clientId !== clientId)) return fail('notFound');
+
+    const options: SessionOptionsDTO = {
+      clientName: client.name,
+      days: programs.flatMap((p) =>
+        p.days.map((d) => ({ id: d.id, title: d.title, programTitle: p.title, exerciseCount: d.items.length })),
+      ),
+      nextDayId: next?.day.id ?? null,
+      linked: booking?.workout ? { id: booking.workout.id, finished: booking.workout.finishedAt !== null } : null,
+      open,
+    };
+    return { ok: true, options };
   });
 }
 

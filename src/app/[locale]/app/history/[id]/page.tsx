@@ -6,13 +6,15 @@ import { DirIcon } from '@/components/ui/DirIcon';
 import { Link } from '@/i18n/navigation';
 import { Stamp } from '@/components/ui/Stamp';
 import { requireUser } from '@/lib/auth';
-import { formatDate, formatKg, formatLoggedSet, formatNumber } from '@/lib/format';
+import { formatDate, formatKg, formatNumber } from '@/lib/format';
 import { getCoachSettings } from '@/lib/settings';
 import { round1 } from '@/lib/training/e1rm';
 import { dayToCardData } from '@/lib/training/card';
 import { getWorkoutDetail } from '@/lib/training/queries';
-import { exerciseName, exerciseSubName } from '@/lib/training/types';
+import { exerciseName } from '@/lib/training/types';
 import { formatClock } from '@/components/training/clock';
+import { ExerciseSubName } from '@/components/training/ExerciseSubName';
+import { loggedSetLabel } from '@/components/training/sets';
 import { sepFor } from '@/components/training/sep';
 import { StatGrid } from '@/components/training/StatGrid';
 import { TrainingCard, type TrainingCardData } from '@/components/training/TrainingCard';
@@ -106,18 +108,13 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
             <p className="border-[1.5px] border-dashed border-ink-3 px-4 py-8 text-center text-base text-ink-2">{t('detail.noSets')}</p>
           ) : (
             w.exercises.map((e) => {
-              const sub = exerciseSubName(e.exercise, locale);
               return (
                 <section key={e.exercise.id} className="flex flex-col gap-2" aria-labelledby={`ex-${e.exercise.id}`}>
                   <div>
                     <h2 id={`ex-${e.exercise.id}`} className="text-xl">
                       <bdi>{exerciseName(e.exercise, locale)}</bdi>
                     </h2>
-                    {sub ? (
-                      <p lang="en" dir="ltr" className="w-fit text-sm text-ink-2">
-                        {sub}
-                      </p>
-                    ) : null}
+                    <ExerciseSubName exercise={e.exercise} locale={locale} />
                   </div>
                   <div className="overflow-x-auto border-[1.5px] border-rule-strong bg-card">
                     <table className="w-full text-start">
@@ -141,7 +138,7 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
                                 <th scope="row" className="num px-3 py-2 text-start text-lg font-bold text-ink-2">
                                   {s.isWarmup ? t('logger.warmupShort') : n(working)}
                                 </th>
-                                <td className="num px-3 py-2 text-lg">{formatLoggedSet(s.reps, s.weightKg, locale)}</td>
+                                <td className="num px-3 py-2 text-lg">{loggedSetLabel(t, s.reps, s.weightKg, locale)}</td>
                                 <td className="num px-3 py-2 text-base text-ink-2">{s.e1rm != null ? formatNumber(round1(s.e1rm), locale, { maxFractionDigits: 1 }) : '—'}</td>
                                 <td className="num px-3 py-2 text-base text-ink-2">{s.rpe != null ? formatNumber(s.rpe, locale) : '—'}</td>
                                 <td className="px-3 py-2 text-end">

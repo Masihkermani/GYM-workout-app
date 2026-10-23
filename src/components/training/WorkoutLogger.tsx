@@ -5,20 +5,20 @@ import { ArrowRight, CircleAlert, Clock, Loader2, Plus, RotateCw, Square } from 
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
+import { DirIcon } from '@/components/ui/DirIcon';
 import { Stamp } from '@/components/ui/Stamp';
 import { Tally } from '@/components/ui/Tally';
 import { Textarea } from '@/components/ui/Textarea';
 import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/lib/cn';
 import { formatKg, formatLoggedSet, formatNumber, formatSet } from '@/lib/format';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { epleyE1rm, round1 } from '@/lib/training/e1rm';
 import type { ExerciseContext, LoggerData, LoggerExercise, WorkoutSummaryDTO } from '@/lib/training/dto';
 import { prefillFor } from '@/lib/training/prefill';
 import { EMPTY_BASELINE, flagPrs, isPr } from '@/lib/training/prs';
 import {
   exerciseName,
-  exerciseSubName,
   isBodyweight,
   usesBarbell,
   type ExerciseDTO,
@@ -37,8 +37,10 @@ import {
 import { formatClock } from './clock';
 import { EditSetSheet } from './EditSetSheet';
 import { ExercisePicker } from './ExercisePicker';
+import { ExerciseSubName } from './ExerciseSubName';
 import { RestTimer, type RestState } from './RestTimer';
 import { sepFor } from './sep';
+import { loggedSetLabel } from './sets';
 import { SetLogger, type SetLoggerValues } from './SetLogger';
 import { TrainingCard, type TrainingCardData } from './TrainingCard';
 import { useNow } from './use-now';
@@ -121,7 +123,20 @@ function lastTimeText(ctx: ExerciseContext | undefined, locale: string): string 
  * PRs are decided on the client from the exercise's history baseline with the same pure functions
  * the server uses for history and the summary.
  */
-export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; locale: string }) {
+export function WorkoutLogger({
+  data,
+  locale: localeProp,
+  coachMode,
+}: {
+  data: LoggerData;
+  locale: string;
+  /**
+   * The coach is logging for the client (the in-person session, /coach/clients/[id]/workouts/[id]):
+   * the header names the client, the dock sits at the very bottom (the coach shell has no tab bar)
+   * and leaving, finishing or discarding returns to `backHref`, the client's page.
+   */
+  coachMode?: { backHref: string };
+}) {
   const t = useTranslations('training');
   const locale = useLocale() || localeProp;
   const router = useRouter();
@@ -161,6 +176,7 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
   const tmpCounter = useRef(0);
   const stripRef = useRef<HTMLDivElement>(null);
   const restKey = `daftar:rest:${data.workoutId}`;
+  const extraKey = `daftar:extra:${data.workoutId}`;
 
   // --------------------------------------------------------------------------------- helpers
   const enqueue = useCallback((job: () => Promise<void>) => {
@@ -414,9 +430,9 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
   }
 
   // ------------------------------------------------------------------------- exercises
-  async function addExercise(ex: ExerciseDTO) {
-    if (!exercises.some((e) => e.exercise.id === ex.id)) {
-      setExercises((prev) => [...prev, { exercise: ex, target: null }]);
+  /** "Last time" and the record baseline for an exercise that joined the workout after it started. */
+  const loadContext = useCallback(
+    async (ex: ExerciseDTO) => {
       setContexts((prev) => ({ ...prev, [ex.id]: prev[ex.id] ?? { lastTime: null, baseline: EMPTY_BASELINE } }));
       try {
         const r = await exerciseContextAction({ exerciseId: ex.id, workoutId: data.workoutId, locale });
@@ -424,9 +440,65 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
       } catch {
         /* the logger works without history; it just cannot prefill or flag records */
       }
+    },
+    [data.workoutId, locale],
+  );
+
+  async function addExercise(ex: ExerciseDTO) {
+    if (!exercises.some((e) => e.exercise.id === ex.id)) {
+      setExercises((prev) => [...prev, { exercise: ex, target: null }]);
+      rememberExtra(ex);
+      await loadContext(ex);
     }
     selectExercise(ex.id);
   }
+
+  /**
+   * An exercise added to a free workout exists only in this component until its first set is saved
+   * (the server derives the exercise list from the sets), so a reload would lose it. Remember the
+   * additions per workout for this tab; a restored exercise that has since got sets is deduplicated.
+   */
+  function rememberExtra(ex: ExerciseDTO) {
+    try {
+      const raw = sessionStorage.getItem(extraKey);
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      const list = Array.isArray(parsed) ? (parsed as ExerciseDTO[]) : [];
+      if (!list.some((e) => e.id === ex.id)) sessionStorage.setItem(extraKey, JSON.stringify([...list, ex]));
+    } catch {
+      /* storage can be blocked; the exercise simply is not remembered across a reload */
+    }
+  }
+
+  function forgetExtras() {
+    try {
+      sessionStorage.removeItem(extraKey);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  useEffect(() => {
+    let saved: ExerciseDTO[] = [];
+    try {
+      const parsed: unknown = JSON.parse(sessionStorage.getItem(extraKey) ?? '[]');
+      saved = Array.isArray(parsed)
+        ? (parsed as ExerciseDTO[]).filter((e) => e && typeof e.id === 'string' && typeof e.nameEn === 'string')
+        : [];
+    } catch {
+      return;
+    }
+    const known = new Set(data.exercises.map((e) => e.exercise.id));
+    const missing = saved.filter((e) => !known.has(e.id));
+    if (missing.length === 0) return;
+    setExercises((prev) => [
+      ...prev,
+      ...missing.filter((e) => !prev.some((p) => p.exercise.id === e.id)).map((e) => ({ exercise: e, target: null })),
+    ]);
+    setCurrentId((id) => id ?? missing[missing.length - 1].id);
+    for (const e of missing) void loadContext(e);
+    // restore once per workout; `data.exercises` is the server's list at load time
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [extraKey]);
 
   function selectExercise(id: string) {
     setCurrentId(id);
@@ -450,6 +522,7 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
       const r = await finishWorkoutAction({ workoutId: data.workoutId, note: finishNote });
       if (r.ok) {
         saveRest(null);
+        forgetExtras();
         setFinishOpen(false);
         setSummary(r.summary);
         window.scrollTo({ top: 0 });
@@ -470,7 +543,8 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
       const r = await deleteWorkoutAction({ workoutId: data.workoutId });
       if (r.ok) {
         saveRest(null);
-        router.replace('/app');
+        forgetExtras();
+        router.replace(coachMode?.backHref ?? '/app');
         return;
       }
       setFinishError(t(`errors.${r.error}`));
@@ -508,7 +582,15 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
         .filter((r) => prFlags.has(r.id))
         .map((r) => ({ id: r.id, name: exerciseName(e.exercise, locale), reps: r.reps, weightKg: r.weightKg })),
     );
-    return <WorkoutSummary summary={summary} locale={locale} prSets={prSets} card={cardData} />;
+    return (
+      <WorkoutSummary
+        summary={summary}
+        locale={locale}
+        prSets={prSets}
+        card={cardData}
+        coach={coachMode ? { backHref: coachMode.backHref, clientName: data.clientName } : undefined}
+      />
+    );
   }
 
   // ------------------------------------------------------------------------------ render
@@ -556,10 +638,26 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
       <div className="flex min-w-0 flex-col gap-4 md:gap-5">
         {/* header ------------------------------------------------------------------------- */}
         <header className="flex flex-col gap-1.5">
+          {coachMode ? (
+            <Link
+              href={coachMode.backHref}
+              className="-ms-2 inline-flex min-h-11 w-fit items-center gap-1.5 px-2 text-sm font-semibold text-ink-2 tx hover:text-ink"
+            >
+              <DirIcon name="chevron-back" className="size-4" />
+              {t('coachMode.back')}
+            </Link>
+          ) : null}
           <div className="flex items-start justify-between gap-3">
-            <h1 className="min-w-0 text-xl md:text-2xl">
-              <bdi>{data.dayTitle ?? t('workout.free')}</bdi>
-            </h1>
+            <div className="min-w-0">
+              {coachMode ? (
+                <p className="text-sm text-ink-2" data-testid="logging-for">
+                  {t('coachMode.loggingFor')} <bdi className="text-base font-bold text-ink">{data.clientName}</bdi>
+                </p>
+              ) : null}
+              <h1 className="text-xl md:text-2xl">
+                <bdi>{data.dayTitle ?? t('workout.free')}</bdi>
+              </h1>
+            </div>
             <p className="flex shrink-0 items-center gap-1.5 leading-none">
               <Clock className="size-5 text-ink-2" aria-hidden="true" />
               <span className="sr-only">{t('workout.elapsed')}</span>
@@ -637,11 +735,7 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
                 <h2 id={nameId} className="text-2xl">
                   <bdi>{exerciseName(ex, locale)}</bdi>
                 </h2>
-                {exerciseSubName(ex, locale) ? (
-                  <p lang="en" dir="ltr" className="hidden w-fit text-sm text-ink-2 md:block">
-                    {exerciseSubName(ex, locale)}
-                  </p>
-                ) : null}
+                <ExerciseSubName exercise={ex} locale={locale} className="hidden md:block" />
               </div>
               <dl className="grid gap-1 text-base">
                 {target ? (
@@ -704,7 +798,9 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
             {/* dock: rest timer + Log set -------------------------------------------------- */}
             <div
               className={cn(
-                'fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-3 border-t-[1.5px] border-rule-strong bg-card px-4 py-3',
+                'fixed inset-x-0 z-30 flex flex-col gap-3 border-t-[1.5px] border-rule-strong bg-card px-4 py-3',
+                // the client shell has a 3.5rem tab bar to clear; the coach shell has none
+                coachMode ? 'bottom-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]' : 'bottom-[calc(3.5rem+env(safe-area-inset-bottom))]',
                 'md:static md:z-auto md:border-0 md:bg-transparent md:p-0',
               )}
             >
@@ -766,7 +862,7 @@ export function WorkoutLogger({ data, locale: localeProp }: { data: LoggerData; 
                             <span className="num w-8 shrink-0 text-center text-xl text-ink-2">
                               {workingIndex != null ? formatNumber(workingIndex, locale, { grouping: false }) : t('logger.warmupShort')}
                             </span>
-                            <span className="num text-xl">{formatLoggedSet(r.reps, r.weightKg, locale)}</span>
+                            <span className="num text-xl">{loggedSetLabel(t, r.reps, r.weightKg, locale)}</span>
                             <span className="ms-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
                               {e1 != null ? (
                                 <span className="num text-sm text-ink-2">{t('logger.e1rm', { kg: formatKg(round1(e1), locale) })}</span>

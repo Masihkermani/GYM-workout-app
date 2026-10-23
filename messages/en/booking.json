@@ -141,11 +141,12 @@
     "more": "Older sessions not shown: {count}."
   },
   "occupancy": {
-    "summary": "This week: {booked} h booked, {open} h still open.",
+    "summary": "{booked} h booked, {open} h still open.",
     "dayLabel": "{day}: {booked} hours booked, {open} hours open",
     "open": "{hours} open",
     "off": "Off",
-    "legend": "Big number: hours booked. Below it: hours still open. Bar: share of the day that is booked."
+    "legend": "Big number: hours booked. Below it: hours still open. Bar: share of the day that is booked.",
+    "title": "Next 7 days"
   },
   "preview": {
     "thisWeek": "This week",

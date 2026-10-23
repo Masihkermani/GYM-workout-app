@@ -7,9 +7,11 @@ import { ClientBookingsPanel } from '@/components/booking/ClientBookingsPanel';
 import { ActiveToggle } from '@/components/coach/ActiveToggle';
 import { ClientStatus } from '@/components/coach/ClientStatus';
 import { CoachNotes } from '@/components/coach/CoachNotes';
+import { EditClientSheet } from '@/components/coach/EditClientSheet';
 import { getClientDetail } from '@/components/coach/queries';
 import { ResetPassword } from '@/components/coach/ResetPassword';
 import { ClientTrainingPanel } from '@/components/training/ClientTrainingPanel';
+import { StartSessionButton } from '@/components/training/StartSessionButton';
 import { Avatar } from '@/components/ui/Avatar';
 import { ButtonLink } from '@/components/ui/Button';
 import { DirIcon } from '@/components/ui/DirIcon';
@@ -19,6 +21,7 @@ import { requireCoach } from '@/lib/auth';
 import { formatDate } from '@/lib/format';
 import { formatPhone } from '@/lib/phone';
 import { getCoachSettings } from '@/lib/settings';
+import { getLinkableBooking } from '@/lib/training/queries';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
@@ -40,6 +43,8 @@ export default async function CoachClientPage({ params }: Props) {
     getTranslations('coach'),
   ]);
   if (!client) notFound();
+  // a confirmed session of this client around now: the workout started here links to it
+  const bookingId = client.active ? await getLinkableBooking(client.id) : null;
 
   const facts: { label: string; value: ReactNode }[] = [
     {
@@ -92,7 +97,10 @@ export default async function CoachClientPage({ params }: Props) {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <ButtonLink href={`/coach/clients/${client.id}/programs/new`}>
+            {client.active ? (
+              <StartSessionButton bookingId={bookingId} clientId={client.id} locale={locale} variant="primary" />
+            ) : null}
+            <ButtonLink href={`/coach/clients/${client.id}/programs/new`} variant="outline">
               <ClipboardPlus className="size-5" aria-hidden="true" />
               {t('client.newProgram')}
             </ButtonLink>
@@ -103,7 +111,9 @@ export default async function CoachClientPage({ params }: Props) {
 
       <div className="grid gap-8 lg:grid-cols-12">
         <section className="flex flex-col gap-4 lg:col-span-5">
-          <SectionLabel>{t('client.details')}</SectionLabel>
+          <SectionLabel action={<EditClientSheet clientId={client.id} name={client.name} phone={client.phone} />}>
+            {t('client.details')}
+          </SectionLabel>
           <div className="border-[1.5px] border-rule-strong bg-card">
             <dl>
               {facts.map((f) => (

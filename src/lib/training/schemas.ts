@@ -61,6 +61,12 @@ export const startWorkoutSchema = z.object({
   clientId: nullable(id).optional(),
 });
 
+/** The coach's "start a session" sheet: which client, and the booking the session belongs to (if any). */
+export const sessionOptionsSchema = z.object({
+  clientId: id,
+  bookingId: nullable(id).optional(),
+});
+
 export const logSetSchema = z.object({
   workoutId: id,
   exerciseId: id,

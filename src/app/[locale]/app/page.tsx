@@ -6,11 +6,12 @@ import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
 import { requireUser } from '@/lib/auth';
-import { formatDate, formatKg, formatLoggedSet } from '@/lib/format';
+import { formatDate, formatKg } from '@/lib/format';
 import { getCoachSettings } from '@/lib/settings';
 import { getRecentPr, listWorkoutSummaries } from '@/lib/training/queries';
 import { round1 } from '@/lib/training/e1rm';
 import { exerciseName } from '@/lib/training/types';
+import { loggedSetLabel } from '@/components/training/sets';
 import { TodayWorkoutCard } from '@/components/training/TodayWorkoutCard';
 import { WorkoutList } from '@/components/training/WorkoutList';
 
@@ -74,7 +75,7 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
                   </span>
                   <Stamp status="PR" />
                 </span>
-                <span className="num text-3xl">{formatLoggedSet(pr.reps, pr.weightKg, locale)}</span>
+                <span className="num text-3xl">{loggedSetLabel(t, pr.reps, pr.weightKg, locale)}</span>
                 <span className="flex flex-wrap items-center gap-x-3 text-sm text-ink-2">
                   <Trophy className="size-4" aria-hidden="true" />
                   {pr.e1rm != null ? (

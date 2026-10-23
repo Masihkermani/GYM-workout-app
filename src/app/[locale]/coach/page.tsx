@@ -27,12 +27,12 @@ export default async function CoachDashboardPage({ params }: { params: Promise<{
 
   const now = new Date();
   const [t, settings] = await Promise.all([getTranslations('coach'), getCoachSettings()]);
-  const stats = await getDashboardStats(locale, settings.timezone, now);
+  const stats = await getDashboardStats(settings.timezone, now);
 
   const name = firstName(coachDisplayName(settings, locale)) || firstName(coach.name);
   const num = (n: number) => formatNumber(n, locale, { grouping: false });
   const figures = [
-    { label: t('dashboard.stats.sessions'), value: stats.sessionsThisWeek },
+    { label: t('dashboard.stats.sessions'), value: stats.sessionsNext7Days },
     { label: t('dashboard.stats.clients'), value: stats.activeClients },
     { label: t('dashboard.stats.pending'), value: stats.pendingRequests },
   ];

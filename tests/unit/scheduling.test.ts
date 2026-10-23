@@ -9,6 +9,7 @@ import {
   clientCancelState,
   generateSlots,
   parseWeekParam,
+  rollingRange,
   tileWindows,
   weekRange,
   type AvailabilityWindow,
@@ -378,6 +379,35 @@ describe('weeks: Saturday-first for fa, Monday-first for en', () => {
     expect(parseWeekParam('2026-02-30', 'x')).toBe('x');
     expect(parseWeekParam('nope', 'x')).toBe('x');
     expect(parseWeekParam(undefined, 'x')).toBe('x');
+  });
+});
+
+describe('rollingRange: the dashboard\'s next 7 days', () => {
+  it('starts today, whatever day of the week it is: on a Friday it is not seven days of the past', () => {
+    const r = rollingRange('2026-10-23', 7, TZ); // Friday
+    expect(r.startKey).toBe('2026-10-23');
+    expect(r.keys).toEqual([
+      '2026-10-23',
+      '2026-10-24',
+      '2026-10-25',
+      '2026-10-26',
+      '2026-10-27',
+      '2026-10-28',
+      '2026-10-29',
+    ]);
+    // the fa calendar week of the same Friday ENDS today; the rolling window has nothing before it
+    expect(weekRange('2026-10-23', 'fa', TZ).keys[6]).toBe('2026-10-23');
+  });
+
+  it('bounds are midnight today to midnight after the last day, in the coach timezone', () => {
+    const r = rollingRange('2026-10-23', 7, TZ);
+    expect(iso(r.from)).toBe('2026-10-22T20:30:00.000Z'); // Friday 00:00 Tehran
+    expect(iso(r.to)).toBe('2026-10-29T20:30:00.000Z'); // Friday 00:00 Tehran, a week later
+  });
+
+  it('crosses month and year ends and keeps the length it was given', () => {
+    expect(rollingRange('2026-12-29', 7, TZ).keys[6]).toBe('2027-01-04');
+    expect(rollingRange('2026-10-23', 3, TZ).keys).toHaveLength(3);
   });
 });
 

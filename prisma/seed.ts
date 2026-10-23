@@ -404,13 +404,15 @@ async function main() {
     coachName: 'Coach Arash Kamali',
     coachNameFa: 'مربی آرش کمالی',
     bioEn:
-      'Strength and general-fitness coaching, one-to-one. Placeholder bio: edit it in Settings. ' +
-      'I write your program, you log every set, we adjust every week.',
+      "I've coached strength for ten years, mostly with people who are just starting out or coming back " +
+      'from an injury: good movement first, heavier weight after. Sessions are one-to-one in my small ' +
+      'studio in Saadat Abad, so only one person trains with me at a time.',
     bioFa:
-      'مربی قدرت و آمادگی جسمانی، جلسه‌های خصوصی. این متن نمونه است؛ از بخش تنظیمات ویرایشش کن. ' +
-      'برنامه را من می‌نویسم، تو هر ست را ثبت می‌کنی، هر هفته با هم اصلاحش می‌کنیم.',
-    locationEn: 'Iron Room gym, Vanak Square, Tehran (placeholder address)',
-    locationFa: 'باشگاه آیرون روم، میدان ونک، تهران (آدرس نمونه)',
+      'ده سال است مربی قدرتی‌ام. بیشتر با کسانی کار می‌کنم که تازه شروع کرده‌اند یا بعد از آسیب‌دیدگی به ' +
+      'تمرین برمی‌گردند؛ اول حرکت درست، بعد وزنه‌ی بیشتر. جلسه‌ها در استودیوی کوچکی در سعادت‌آباد است ' +
+      'و هر ساعت فقط یک نفر پیش من تمرین می‌کند.',
+    locationEn: 'Private training studio, Saadat Abad, Tehran. Ground floor, entrance from the side street.',
+    locationFa: 'استودیوی خصوصی تمرین، سعادت‌آباد، تهران. طبقه‌ی همکف، ورودی از کوچه.',
     timezone: TZ,
     slotMinutes: SLOT_MINUTES,
     bufferMinutes: 0,

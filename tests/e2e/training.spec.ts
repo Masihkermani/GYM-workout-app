@@ -119,6 +119,34 @@ test.describe('live workout (fa)', () => {
     await page.goBack();
   });
 
+  test('an exercise added to a free workout, with no set yet, is still there after a reload', async ({ page }) => {
+    await login(page, 'fa', CLIENT);
+    await closeOpenWorkouts(page, 'fa');
+    await page.goto('/fa/app/workout/new');
+    await page.getByRole('button', { name: 'شروع تمرین آزاد' }).click();
+    await page.waitForURL(/\/fa\/app\/workout\/(?!new)/); // /workout/new matches the plain pattern too
+    const workoutUrl = page.url();
+
+    await page.getByRole('button', { name: 'افزودن حرکت' }).first().click();
+    await page.getByRole('searchbox', { name: 'جست‌وجوی حرکت' }).fill('پرس سینه هالتر');
+    await page.getByRole('dialog').getByRole('button', { name: /پرس سینه هالتر/ }).first().click();
+    await expect(page.getByRole('heading', { level: 2, name: /پرس سینه هالتر/ })).toBeVisible();
+
+    // nothing was logged, so the server has no record of the exercise: only this tab remembers it
+    await page.reload();
+    await expect(page).toHaveURL(workoutUrl);
+    await expect(page.getByRole('heading', { level: 2, name: /پرس سینه هالتر/ })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'حرکت‌های تمرین' }).getByRole('button', { name: /پرس سینه هالتر/ })).toBeVisible();
+    // and it works as before: the steppers and the Log button are there
+    await expect(page.getByRole('button', { name: /^ثبت ست/ })).toBeVisible();
+
+    // discarding the empty workout forgets the remembered exercise too
+    await page.getByRole('button', { name: 'پایان تمرین' }).first().click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'حذف تمرین' }).click();
+    await expect(page).toHaveURL(/\/fa\/app$/);
+    expect(await page.evaluate(() => Object.keys(sessionStorage).filter((k) => k.startsWith('daftar:extra:')))).toEqual([]);
+  });
+
   test('exercise picker finds an exercise by Persian name and by English name', async ({ page }) => {
     await login(page, 'fa', CLIENT);
     await closeOpenWorkouts(page, 'fa');
@@ -133,6 +161,13 @@ test.describe('live workout (fa)', () => {
     await expect(first).toBeVisible();
     // Persian name leads, the English one sits small beneath it
     await expect(first).toContainText('Barbell bench press');
+
+    // ...at the start edge, directly under it (a block-level dir=ltr box would be pushed to the far side)
+    const name = first.locator('bdi').first();
+    const sub = first.locator('bdi[lang=en]');
+    const [nb, sb] = [await name.boundingBox(), await sub.boundingBox()];
+    expect(Math.abs((nb!.x + nb!.width) - (sb!.x + sb!.width)), 'right edges line up in fa').toBeLessThanOrEqual(2);
+    expect(sb!.y - (nb!.y + nb!.height)).toBeLessThanOrEqual(8);
 
     await search.fill('bench press');
     await expect(page.getByRole('dialog').getByRole('button', { name: /bench press/i }).first()).toBeVisible();
@@ -275,6 +310,33 @@ test.describe('English', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Workout done' })).toBeVisible();
     await page.getByRole('link', { name: 'See it in history' }).click();
     await expect(page.getByText('8 × 30 kg').first()).toBeVisible();
+  });
+
+  test('the English exercise name sits directly under the Persian one at the start edge (fa progress page)', async ({ page }) => {
+    await login(page, 'fa', CLIENT);
+    await page.goto('/fa/app/progress');
+    const heading = page.locator('#strength');
+    await expect(heading).toBeVisible();
+    const name = page.locator('#strength + p bdi').first();
+    const sub = page.locator('bdi[lang=en]').first();
+    await expect(sub).toHaveText(/\S/);
+    const [nb, sb] = [await name.boundingBox(), await sub.boundingBox()];
+    // right edges line up (fa starts at the right), and the English line is the next line down
+    expect(Math.abs((nb!.x + nb!.width) - (sb!.x + sb!.width))).toBeLessThanOrEqual(2);
+    expect(sb!.y).toBeGreaterThanOrEqual(nb!.y + nb!.height - 2);
+    expect(sb!.y - (nb!.y + nb!.height)).toBeLessThanOrEqual(12);
+    // secondary text colour, and Latin words stay in reading order
+    expect(await sub.evaluate((el) => getComputedStyle(el).direction)).toBe('ltr');
+    expect(await sub.evaluate((el) => getComputedStyle(el.parentElement!).color)).toBe(
+      await page.evaluate(() => {
+        const probe = document.createElement('span');
+        probe.style.color = 'var(--ink-3)';
+        document.body.append(probe);
+        const c = getComputedStyle(probe).color;
+        probe.remove();
+        return c;
+      }),
+    );
   });
 
   test('progress page shows the chart and the accessible table fallback', async ({ page }) => {

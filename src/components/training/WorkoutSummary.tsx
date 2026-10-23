@@ -3,9 +3,10 @@
 import { useTranslations } from 'next-intl';
 import { ButtonLink } from '@/components/ui/Button';
 import { Stamp } from '@/components/ui/Stamp';
-import { formatKg, formatLoggedSet, formatNumber } from '@/lib/format';
+import { formatKg, formatNumber } from '@/lib/format';
 import type { WorkoutSummaryDTO } from '@/lib/training/dto';
 import { formatClock } from './clock';
+import { loggedSetLabel } from './sets';
 import { StatGrid } from './StatGrid';
 import { TrainingCard, type TrainingCardData } from './TrainingCard';
 
@@ -15,11 +16,14 @@ export function WorkoutSummary({
   locale,
   prSets,
   card,
+  coach,
 }: {
   summary: WorkoutSummaryDTO;
   locale: string;
   prSets: { id: string; name: string; reps: number; weightKg: number }[];
   card: TrainingCardData;
+  /** The coach ran this session: the way on is back to the client's page, not the client's own history. */
+  coach?: { backHref: string; clientName: string };
 }) {
   const t = useTranslations('training');
   const n = (v: number) => formatNumber(v, locale, { grouping: false });
@@ -36,7 +40,13 @@ export function WorkoutSummary({
         <header className="flex flex-col items-start gap-3">
           <Stamp status="COMPLETED" size="lg" label={t('summary.stamp')} />
           <h1 className="text-3xl">{t('summary.title')}</h1>
-          <p className="text-base text-ink-2">{summary.setCount > 0 ? t('summary.body') : t('summary.bodyEmpty')}</p>
+          <p className="text-base text-ink-2">
+            {summary.setCount === 0
+              ? t('summary.bodyEmpty')
+              : coach
+                ? t('coachMode.summaryBody', { name: coach.clientName })
+                : t('summary.body')}
+          </p>
         </header>
 
         <StatGrid items={stats} />
@@ -53,7 +63,7 @@ export function WorkoutSummary({
                     <bdi>{p.name}</bdi>
                   </span>
                   <span className="flex shrink-0 items-center gap-3">
-                    <span className="num text-xl">{formatLoggedSet(p.reps, p.weightKg, locale)}</span>
+                    <span className="num text-xl">{loggedSetLabel(t, p.reps, p.weightKg, locale)}</span>
                     <Stamp status="PR" size="sm" />
                   </span>
                 </li>
@@ -66,14 +76,22 @@ export function WorkoutSummary({
           <p className="border-s-[3px] border-ink ps-3 text-base text-ink-2">{summary.note}</p>
         ) : null}
 
-        <div className="flex flex-wrap gap-3">
-          <ButtonLink href={`/app/history/${summary.id}`} variant="ink" size="lg">
-            {t('summary.seeHistory')}
-          </ButtonLink>
-          <ButtonLink href="/app" variant="outline" size="lg">
-            {t('summary.backToday')}
-          </ButtonLink>
-        </div>
+        {coach ? (
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href={coach.backHref} variant="ink" size="lg">
+              {t('coachMode.backToClient', { name: coach.clientName })}
+            </ButtonLink>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href={`/app/history/${summary.id}`} variant="ink" size="lg">
+              {t('summary.seeHistory')}
+            </ButtonLink>
+            <ButtonLink href="/app" variant="outline" size="lg">
+              {t('summary.backToday')}
+            </ButtonLink>
+          </div>
+        )}
       </div>
 
       <aside aria-label={t('workout.cardLabel')}>

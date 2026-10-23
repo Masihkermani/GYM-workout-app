@@ -31,7 +31,7 @@
   },
   "card": {
     "title": "A card from the log",
-    "caption": "This is what a training day looks like once you start logging. The names and numbers are samples."
+    "caption": "This is what a training day looks like once you start logging. The names and numbers on this card are made up for show."
   },
   "hours": {
     "title": "Hours and place",
@@ -42,7 +42,8 @@
     "pair": "{a} and {b}",
     "session": "Session",
     "sessionValue": "{minutes} minutes",
-    "place": "Place"
+    "place": "Place",
+    "window": "{from}–{to}"
   },
   "footer": {
     "note": "Only you and your coach see your sets."

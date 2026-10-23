@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { cn } from '@/lib/cn';
 import { prisma } from '@/lib/db';
 import { formatNumber, formatWeekday } from '@/lib/format';
-import { tileWindows, weekRange } from '@/lib/scheduling';
+import { DASHBOARD_WINDOW_DAYS, rollingRange, tileWindows } from '@/lib/scheduling';
 import { loadRules, loadTimeOff } from '@/lib/scheduling/load';
 import { getCoachSettings } from '@/lib/settings';
 import { todayKey, utcToZoned, weekdayOfKey, weekendWeekday } from '@/lib/time';
@@ -11,15 +11,17 @@ import { dayNumber, noonOf } from './dates';
 const MS_MINUTE = 60_000;
 
 /**
- * Coach dashboard: this week as seven compact columns. Per day: hours booked and hours still open as
- * numbers (never colour alone) plus a bar of how much of the day's capacity is taken.
+ * Coach dashboard: the next seven days (today first, in the coach timezone, rolling rather than the
+ * calendar week so that on a Friday it is not a row of past days) as compact columns. Per
+ * day: hours booked and hours still open as numbers (never colour alone) plus a bar of how much of
+ * the day's capacity is taken.
  */
 export async function WeekOccupancy({ locale }: { locale: string }) {
   const [t, settings] = await Promise.all([getTranslations({ locale, namespace: 'booking' }), getCoachSettings()]);
   const tz = settings.timezone;
   const now = new Date();
   const today = todayKey(tz, now);
-  const week = weekRange(today, locale, tz);
+  const week = rollingRange(today, DASHBOARD_WINDOW_DAYS, tz);
 
   const [rules, timeOff, bookings] = await Promise.all([
     loadRules(),
@@ -55,7 +57,7 @@ export async function WeekOccupancy({ locale }: { locale: string }) {
       <p className="text-sm text-ink-2">
         {t('occupancy.summary', { booked: hours(totalBooked), open: hours(totalOpen) })}
       </p>
-      <ol className="grid grid-cols-7 gap-1.5 sm:gap-2">
+      <ol aria-label={t('occupancy.title')} className="grid grid-cols-7 gap-1.5 sm:gap-2">
         {days.map((d) => {
           const share = d.bookedMin + d.openMin > 0 ? Math.min(100, Math.round((d.bookedMin / (d.bookedMin + d.openMin)) * 100)) : d.bookedMin > 0 ? 100 : 0;
           const isToday = d.key === today;

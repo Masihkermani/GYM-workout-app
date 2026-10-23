@@ -41,9 +41,8 @@ export async function HoursTable({ locale, rules, slotMinutes, location }: Hours
           <ul className="flex flex-col">
             {row.windows.map(([a, b]) => (
               <li key={a} className="num text-lg">
-                <bdi>
-                  {formatMinuteOfDay(a, locale)}–{formatMinuteOfDay(b, locale)}
-                </bdi>
+                {/* the word «تا» (not a dash) pins start-first reading between two Persian numbers */}
+                <bdi>{t('hours.window', { from: formatMinuteOfDay(a, locale), to: formatMinuteOfDay(b, locale) })}</bdi>
               </li>
             ))}
           </ul>

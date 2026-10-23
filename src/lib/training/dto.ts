@@ -48,6 +48,27 @@ export interface ExerciseContext {
   baseline: PrBaseline;
 }
 
+/** One program day the coach can start a session from. */
+export interface SessionDayOption {
+  id: string;
+  title: string;
+  programTitle: string;
+  exerciseCount: number;
+}
+
+/** What the coach's "start a session" sheet needs to know about a client (and booking). */
+export interface SessionOptionsDTO {
+  clientName: string;
+  /** The client's active program days, program by program, in order. */
+  days: SessionDayOption[];
+  /** The day that is next in rotation (preselected), null when there is no program. */
+  nextDayId: string | null;
+  /** The workout already linked to the booking, if there is one. */
+  linked: { id: string; finished: boolean } | null;
+  /** A workout of this client that is still open: continue it instead of starting a second one. */
+  open: { id: string; dayTitle: string | null; setCount: number; startedAt: string } | null;
+}
+
 export interface LoggerExercise {
   exercise: ExerciseDTO;
   /** Present when the exercise comes from the program day. */

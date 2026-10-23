@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Sheet } from '@/components/ui/Sheet';
 import { formatNumber } from '@/lib/format';
-import { exerciseName, exerciseSubName, type ExerciseDTO } from '@/lib/training/types';
+import { exerciseName, type ExerciseDTO } from '@/lib/training/types';
 import { searchExercisesAction } from '@/server/training';
+import { ExerciseSubName } from './ExerciseSubName';
 import { joinFacts } from './sep';
 import { BODY_PARTS, EQUIPMENT, bodyPartLabel, equipmentLabel } from './labels';
 
@@ -130,7 +131,6 @@ export function ExercisePicker({
         ) : (
           <ul className={state === 'loading' ? 'opacity-60 tx' : 'tx'}>
             {results.map((ex) => {
-              const sub = exerciseSubName(ex, locale);
               return (
                 <li key={ex.id} className="border-b border-rule last:border-b-0">
                   <button
@@ -144,11 +144,7 @@ export function ExercisePicker({
                     <span className="text-base font-semibold">
                       <bdi>{exerciseName(ex, locale)}</bdi>
                     </span>
-                    {sub ? (
-                      <span className="self-start text-sm text-ink-2" dir="ltr" lang="en">
-                        {sub}
-                      </span>
-                    ) : null}
+                    <ExerciseSubName exercise={ex} locale={locale} />
                     <span className="text-sm text-ink-3">
                       {joinFacts([bodyPartLabel(t, ex.bodyPart), equipmentLabel(t, ex.equipment)], locale)}
                     </span>

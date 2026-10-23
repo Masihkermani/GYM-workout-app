@@ -306,7 +306,6 @@
   "panel": {
     "title": "Training",
     "programs": "Programs",
-    "newProgram": "New program",
     "noProgramsTitle": "No programs yet",
     "noProgramsBody": "Write the first one so the client can start training.",
     "active": "Active",
@@ -378,5 +377,30 @@
     "trap bar": "Trap bar",
     "bosu ball": "Bosu ball",
     "wheel roller": "Ab wheel"
+  },
+  "set": {
+    "repsOnly": "{count, plural, one {{n} rep} other {{n} reps}}",
+    "repsList": "{list} reps"
+  },
+  "coachMode": {
+    "back": "Back to client",
+    "loggingFor": "Logging for",
+    "backToClient": "Back to {name}",
+    "summaryBody": "Saved to {name}'s logbook."
+  },
+  "session": {
+    "start": "Start session",
+    "title": "Start a session with {name}",
+    "description": "Pick the program day, or log a free workout. Sets go into the client's logbook.",
+    "loading": "Loading…",
+    "openTitle": "A workout is already open",
+    "continue": "Continue workout",
+    "orNew": "Or start a new one",
+    "linkedDone": "This session's workout is already logged and closed.",
+    "legend": "This session's workout",
+    "next": "Up next",
+    "freeHint": "No program; add exercises as you go.",
+    "noProgram": "This client has no active program, so the session starts as a free workout.",
+    "confirm": "Start"
   }
 }

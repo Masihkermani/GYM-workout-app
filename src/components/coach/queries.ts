@@ -1,7 +1,8 @@
 import 'server-only';
 import type { BookingStatus, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
-import { addDaysToKey, startOfWeekKey, utcToZoned, wallClockToUtc } from '@/lib/time';
+import { DASHBOARD_WINDOW_DAYS, rollingRange } from '@/lib/scheduling/week';
+import { utcToZoned } from '@/lib/time';
 import { matchesClient, searchTokens, tokenVariants } from './search';
 
 /** Read models for the coach pages. Pages call requireCoach() before using any of these. */
@@ -140,26 +141,28 @@ export async function getClientDetail(id: string): Promise<ClientDetail | null> 
 // ---------------------------------------------------------------------------------- dashboard
 
 export interface DashboardStats {
-  sessionsThisWeek: number;
+  /** Confirmed or completed sessions from the start of today to the end of the 7th day (today included). */
+  sessionsNext7Days: number;
   activeClients: number;
   pendingRequests: number;
 }
 
-/** The three numbers on the dashboard. "This week" follows the viewer's week start (Saturday for fa). */
-export async function getDashboardStats(locale: string, timeZone: string, now = new Date()): Promise<DashboardStats> {
-  const todayKey = utcToZoned(now, timeZone).dateKey;
-  const startKey = startOfWeekKey(todayKey, locale);
-  const from = wallClockToUtc(startKey, 0, timeZone);
-  const to = wallClockToUtc(addDaysToKey(startKey, 7), 0, timeZone);
+/**
+ * The three numbers on the dashboard. The sessions figure covers the same rolling window as the
+ * occupancy strip (today and the six days after it, coach timezone), so on a Friday it is not just
+ * today's sessions under a "this week" label.
+ */
+export async function getDashboardStats(timeZone: string, now = new Date()): Promise<DashboardStats> {
+  const window = rollingRange(utcToZoned(now, timeZone).dateKey, DASHBOARD_WINDOW_DAYS, timeZone);
 
-  const [sessionsThisWeek, activeClients, pendingRequests] = await Promise.all([
+  const [sessionsNext7Days, activeClients, pendingRequests] = await Promise.all([
     prisma.booking.count({
-      where: { startsAt: { gte: from, lt: to }, status: { in: ['CONFIRMED', 'COMPLETED'] } },
+      where: { startsAt: { gte: window.from, lt: window.to }, status: { in: ['CONFIRMED', 'COMPLETED'] } },
     }),
     prisma.user.count({ where: { role: 'CLIENT', active: true } }),
     prisma.booking.count({ where: { status: 'PENDING', startsAt: { gte: now } } }),
   ]);
-  return { sessionsThisWeek, activeClients, pendingRequests };
+  return { sessionsNext7Days, activeClients, pendingRequests };
 }
 
 // ----------------------------------------------------------------------------------- exercises

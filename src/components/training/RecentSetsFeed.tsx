@@ -2,10 +2,10 @@ import { getTranslations } from 'next-intl/server';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
-import { formatLoggedSet } from '@/lib/format';
 import { getRecentSetFeed } from '@/lib/training/queries';
 import { formatRelative } from '@/lib/training/relative';
 import { exerciseName } from '@/lib/training/types';
+import { loggedSetLabel } from './sets';
 
 /** Coach dashboard: the latest exercises logged across all clients (client, exercise, best set, how long ago). */
 export async function RecentSetsFeed({ locale, limit = 5 }: { locale: string; limit?: number }) {
@@ -33,7 +33,7 @@ export async function RecentSetsFeed({ locale, limit = 5 }: { locale: string; li
             <span className="flex shrink-0 flex-col items-end gap-0.5 text-end">
               <span className="flex items-center gap-2">
                 {it.isPr ? <Stamp status="PR" size="sm" /> : null}
-                <span className="num text-lg">{formatLoggedSet(it.reps, it.weightKg, locale)}</span>
+                <span className="num text-lg">{loggedSetLabel(t, it.reps, it.weightKg, locale)}</span>
               </span>
               <span className="text-sm text-ink-2">{formatRelative(it.at, now, locale)}</span>
             </span>

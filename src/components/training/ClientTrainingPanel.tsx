@@ -1,11 +1,9 @@
-import { Plus } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
-import { formatDate, formatKg, formatLoggedSet, formatNumber } from '@/lib/format';
+import { formatDate, formatKg, formatNumber } from '@/lib/format';
 import { getCoachSettings } from '@/lib/settings';
 import { getClientTrainingOverview } from '@/lib/training/queries';
 import { exerciseName } from '@/lib/training/types';
@@ -13,6 +11,7 @@ import { linearScale } from '@/lib/training/chart';
 import type { WeeklyBucket } from '@/lib/training/weekly';
 import { AuthorTag } from './AuthorTag';
 import { joinFacts, sepFor } from './sep';
+import { loggedSetList } from './sets';
 import { Sparkline } from './Sparkline';
 
 function MiniVolume({ weeks, rtl, label }: { weeks: WeeklyBucket[]; rtl: boolean; label: string }) {
@@ -87,16 +86,7 @@ export async function ClientTrainingPanel({ clientId, locale }: { clientId: stri
     <section className="flex flex-col gap-8" aria-label={t('panel.title')}>
       {/* programs ------------------------------------------------------------------------- */}
       <div className="flex flex-col gap-3">
-        <SectionLabel
-          action={
-            <ButtonLink href={`/coach/clients/${clientId}/programs/new`} variant="ink" size="sm">
-              <Plus className="size-4" aria-hidden="true" />
-              {t('panel.newProgram')}
-            </ButtonLink>
-          }
-        >
-          {t('panel.programs')}
-        </SectionLabel>
+        <SectionLabel>{t('panel.programs')}</SectionLabel>
         {data.programs.length === 0 ? (
           <EmptyState title={t('panel.noProgramsTitle')} description={t('panel.noProgramsBody')} />
         ) : (
@@ -145,7 +135,7 @@ export async function ClientTrainingPanel({ clientId, locale }: { clientId: stri
                             <bdi>{exerciseName(e.exercise, locale)}</bdi>
                           </dt>
                           <dd className="num text-base text-ink-2">
-                            {e.sets.map((s) => formatLoggedSet(s.reps, s.weightKg, locale)).join(locale === 'fa' ? '، ' : ', ')}
+                            {loggedSetList(t, e.sets, locale)}
                           </dd>
                         </div>
                       ))}
@@ -167,8 +157,8 @@ export async function ClientTrainingPanel({ clientId, locale }: { clientId: stri
         {data.lifts.length === 0 ? (
           <EmptyState title={t('panel.noProgressTitle')} description={t('panel.noProgressBody')} />
         ) : (
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
-            <ul className="border-[1.5px] border-rule-strong bg-card">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
+            <ul className="min-w-0 border-[1.5px] border-rule-strong bg-card">
               {data.lifts.map((l) => (
                 <li key={l.exercise.id} className="flex items-center justify-between gap-3 border-b border-rule px-4 py-3 last:border-b-0">
                   <span className="min-w-0">
@@ -190,7 +180,7 @@ export async function ClientTrainingPanel({ clientId, locale }: { clientId: stri
                   </span>
                   <span className="flex shrink-0 items-center gap-3">
                     <Sparkline values={l.points} rtl={rtl} />
-                    <span className="num w-20 text-end text-xl">{formatKg(l.current, locale)}</span>
+                    <span className="num min-w-16 whitespace-nowrap text-end text-xl">{formatKg(l.current, locale)}</span>
                   </span>
                 </li>
               ))}

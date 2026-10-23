@@ -283,6 +283,7 @@ Coach `/[locale]/coach`:
 - `/coach/clients` table + search + add client (coach sets a temporary password).
 - `/coach/clients/[id]` profile, coach notes, bookings, programs, workout history, progress.
 - `/coach/clients/[id]/programs/[programId]` program builder (days, exercises, sets×reps@weight, rest, notes; reorder).
+- `/coach/clients/[id]/workouts/[workoutId]` the coach logs a session for the client (same logger; finishing a workout linked to a started CONFIRMED booking marks it COMPLETED).
 - `/coach/exercises` library: search en/fa, filter by body part/equipment, edit Persian name/steps, add custom.
 - `/coach/settings` everything in `CoachSettings`.
 

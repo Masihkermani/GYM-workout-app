@@ -73,6 +73,13 @@ export const createClientSchema = z.object({
   locale: localeSchema,
 });
 
+/** The coach corrects a client's name or phone (the phone is the login, so it stays unique). */
+export const updateClientSchema = z.object({
+  id: idSchema,
+  name: personNameSchema,
+  phone: phoneSchema,
+});
+
 export const COACH_NOTES_MAX = 5000;
 export const notesSchema = z.object({
   id: idSchema,

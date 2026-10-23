@@ -19,7 +19,7 @@ import { dayToCardData } from '@/lib/training/card';
 import { defaultDayTitle } from '@/lib/training/day-title';
 import type { ProgramDTO, ProgramDayDTO, ProgramItemDTO } from '@/lib/training/dto';
 import type { ActionErrorCode } from '@/lib/training/schemas';
-import { exerciseName, exerciseSubName, type ExerciseDTO } from '@/lib/training/types';
+import { exerciseName, type ExerciseDTO } from '@/lib/training/types';
 import {
   addDayAction,
   addItemAction,
@@ -33,6 +33,7 @@ import {
   updateProgramAction,
 } from '@/server/training';
 import { ExercisePicker } from './ExercisePicker';
+import { ExerciseSubName } from './ExerciseSubName';
 import { TrainingCard } from './TrainingCard';
 
 const SAVE_DELAY = 600;
@@ -707,7 +708,6 @@ function ItemRow({
   const t = useTranslations('training');
   const locale = useLocale();
   const name = exerciseName(item.exercise, locale);
-  const sub = exerciseSubName(item.exercise, locale);
   const isRange = item.targetRepsMax != null;
   const upId = `move-up-${item.id}`;
   const downId = `move-down-${item.id}`;
@@ -726,11 +726,7 @@ function ItemRow({
           <span className="block text-base font-bold">
             <bdi>{name}</bdi>
           </span>
-          {sub ? (
-            <span lang="en" dir="ltr" className="block w-fit text-sm text-ink-2">
-              {sub}
-            </span>
-          ) : null}
+          <ExerciseSubName exercise={item.exercise} locale={locale} />
         </button>
         <div className="flex shrink-0">
           <IconButton id={upId} label={t('builder.moveUp', { name })} disabled={first} onClick={() => onMove(-1, upId)}>

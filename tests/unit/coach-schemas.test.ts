@@ -6,6 +6,7 @@ import {
   notesSchema,
   parseSteps,
   settingsSchema,
+  updateClientSchema,
   updateExerciseSchema,
 } from '@/components/coach/schemas';
 
@@ -65,6 +66,29 @@ describe('settingsSchema', () => {
     const r = settingsSchema.parse({ ...settings, coachNameFa: 'كريم', bioFa: 'يك متن' });
     expect(r.coachNameFa).toBe('کریم');
     expect(r.bioFa).toBe('یک متن');
+  });
+});
+
+describe('updateClientSchema', () => {
+  it('normalises the phone like sign-up does and tidies the name', () => {
+    const r = updateClientSchema.parse({ id: 'c1', name: '  پریسا   آزمون‌پور ', phone: '۰۹۱۳ ۱۲۳ ۴۵۶۷' });
+    expect(r.phone).toBe('+989131234567');
+    expect(r.name).toBe('پریسا آزمون‌پور');
+  });
+
+  it('accepts a foreign number in E.164 and Arabic yeh/kaf in the name', () => {
+    const r = updateClientSchema.parse({ id: 'c1', name: 'كيان', phone: '+49 151 2345 6789' });
+    expect(r.phone).toBe('+4915123456789');
+    expect(r.name).toBe('کیان');
+  });
+
+  it('reports a bad phone, an empty phone and a short name as stable codes on their own fields', () => {
+    const bad = updateClientSchema.safeParse({ id: 'c1', name: 'آ', phone: '12' });
+    expect(bad.success).toBe(false);
+    if (!bad.success) expect(fieldCodes(bad.error)).toEqual({ name: 'nameShort', phone: 'phoneInvalid' });
+    const empty = updateClientSchema.safeParse({ id: 'c1', name: 'Kian', phone: '  ' });
+    if (!empty.success) expect(fieldCodes(empty.error)).toEqual({ phone: 'required' });
+    else throw new Error('expected a failure');
   });
 });
 

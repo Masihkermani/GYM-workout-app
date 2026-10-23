@@ -30,6 +30,24 @@ export function weekRange(key: DateKey, locale: string, timeZone: string): WeekR
   };
 }
 
+/** Length of the coach dashboard's rolling window: the occupancy strip and the sessions figure share it. */
+export const DASHBOARD_WINDOW_DAYS = 7;
+
+/**
+ * `days` consecutive days beginning at `startKey` (the dashboard's "next 7 days": it starts today,
+ * wherever today falls in the calendar week, so late in the week it is not a row of past days).
+ * Same shape as `weekRange`, so the two are interchangeable for callers that only need keys and bounds.
+ */
+export function rollingRange(startKey: DateKey, days: number, timeZone: string): WeekRange {
+  const keys = Array.from({ length: days }, (_, i) => addDaysToKey(startKey, i));
+  return {
+    startKey,
+    keys,
+    from: wallClockToUtc(startKey, 0, timeZone),
+    to: wallClockToUtc(addDaysToKey(startKey, days), 0, timeZone),
+  };
+}
+
 /**
  * Start keys of every week a client can book in: from the week containing today to the week
  * containing the last day of the horizon (now + horizonDays).

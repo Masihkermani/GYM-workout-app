@@ -14,6 +14,7 @@ import {
   notesSchema,
   profileSchema,
   settingsSchema,
+  updateClientSchema,
   updateExerciseSchema,
   type CoachErrorCode,
   type SettingsField,
@@ -49,6 +50,7 @@ export interface ClientCreated {
   phone: string;
 }
 export type CreateClientState = FormState<'name' | 'phone' | 'password'> & { created?: ClientCreated };
+export type UpdateClientState = FormState<'name' | 'phone'>;
 export type ExerciseState = FormState<
   'nameEn' | 'nameFa' | 'stepsFa' | 'stepsEn' | 'bodyPart' | 'equipment' | 'target'
 > & { deleted?: boolean };
@@ -101,6 +103,37 @@ export type ActionResult = { ok: true; savedAt: number } | { ok: false; error: C
 
 async function findClient(id: string) {
   return prisma.user.findFirst({ where: { id, role: 'CLIENT' }, select: { id: true } });
+}
+
+/**
+ * Coach edits a client's name and phone. The phone is the login, so it is normalised exactly like at
+ * sign-up and must stay unique: a number that belongs to anyone else (client or coach) is refused on the
+ * field with `phoneTaken`. Only CLIENT rows can be edited here; the coach's own details live in /app/me.
+ */
+export async function updateClientAction(_prev: UpdateClientState, formData: FormData): Promise<UpdateClientState> {
+  const locale = localeOf(formData.get('locale'));
+  await requireCoach(locale);
+
+  const values = { name: text(formData.get('name')), phone: text(formData.get('phone')) };
+  const id = idSchema.safeParse(text(formData.get('id')));
+  if (!id.success) return { errors: { form: 'notFound' }, values };
+
+  const parsed = updateClientSchema.safeParse({ id: id.data, ...values });
+  if (!parsed.success) return { errors: fieldCodes<'name' | 'phone' | 'id'>(parsed.error), values };
+  const { name, phone } = parsed.data;
+
+  if (!(await findClient(id.data))) return { errors: { form: 'notFound' }, values };
+  if (await prisma.user.findFirst({ where: { phone, NOT: { id: id.data } }, select: { id: true } })) {
+    return { errors: { phone: 'phoneTaken' }, values };
+  }
+  try {
+    await prisma.user.update({ where: { id: id.data }, data: { name, phone } });
+  } catch (e) {
+    if (isUniqueViolation(e)) return { errors: { phone: 'phoneTaken' }, values }; // lost a race for the number
+    throw e;
+  }
+  refreshPages();
+  return { ok: true, savedAt: Date.now(), values: { name, phone } };
 }
 
 /** Deactivating blocks login at once: the client's sessions are deleted too. */
