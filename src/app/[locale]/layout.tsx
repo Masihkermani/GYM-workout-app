@@ -24,6 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: { default: t('meta.title'), template: t('meta.titleTemplate') },
     description: t('meta.description'),
     applicationName: t('brand.name'),
+    icons: { icon: '/icon.svg' },
     robots: { index: true, follow: true },
   };
 }

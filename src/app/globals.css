@@ -409,7 +409,7 @@ html[lang="fa"] .label-caps {
   }
 }
 
-/* Numbers / phone numbers inside RTL text stay left-to-right. */
+/* Numbers / phone numbers inside RTL text keep LTR order. */
 @utility ltr-isolate {
   direction: ltr;
   unicode-bidi: isolate;

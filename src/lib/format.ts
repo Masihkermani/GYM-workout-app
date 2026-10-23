@@ -102,7 +102,7 @@ export interface DateFormatOptions {
   /**
    *  short   `1 Farvardin` / `21 Mar`
    *  medium  `1 Farvardin 1405` / `21 Mar 2026`
-   *  long    `Saturday, 1 Farvardin 1405` / `Saturday, 21 March 2026`
+   *  long    `شنبه، ۱ فروردین ۱۴۰۵` / `Saturday, 21 March 2026`
    *  numeric `1405/01/01` / `2026-03-21`
    */
   style?: DateStyle;
@@ -126,13 +126,14 @@ export function formatDate(value: DateInput, locale: string, opts: DateFormatOpt
   switch (style) {
     case 'short':
       return dtf(locale, timeZone, { day: 'numeric', month: 'short' }).format(date);
-    case 'long':
-      return dtf(locale, timeZone, {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }).format(date);
+    case 'long': {
+      const f = dtf(locale, timeZone, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      if (!isFa(locale)) return f.format(date); // "Saturday, 21 March 2026"
+      // CLDR orders Persian as "1405 Farvardin 1, Saturday"; people write «شنبه، ۱ فروردین ۱۴۰۵».
+      const parts = f.formatToParts(date);
+      const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+      return `${get('weekday')}\u060c ${get('day')} ${get('month')} ${get('year')}`;
+    }
     case 'numeric': {
       const parts = dtf(locale, timeZone, { year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
       const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';

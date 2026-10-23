@@ -187,7 +187,7 @@ export function NumberInput(props: NumberInputProps) {
         className={cn(
           'flex shrink-0 select-none items-center justify-center rounded-[var(--r)] border-[1.5px] border-ink bg-card text-ink',
           'tx hover:bg-paper-2 active:translate-y-px disabled:pointer-events-none disabled:opacity-40',
-          xl ? 'size-16 min-w-16' : 'size-11',
+          xl ? 'w-16 self-stretch' : 'w-11 self-stretch',
         )}
       >
         {dir === 1 ? (
@@ -200,11 +200,14 @@ export function NumberInput(props: NumberInputProps) {
   };
 
   return (
-    <div className={cn('flex items-stretch gap-2', className)}>
+    // The numeric axis is always LTR (digits read LTR): minus on the low side, plus on the high side,
+    // in both languages.
+    <div dir="ltr" className={cn('flex items-stretch gap-2', className)}>
       {stepButton(-1)}
       <div
         className={cn(
-          'focus-wrap relative flex min-w-0 flex-1 items-center rounded-[var(--r)] border-[1.5px] bg-card tx',
+          'focus-wrap relative flex min-w-0 flex-1 flex-col justify-center rounded-[var(--r)] border-[1.5px] bg-card tx',
+          xl ? 'min-h-[7rem]' : 'min-h-11',
           invalid ? 'border-danger' : 'border-ink-3 hover:border-ink-2 has-[input:focus]:border-ink',
           disabled && 'opacity-50',
         )}
@@ -229,19 +232,20 @@ export function NumberInput(props: NumberInputProps) {
           onChange={(e) => onType(e.target.value)}
           onBlur={onBlur}
           onKeyDown={onKeyDown}
-          dir="ltr"
           className={cn(
-            'focus-bare w-full min-w-0 bg-transparent text-center text-ink placeholder:text-ink-3',
-            xl ? 'num h-16 text-6xl leading-none' : 'h-11 text-lg font-semibold',
-            unit ? 'px-12' : 'px-2',
+            'focus-bare w-full min-w-0 bg-transparent px-2 text-center text-ink placeholder:text-ink-3',
+            xl ? 'num h-[5rem] text-5xl sm:text-6xl' : 'h-11 text-lg font-semibold',
+            unit && !xl && 'pe-12 ps-12',
           )}
         />
         {unit ? (
           <span
             aria-hidden="true"
             className={cn(
-              'pointer-events-none absolute inset-y-0 end-3 flex text-ink-2',
-              xl ? 'items-end pb-2 text-base font-semibold' : 'items-center text-sm font-semibold',
+              'pointer-events-none text-ink-2',
+              xl
+                ? 'pb-2 text-center text-sm font-semibold'
+                : 'absolute inset-y-0 end-3 flex items-center text-sm font-semibold',
             )}
           >
             {unit}

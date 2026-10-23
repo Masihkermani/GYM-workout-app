@@ -41,6 +41,22 @@ async function login(context) {
   await page.close();
 }
 
+/** Open the sheet, the dialog and a toast on the styleguide and capture each (light scope on top). */
+async function overlays(page, theme, width) {
+  const scope = page.locator(`.theme-scope[data-theme=${theme}]`);
+  await scope.getByRole('button', { name: 'باز کردن برگه' }).click();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: join(out, `fa-styleguide-sheet-${theme}-${width}.png`) });
+  await page.keyboard.press('Escape');
+  await scope.getByRole('button', { name: 'باز کردن گفتگو' }).click();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: join(out, `fa-styleguide-dialog-${theme}-${width}.png`) });
+  await page.keyboard.press('Escape');
+  await scope.getByRole('button', { name: 'نمایش اعلان', exact: true }).click();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: join(out, `fa-styleguide-toast-${theme}-${width}.png`) });
+}
+
 for (const w of widths) {
   for (const theme of themes) {
     const context = await browser.newContext({
@@ -61,6 +77,7 @@ for (const w of widths) {
       const file = join(out, `${p.name}-${theme}-${w.name}.png`);
       await page.screenshot({ path: file, fullPage: Boolean(p.fullPage) });
       console.log(`${res?.status()} ${p.path} -> ${file}`);
+      if (p.name === 'fa-styleguide') await overlays(page, theme, w.name);
       await page.close();
     }
     await context.close();

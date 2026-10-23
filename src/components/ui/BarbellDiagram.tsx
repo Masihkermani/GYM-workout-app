@@ -8,7 +8,6 @@ import {
   PLATE_HEIGHT,
   PLATE_THICKNESS,
   type PlateColor,
-  type PlateKg,
 } from '@/lib/plates';
 
 const FILL: Record<PlateColor, string> = {
@@ -31,15 +30,17 @@ const SWATCH: Record<PlateColor, string> = {
   steel: 'bg-plate-steel',
 };
 
-// viewBox geometry (units)
+// viewBox geometry (units). The bar is drawn horizontally with the collar at COLLAR_X and plates
+// stacking outward from it, so a 25 kg plate is the tallest thing on screen.
 const H = 120;
 const MID = H / 2;
 const PLATE_MAX_H = 112;
 const PLATE_MAX_W = 15;
 const GAP = 1.5;
-const SHAFT = 26; // bare grip section before the collar
-const COLLAR = 7;
-const TIP = 16; // sleeve end beyond the last plate
+const COLLAR_X = 200;
+const COLLAR_W = 8;
+const MIN_WIDTH = 330;
+const TIP = 24; // sleeve end beyond the last plate
 
 export interface BarbellDiagramProps {
   weightKg: number;
@@ -51,7 +52,7 @@ export interface BarbellDiagramProps {
 }
 
 /**
- * One loaded half of a barbell: plates per side for the entered weight, greedy from
+ * One loaded end of a barbell: plates per side for the entered weight, greedy from
  * 25/20/15/10/5/2.5/1.25 kg in IWF colours at proportional sizes. When the weight cannot be made
  * with those plates it says so and suggests the nearest loadable weights.
  */
@@ -84,18 +85,26 @@ export function BarbellDiagram({ weightKg, barKg = 20, compact = false, classNam
   }
 
   const plates = load.perSide;
-  let x = SHAFT + COLLAR + 3;
-  const drawn = plates.map((p, i) => {
-    const w = PLATE_THICKNESS[p] * PLATE_MAX_W;
-    const h = PLATE_HEIGHT[p] * PLATE_MAX_H;
-    const rect = { key: i, plate: p, x, y: MID - h / 2, w, h };
+  let x = COLLAR_X + COLLAR_W + 3;
+  const drawn = plates.map((plate, i) => {
+    const w = PLATE_THICKNESS[plate] * PLATE_MAX_W;
+    const h = PLATE_HEIGHT[plate] * PLATE_MAX_H;
+    const rect = { key: i, plate, x, y: MID - h / 2, w, h };
     x += w + GAP;
     return rect;
   });
-  const width = x + TIP;
+  const width = Math.max(MIN_WIDTH, x + TIP);
   const groups = groupPlates(plates);
-  const list = groups.map((g) => (g.count > 1 ? `${formatNumber(g.plate, locale)} × ${formatNumber(g.count, locale, { grouping: false })}` : formatNumber(g.plate, locale))).join(' + ');
+  const list = groups
+    .map((g) =>
+      g.count > 1
+        ? `${formatNumber(g.plate, locale)} × ${formatNumber(g.count, locale, { grouping: false })}`
+        : formatNumber(g.plate, locale),
+    )
+    .join(' + ');
   const alt = plates.length === 0 ? t('barbell.bareBar') : t('barbell.alt', { plates: list });
+
+  const ink = { strokeWidth: 1, vectorEffect: 'non-scaling-stroke' } as const;
 
   return (
     <figure className={cn('flex flex-col gap-2', className)}>
@@ -110,12 +119,15 @@ export function BarbellDiagram({ weightKg, barKg = 20, compact = false, classNam
         role="img"
         aria-label={alt}
         viewBox={`0 0 ${width} ${H}`}
-        className="h-24 w-auto max-w-full self-start"
+        className="h-24 w-full max-w-sm self-start"
         preserveAspectRatio="xMinYMid meet"
       >
-        {/* shaft, collar and sleeve tip */}
-        <rect x={0} y={MID - 3} width={width - 4} height={6} className="fill-plate-steel stroke-ink" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-        <rect x={SHAFT} y={MID - 12} width={COLLAR} height={24} className="fill-plate-black stroke-ink" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+        {/* bar shaft, running out past the last plate */}
+        <rect x={0} y={MID - 3.5} width={width} height={7} rx={1} className="fill-plate-steel stroke-ink" {...ink} />
+        {/* knurled grip hint */}
+        <rect x={40} y={MID - 4.5} width={90} height={9} className="fill-plate-steel stroke-ink" {...ink} />
+        {/* inner collar */}
+        <rect x={COLLAR_X} y={MID - 13} width={COLLAR_W} height={26} rx={1} className="fill-plate-black stroke-ink" {...ink} />
         {drawn.map((r) => (
           <rect
             key={r.key}
@@ -124,12 +136,12 @@ export function BarbellDiagram({ weightKg, barKg = 20, compact = false, classNam
             width={r.w}
             height={r.h}
             rx={1.5}
-            className={cn(FILL[PLATE_COLOR[r.plate as PlateKg]], 'stroke-ink')}
-            strokeWidth={1}
-            vectorEffect="non-scaling-stroke"
+            className={cn(FILL[PLATE_COLOR[r.plate]], 'stroke-ink')}
+            {...ink}
           />
         ))}
-        <rect x={width - TIP + 3} y={MID - 8} width={5} height={16} className="fill-plate-black stroke-ink" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+        {/* spring clip on the sleeve end */}
+        <rect x={x + 3} y={MID - 9} width={6} height={18} rx={1} className="fill-plate-black stroke-ink" {...ink} />
       </svg>
 
       {/* text alternative and legend */}
@@ -141,7 +153,9 @@ export function BarbellDiagram({ weightKg, barKg = 20, compact = false, classNam
             <li key={g.plate} className="flex items-center gap-1.5">
               <span aria-hidden="true" className={cn('size-3 rounded-full border border-ink', SWATCH[PLATE_COLOR[g.plate]])} />
               <span className="num text-base text-ink">{formatNumber(g.plate, locale)}</span>
-              {g.count > 1 ? <span className="num text-base text-ink-2">× {formatNumber(g.count, locale, { grouping: false })}</span> : null}
+              {g.count > 1 ? (
+                <span className="num text-base text-ink-2">× {formatNumber(g.count, locale, { grouping: false })}</span>
+              ) : null}
             </li>
           ))}
         </ul>

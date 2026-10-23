@@ -67,6 +67,10 @@ describe('dates (Jalali for fa)', () => {
     expect(formatDate(nowruz, 'fa')).toBe('۱ فروردین ۱۴۰۵');
   });
   it('en medium date', () => expect(formatDate(nowruz, 'en')).toBe('21 Mar 2026'));
+  it('long dates read naturally in both languages', () => {
+    expect(formatDate(nowruz, 'fa', { style: 'long' })).toBe('شنبه، ۱ فروردین ۱۴۰۵');
+    expect(formatDate(nowruz, 'en', { style: 'long' })).toBe('Saturday, 21 March 2026');
+  });
   it('honours the timezone for the date boundary', () => {
     // 2026-03-20T21:00Z is already 00:30 on 21 March in Tehran (UTC+03:30).
     const late = new Date('2026-03-20T21:00:00Z');

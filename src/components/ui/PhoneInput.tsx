@@ -7,7 +7,7 @@ import { Input } from './Input';
 export type PhoneInputProps = Omit<ComponentProps<typeof Input>, 'type' | 'inputMode' | 'dir'>;
 
 /**
- * Phone numbers are always left-to-right, but sit at the start edge of an RTL form.
+ * Phone numbers always read in LTR order, but sit at the start edge of an RTL form.
  * Accepts Persian / Arabic / Latin digits; the server normalises with normalizePhone().
  */
 export function PhoneInput({ className, autoComplete = 'tel', ...props }: PhoneInputProps) {

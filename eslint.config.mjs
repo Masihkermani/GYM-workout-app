@@ -11,6 +11,8 @@ const config = [
       'node_modules/**',
       '.next*/**',
       '.qa/**',
+      '.claude/**',
+      'design-system/**',
       'playwright-report/**',
       'test-results/**',
       'next-env.d.ts',
