@@ -1,0 +1,2593 @@
+<title>Daftar Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Vazirmatn:wght@100..900&display=swap">
+<style>
+/* ==========================================================================
+   Daftar design preview. Tokens from docs/DESIGN.md ("chalk on steel" / "rubber floor").
+   Logical properties only; the two gutter paddings below are the single physical exception.
+   ========================================================================== */
+:root {
+  --paper: #EBECE8;
+  --paper-2: #DFE1DC;
+  --card: #F8F8F6;
+  --ink: #141614;
+  --ink-2: #444843;
+  --ink-3: #5F655E;
+  --rule: rgb(20 22 20 / 0.16);
+  --rule-strong: #141614;
+  --plate-red: #C0211A;
+  --plate-blue: #1D4C9F;
+  --plate-yellow: #E3AE12;
+  --plate-green: #2B7A42;
+  --plate-white: #FBFBF8;
+  --danger: #8E1B12;
+  --on-plate: #FFFFFF;
+  --on-yellow: #141614;
+  --scrim: rgb(20 22 20 / 0.55);
+  --chrome-bg: #141614;
+  --chrome-fg: #EBECE8;
+  --chrome-dim: #B7BBB4;
+  --hatch: repeating-linear-gradient(45deg, transparent 0 5px, var(--rule) 5px 6.5px);
+  --r: 2px;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --f-en: "Archivo", "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --f-fa: "Vazirmatn", "Archivo", "Segoe UI", Tahoma, system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111311;
+    --paper-2: #191C19;
+    --card: #1D201D;
+    --ink: #E8EAE5;
+    --ink-2: #AEB3AB;
+    --ink-3: #8C9289;
+    --rule: rgb(232 234 229 / 0.15);
+    --rule-strong: #E8EAE5;
+    --plate-red: #E2463B;
+    --plate-blue: #6A95E6;
+    --plate-yellow: #F0C232;
+    --plate-green: #4FAE6A;
+    --plate-white: #E8EAE5;
+    --danger: #F07466;
+    --on-plate: #111311;
+    --on-yellow: #111311;
+    --scrim: rgb(0 0 0 / 0.66);
+    --chrome-bg: #050605;
+    --chrome-fg: #E8EAE5;
+    --chrome-dim: #AEB3AB;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111311;
+  --paper-2: #191C19;
+  --card: #1D201D;
+  --ink: #E8EAE5;
+  --ink-2: #AEB3AB;
+  --ink-3: #8C9289;
+  --rule: rgb(232 234 229 / 0.15);
+  --rule-strong: #E8EAE5;
+  --plate-red: #E2463B;
+  --plate-blue: #6A95E6;
+  --plate-yellow: #F0C232;
+  --plate-green: #4FAE6A;
+  --plate-white: #E8EAE5;
+  --danger: #F07466;
+  --on-plate: #111311;
+  --on-yellow: #111311;
+  --scrim: rgb(0 0 0 / 0.66);
+  --chrome-bg: #050605;
+  --chrome-fg: #E8EAE5;
+  --chrome-dim: #AEB3AB;
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); }
+[hidden] { display: none !important; }
+#app {
+  min-height: 100vh;
+  font-family: var(--f-en);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --chrome-h: 52px;
+  --fp: 0px;
+}
+#app[lang="fa"] { font-family: var(--f-fa); line-height: 1.75; }
+:where(#app) :is(h1, h2, h3, p, ul, ol, dl, dd, figure) { margin: 0; padding: 0; }
+:where(#app) :is(ul, ol) { list-style: none; }
+:where(#app) :is(button, input, textarea, select) { font: inherit; color: inherit; letter-spacing: inherit; }
+:where(#app) button { cursor: pointer; background: none; border: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:where(#app) a { color: inherit; }
+:where(#app) textarea { resize: vertical; }
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; box-shadow: 0 0 0 2px var(--paper); }
+.sr-only { position: fixed; inset-block-start: 0; inset-inline-start: 0; inline-size: 1px; block-size: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+#app[lang="en"] .num { font-stretch: 75%; font-weight: 700; letter-spacing: 0.01em; }
+#app[lang="fa"] .num { font-weight: 700; }
+.latin { font-family: var(--f-en); }
+.ic { inline-size: 20px; block-size: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+#app[dir="rtl"] .ic.flip { transform: scaleX(-1); }
+.muted { color: var(--ink-2); }
+.cap { font-size: 13px; color: var(--ink-3); line-height: 1.5; }
+#app[lang="fa"] .cap { font-size: 13px; line-height: 1.7; }
+.fine { font-size: 14px; color: var(--ink-2); }
+.balance { text-wrap: balance; }
+.pretty { text-wrap: pretty; }
+
+.display { font-weight: 800; line-height: 1.05; }
+#app[lang="en"] .display { font-stretch: 112%; letter-spacing: -0.01em; }
+#app[lang="fa"] .display { font-weight: 800; line-height: 1.35; }
+.t1 { font-size: 28px; line-height: 1.15; text-wrap: balance; }
+#app[lang="fa"] .t1 { line-height: 1.4; }
+.t2 { font-size: 20px; line-height: 1.25; font-weight: 800; text-wrap: balance; }
+#app[lang="en"] .t2 { font-stretch: 112%; font-size: 18px; }
+#app[lang="fa"] .t2 { line-height: 1.5; }
+
+/* ---------- preview chrome (not part of the app UI) ---------- */
+.chrome {
+  position: sticky;
+  inset-block-start: env(safe-area-inset-top, 0px);
+  z-index: 60;
+  background: var(--chrome-bg);
+  color: var(--chrome-fg);
+  border-block-end: 1px solid var(--rule);
+}
+.chrome-in { display: flex; align-items: center; gap: 12px; min-block-size: var(--chrome-h); max-inline-size: 1280px; margin-inline: auto; }
+.pv-brand { display: none; flex-direction: column; line-height: 1.25; flex: none; }
+.pv-brand b { font-size: 13px; font-weight: 800; letter-spacing: 0.02em; }
+.pv-note { font-size: 12px; color: var(--chrome-dim); }
+.pv-nav { flex: 1 1 auto; min-inline-size: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-block: 4px; }
+.pv-nav::-webkit-scrollbar { display: none; }
+.pv-link {
+  flex: none; min-block-size: 44px; display: inline-flex; align-items: center; padding: 0 12px;
+  font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; color: var(--chrome-dim);
+  border-radius: var(--r); transition-property: background-color, color; transition-duration: 150ms; transition-timing-function: var(--ease);
+}
+.pv-link:hover { color: var(--chrome-fg); }
+.pv-link[aria-current="page"] { background: var(--chrome-fg); color: var(--chrome-bg); }
+.pv-sep { flex: none; inline-size: 1px; block-size: 20px; background: var(--rule); margin-inline: 4px; }
+.chrome :focus-visible { outline-color: var(--chrome-fg); box-shadow: none; }
+.pv-ctl { flex: none; display: flex; align-items: center; gap: 6px; }
+.seg { display: inline-flex; border: 1px solid var(--chrome-dim); border-radius: var(--r); overflow: hidden; }
+.seg button { min-block-size: 44px; min-inline-size: 44px; padding: 0 10px; font-size: 13px; font-weight: 700; color: var(--chrome-dim); transition-property: background-color, color; transition-duration: 150ms; }
+.seg button[aria-pressed="true"] { background: var(--chrome-fg); color: var(--chrome-bg); }
+.chrome .iconbtn { background: transparent; min-block-size: 44px; min-inline-size: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--chrome-dim); border-radius: var(--r); color: var(--chrome-fg); padding: 0 10px; font-size: 13px; font-weight: 700; }
+.chrome .iconbtn:hover { background: transparent; }
+.pv-theme-txt { display: none; }
+.pv-note-m { padding-block: 8px 0; font-size: 12px; color: var(--ink-3); }
+@media (min-width: 720px) {
+  .pv-brand { display: flex; }
+  .pv-note-m { display: none; }
+  .pv-theme-txt { display: inline; }
+}
+
+/* ---------- layout ---------- */
+.wrap { padding-block: 16px 48px; }
+@media (min-width: 720px) { .wrap { padding-block: 24px 72px; } #app { --fp: 20px; } }
+.screen { max-inline-size: 1200px; margin-inline: auto; }
+.frame { display: flex; flex-direction: column; inline-size: 100%; margin-inline: auto; background: var(--paper); min-block-size: calc(100vh - 140px); }
+@media (min-width: 720px) {
+  .frame { max-inline-size: 420px; border: 1.5px solid var(--rule-strong); border-radius: var(--r); min-block-size: 760px; }
+  .frame--wide { max-inline-size: 1040px; }
+  .frame--wide .tabbar { display: none; }
+}
+.fp { padding-inline: var(--fp); }
+.apphead { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px 4px; }
+.wordmark { font-weight: 900; font-size: 18px; letter-spacing: 0.01em; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+#app[lang="en"] .wordmark { font-stretch: 112%; font-weight: 800; }
+.wordmark i { display: inline-block; inline-size: 10px; block-size: 10px; border-radius: 999px; border: 3px solid var(--ink); }
+.avatar { inline-size: 36px; block-size: 36px; border-radius: 999px; border: 1.5px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; background: var(--card); flex: none; }
+.pagehead { padding-block: 12px 16px; display: grid; gap: 4px; }
+.pagehead p { color: var(--ink-2); font-size: 15px; max-inline-size: 38ch; text-wrap: pretty; }
+.body { padding-block: 0 32px; display: grid; gap: 24px; align-content: start; }
+.stack { display: grid; gap: 12px; }
+.row { display: flex; align-items: center; gap: 12px; }
+.row--between { justify-content: space-between; }
+.row--wrap { flex-wrap: wrap; }
+.grow { flex: 1 1 auto; min-inline-size: 0; }
+
+.tabbar { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--card); border-block-start: 1.5px solid var(--rule-strong); z-index: 30; }
+.tab {
+  min-block-size: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  font-size: 12px; font-weight: 700; text-decoration: none; color: var(--ink-2);
+  border-block-start: 3px solid transparent; margin-block-start: -1.5px;
+}
+.tab[aria-current="page"] { color: var(--ink); border-block-start-color: var(--ink); }
+.has-tabs { padding-block-end: 72px; }
+@media (max-width: 719.98px) {
+  .tabbar { position: fixed; inset-inline: 0; inset-block-end: 0; padding-block-end: env(safe-area-inset-bottom, 0px); }
+  .has-tabs { padding-block-end: calc(72px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 720px) {
+  .tabbar { position: sticky; inset-block-end: 0; margin-block-start: auto; }
+  .has-tabs { padding-block-end: 24px; }
+}
+
+/* ---------- primitives ---------- */
+.card { background: var(--card); border: 1.5px solid var(--rule-strong); border-radius: var(--r); }
+.pad { padding: 16px; }
+.sl { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); margin-block-end: 12px; }
+#app[lang="fa"] .sl { font-size: 13px; letter-spacing: 0; text-transform: none; font-weight: 800; }
+.sl::after { content: ""; display: block; inline-size: 32px; border-block-start: 1.5px solid var(--ink); margin-block-start: 6px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-block-size: 48px; padding: 0 20px;
+  border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--card); color: var(--ink);
+  font-weight: 700; font-size: 15px; line-height: 1.2; text-decoration: none; text-align: center;
+  transition-property: background-color, color, border-color, transform; transition-duration: 150ms; transition-timing-function: var(--ease);
+}
+.btn:hover { background: var(--paper-2); }
+.btn:active { transform: scale(0.97); }
+.btn--red { background: var(--plate-red); border-color: var(--plate-red); color: var(--on-plate); }
+.btn--red:hover { background: var(--plate-red); filter: brightness(0.94); }
+.btn--ink { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.btn--ink:hover { background: var(--ink); filter: brightness(1.08); }
+.btn--danger { border-color: var(--danger); color: var(--danger); background: transparent; }
+.btn--blue { background: var(--plate-blue); border-color: var(--plate-blue); color: var(--on-plate); }
+.btn--blue:hover { background: var(--plate-blue); filter: brightness(0.94); }
+.btn--quiet { border-color: var(--ink-3); color: var(--ink-2); background: transparent; }
+.btn--quiet:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-2); }
+.btn--ghost { border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 4px; padding: 0 8px; }
+.btn--sm { min-block-size: 44px; padding: 0 14px; font-size: 14px; }
+.btn--block { inline-size: 100%; }
+.btn--xl { min-block-size: 64px; font-size: 20px; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 1; background: var(--paper-2); border-color: var(--rule); color: var(--ink-3); cursor: not-allowed; transform: none; }
+.btn[disabled]:hover { background: var(--paper-2); }
+.iconbtn { min-block-size: 44px; min-inline-size: 44px; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--card); transition-property: background-color, transform; transition-duration: 150ms; }
+.iconbtn:hover { background: var(--paper-2); }
+.iconbtn:active { transform: scale(0.95); }
+.iconbtn[disabled] { border-color: var(--rule); color: var(--ink-3); cursor: not-allowed; background: transparent; }
+.iconbtn--bare { border-color: transparent; background: transparent; }
+.chip {
+  min-block-size: 44px; min-inline-size: 44px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--ink-3); border-radius: var(--r); background: var(--card); font-weight: 700; font-size: 16px;
+  transition-property: background-color, color, border-color; transition-duration: 150ms;
+}
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip:hover { border-color: var(--ink); }
+
+.field { display: grid; gap: 6px; }
+.field > label, .lbl { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.input {
+  inline-size: 100%; min-block-size: 48px; padding: 8px 12px; background: var(--card); color: var(--ink);
+  border: 1.5px solid var(--ink-3); border-radius: var(--r); font-size: 16px; line-height: 1.5;
+  transition-property: border-color; transition-duration: 150ms;
+}
+.input:hover { border-color: var(--ink); }
+.input:focus-visible { border-color: var(--ink); }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+textarea.input { min-block-size: 76px; }
+.err { color: var(--danger); font-size: 13px; font-weight: 600; }
+
+/* ---------- stamp ---------- */
+.stamp {
+  display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; min-block-size: 24px; border: 1.5px solid var(--ink); border-radius: var(--r);
+  font-size: 12px; font-weight: 700; line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; background: transparent; color: var(--ink);
+}
+#app[lang="fa"] .stamp { font-size: 13px; letter-spacing: 0; text-transform: none; }
+.stamp--blue { background: var(--plate-blue); border-color: var(--plate-blue); color: var(--on-plate); }
+.stamp--yellow { background: var(--plate-yellow); border-color: var(--plate-yellow); color: var(--on-yellow); }
+.stamp--green { background: var(--plate-green); border-color: var(--plate-green); color: var(--on-plate); }
+.stamp--red { background: var(--plate-red); border-color: var(--plate-red); color: var(--on-plate); }
+.stamp--danger { border-color: var(--danger); color: var(--danger); }
+.stamp--mute { border-color: var(--ink-3); color: var(--ink-2); }
+.stamp--lg { font-size: 18px; padding: 8px 18px; min-block-size: 0; outline: 1.5px solid var(--on-plate); outline-offset: -5px; letter-spacing: 0.12em; }
+#app[lang="fa"] .stamp--lg { font-size: 22px; }
+.stamp--yellow.stamp--lg { outline-color: var(--on-yellow); }
+.stamp--land { animation: land 180ms var(--ease) both; transform: rotate(-3deg); }
+@keyframes land { from { transform: scale(1.12) rotate(-3deg); opacity: 0; } to { transform: scale(1) rotate(-3deg); opacity: 1; } }
+
+/* ---------- tally ---------- */
+.tallies { display: inline-flex; align-items: center; gap: 8px; }
+.tally { overflow: visible; flex: none; }
+.tally path { fill: none; stroke: var(--ink); stroke-width: 2.6; stroke-linecap: round; }
+.tally path.fresh { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 220ms var(--ease) forwards; }
+@keyframes draw { from { stroke-dashoffset: 1.05; } to { stroke-dashoffset: 0; } }
+
+/* ---------- training card ---------- */
+.tc { container-type: inline-size; background: var(--card); border: 1.5px solid var(--rule-strong); border-radius: var(--r); overflow: hidden; }
+.tc-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 14px; padding: 10px 14px; background: var(--ink); color: var(--card); font-size: 14px; }
+.tc-head b { font-weight: 800; }
+.tc-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; padding: 12px 14px; border-block-end: 1px solid var(--rule); align-items: baseline; }
+.tc-name { font-weight: 700; min-inline-size: 0; text-wrap: balance; }
+.tc-target { font-size: 14px; color: var(--ink-2); white-space: nowrap; }
+.tc-sets { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 6px; }
+.tc-set { white-space: nowrap; position: relative; min-block-size: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--rule); border-radius: var(--r); font-size: 15px; padding-inline: 14px; }
+.tc-set--done { border-color: var(--ink-3); background: var(--paper); }
+.tc-set--none::after { content: ""; inline-size: 14px; border-block-start: 1.5px solid var(--rule); }
+.tc-stroke { position: absolute; inset-inline-start: 6px; inset-block: 11px; block-size: 22px; inline-size: 6px; overflow: visible; }
+.tc-stroke path { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.tc-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; font-size: 13px; color: var(--ink-2); background: var(--paper-2); }
+.tc-foot b { color: var(--ink); }
+@container (min-width: 540px) {
+  .tc-row { grid-template-columns: minmax(0, 1.15fr) auto minmax(0, 2.5fr); align-items: center; }
+  .tc-sets { grid-column: auto; }
+  .tc-set { padding-inline: 18px 6px; font-size: 14px; white-space: nowrap; }
+}
+
+/* ---------- timetable ---------- */
+.tt { display: grid; gap: 3px; grid-template-columns: 56px repeat(7, minmax(0, 1fr)); align-items: stretch; }
+.tt--mini { grid-template-columns: 26px repeat(7, minmax(0, 1fr)); gap: 3px; }
+.tt-corner { min-block-size: 1px; }
+.tt-day { display: grid; justify-items: center; align-content: end; gap: 2px; padding-block: 4px 6px; text-align: center; border-block-end: 1.5px solid var(--rule-strong); line-height: 1.25; }
+.tt-wd { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.tt-dn { font-size: 20px; line-height: 1.1; }
+.tt-mo { font-size: 12px; color: var(--ink-3); }
+.tt-dn { position: relative; padding-block-end: 6px; }
+.tt-day.is-today .tt-dn::after { content: ""; position: absolute; inset-inline: -2px; inset-block-end: 0; block-size: 3px; background: var(--ink); }
+.tt-day.is-fri .tt-wd, .tt-day.is-fri .tt-dn { color: var(--ink-3); }
+.tt-off { font-size: 12px; font-weight: 700; color: var(--ink-3); }
+.tt--mini .tt-day { padding-block: 2px 4px; }
+.tt--mini .tt-dn { font-size: 15px; padding-block-end: 5px; }
+.tt--mini .tt-wd { font-size: 12px; }
+.tt-hour { display: flex; align-items: center; justify-content: flex-start; font-size: 12px; color: var(--ink-3); padding-inline-end: 4px; }
+.tt--mini .tt-hour { font-size: 12px; justify-content: center; padding: 0; }
+.tt-gap { grid-column: 1 / -1; block-size: 14px; position: relative; }
+.tt--mini .tt-gap { block-size: 8px; }
+.c {
+  position: relative; min-block-size: 50px; display: flex; align-items: center; justify-content: center; border-radius: var(--r);
+  font-size: 12px; font-weight: 700; padding: 0; border: 1px solid transparent; min-inline-size: 0; overflow: hidden;
+  transition-property: background-color, border-color, opacity; transition-duration: 150ms; transition-timing-function: var(--ease);
+}
+.tt--mini .c { min-block-size: 18px; }
+.c--open { border: 1.25px solid var(--ink-3); background-image: var(--hatch); background-color: var(--card); color: var(--ink); }
+button.c--open { cursor: pointer; }
+button.c--open:hover { background-color: var(--paper-2); border-color: var(--ink); }
+.c--taken { background: var(--paper-2); border-color: var(--rule); }
+.c--mine-c { background: var(--plate-blue); color: var(--on-plate); border-color: var(--plate-blue); }
+.c--mine-p { background: var(--plate-yellow); color: var(--on-yellow); border-color: var(--plate-yellow); }
+.c--closed { background: transparent; }
+.c--closed::after { content: ""; inline-size: 3px; block-size: 3px; border-radius: 999px; background: var(--rule); }
+.tt--mini .c--closed::after { display: none; }
+.c--fri { background: var(--paper-2); opacity: 0.6; }
+.c--fri::after { display: none; }
+.is-off { opacity: 0.4; }
+.c--open.is-off, .slotrow--open.is-off { background-image: none; background-color: var(--paper-2); border: 1px solid var(--rule); }
+.c-plus { color: var(--ink-2); opacity: 0; transition: opacity 150ms var(--ease); }
+button.c--open:hover .c-plus, button.c--open:focus-visible .c-plus { opacity: 1; }
+.tt-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; color: var(--ink-2); }
+.tt-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { inline-size: 16px; block-size: 14px; border-radius: var(--r); border: 1px solid var(--rule); display: inline-block; flex: none; }
+.sw--open { border: 1.25px solid var(--ink-3); background-image: var(--hatch); background-color: var(--card); }
+.sw--taken { background: var(--paper-2); }
+.sw--c { background: var(--plate-blue); border-color: var(--plate-blue); }
+.sw--p { background: var(--plate-yellow); border-color: var(--plate-yellow); }
+a.tt-link { display: block; text-decoration: none; color: inherit; border-radius: var(--r); }
+.weeknav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.weeknav .wk { font-weight: 800; text-align: center; flex: 1; text-wrap: balance; }
+.daystrip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; border-block-end: 1px solid var(--rule); }
+.dchip { min-block-size: 64px; display: grid; justify-items: center; align-content: center; gap: 0; padding: 4px 0 6px; border-block-end: 3px solid transparent; margin-block-end: -1px; color: var(--ink-2); line-height: 1.25; }
+.dchip-wd { font-size: 12px; font-weight: 700; }
+.dchip-n { font-size: 22px; line-height: 1.15; color: var(--ink); }
+.dchip-c { font-size: 12px; color: var(--ink-3); min-block-size: 16px; }
+.dchip.is-sel { border-block-end-color: var(--ink); }
+.dchip.is-fri .dchip-n, .dchip.is-fri .dchip-wd { color: var(--ink-3); }
+.dchip.is-past { opacity: 0.7; }
+.slotlist { display: grid; gap: 8px; }
+.slotrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-block-size: 56px; padding: 8px 14px; border-radius: var(--r); border: 1px solid var(--rule); text-align: start; inline-size: 100%; background: transparent; }
+.slotrow .time { font-weight: 800; font-size: 18px; }
+.slotrow .st { font-size: 13px; font-weight: 700; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+.slotrow--open { border: 1.25px solid var(--ink-3); background-image: var(--hatch); background-color: var(--card); }
+button.slotrow--open:hover { background-color: var(--paper-2); border-color: var(--ink); }
+.slotrow--taken { background: var(--paper-2); }
+.slotrow--mine-c { background: var(--plate-blue); color: var(--on-plate); border-color: var(--plate-blue); }
+.slotrow--mine-c .st, .slotrow--mine-p .st { color: inherit; }
+.slotrow--mine-p { background: var(--plate-yellow); color: var(--on-yellow); border-color: var(--plate-yellow); }
+.dayoff { padding: 24px 16px; border: 1px dashed var(--ink-3); border-radius: var(--r); background: var(--paper-2); color: var(--ink-2); font-weight: 700; }
+
+/* ---------- bookings list ---------- */
+.bk { display: grid; gap: 8px; padding: 14px 16px; border-block-end: 1px solid var(--rule); }
+.bk:last-child { border-block-end: 0; }
+.bk h3 { font-size: 16px; font-weight: 800; line-height: 1.4; }
+.bk-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.bk-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.bk.is-past .stamp { opacity: 1; }
+.bk:focus-visible { outline-offset: -2px; }
+.ask { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border: 1.5px solid var(--danger); border-radius: var(--r); }
+.ask b { font-weight: 800; color: var(--danger); }
+
+/* ---------- sheet ---------- */
+.scrim { position: fixed; inset: 0; z-index: 100; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; animation: fadein 150ms var(--ease) both; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.sheet {
+  inline-size: 100%; max-inline-size: 520px; max-block-size: min(90vh, 100dvh - 16px); overflow: auto; overscroll-behavior: contain;
+  background: var(--card); color: var(--ink); border: 1.5px solid var(--rule-strong); border-block-end: 0;
+  border-start-start-radius: var(--r); border-start-end-radius: var(--r);
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom, 0px)); animation: sheetin 180ms var(--ease) both;
+  display: grid; gap: 16px; align-content: start;
+}
+@keyframes sheetin { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet-grab { inline-size: 40px; block-size: 4px; border-radius: 999px; background: var(--rule); margin: 4px auto 0; }
+.sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sheet-sum { display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--paper); }
+.sheet-sum .big { font-size: 22px; font-weight: 800; line-height: 1.3; }
+.policy { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; color: var(--ink-2); }
+.sent { display: grid; justify-items: start; gap: 12px; padding-block: 16px 8px; }
+@media (min-width: 720px) {
+  .scrim { align-items: center; }
+  .sheet { border: 1.5px solid var(--rule-strong); border-radius: var(--r); }
+}
+.results { display: grid; max-block-size: 46vh; overflow: auto; border: 1px solid var(--rule); border-radius: var(--r); background: var(--paper); }
+.res { display: grid; gap: 2px; text-align: start; padding: 10px 14px; min-block-size: 56px; border-block-end: 1px solid var(--rule); inline-size: 100%; }
+.res:last-child { border-block-end: 0; }
+.res:hover { background: var(--paper-2); }
+.res b { font-weight: 700; }
+.res .sub { font-size: 13px; color: var(--ink-2); }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-block-start: 2px; }
+.tag { font-size: 12px; font-weight: 700; padding: 0 6px; border: 1px solid var(--ink-3); border-radius: var(--r); color: var(--ink-2); line-height: 1.6; }
+
+/* ---------- landing ---------- */
+.lp { display: grid; gap: 48px; }
+.lp-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 4px; }
+.hero { display: grid; gap: 32px; }
+.hero-name { font-size: clamp(64px, 19vw, 96px); font-weight: 900; line-height: 1.05; display: grid; margin-block: 4px 16px; }
+#app[lang="fa"] .hero-name { line-height: 1.25; }
+#app[lang="en"] .hero-name { font-stretch: 112%; font-weight: 800; letter-spacing: -0.02em; font-size: clamp(52px, 15.5vw, 84px); line-height: 0.98; }
+.hero-name span { display: block; }
+.lede { font-size: 20px; line-height: 1.6; max-inline-size: 30ch; text-wrap: pretty; }
+#app[lang="fa"] .lede { line-height: 1.85; font-size: 19px; }
+.cta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-block-start: 24px; }
+.count { display: inline-flex; align-items: baseline; gap: 8px; }
+.count .num { font-size: 40px; line-height: 1; }
+.count span:last-child { font-size: 14px; color: var(--ink-2); max-inline-size: 12ch; line-height: 1.35; }
+.board { padding: 14px 14px 12px; display: grid; gap: 12px; align-content: start; }
+.board-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.board-head .sl { margin: 0; }
+.steps { display: grid; border-block-start: 1.5px solid var(--rule-strong); }
+.step { display: grid; grid-template-columns: 56px 1fr; gap: 4px 12px; padding-block: 16px; border-block-end: 1px solid var(--rule); align-items: baseline; }
+.step .n { font-size: 40px; line-height: 1; color: var(--ink); }
+.step h3 { font-size: 19px; font-weight: 800; line-height: 1.4; }
+.step p { grid-column: 2; color: var(--ink-2); text-wrap: pretty; }
+.ledger { inline-size: 100%; border-collapse: collapse; }
+.ledger th, .ledger td { padding: 12px 0; text-align: start; vertical-align: baseline; border-block-end: 1px solid var(--rule); }
+.ledger th { font-weight: 700; color: var(--ink-2); padding-inline-end: 16px; inline-size: 38%; }
+.ledger td { font-weight: 600; }
+.ledger tr:first-child th, .ledger tr:first-child td { border-block-start: 1.5px solid var(--rule-strong); }
+.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-block: 24px 8px; border-block-start: 1.5px solid var(--rule-strong); }
+.foot .seg { border-color: var(--ink); }
+.foot .seg button { color: var(--ink-2); }
+.foot .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.lp-cols { display: grid; gap: 48px; grid-template-areas: "steps" "card" "hours"; }
+.a-steps { grid-area: steps; }
+.a-card { grid-area: card; }
+.a-hours { grid-area: hours; }
+@media (min-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: end; }
+  .hero-name { font-size: clamp(96px, 9.5vw, 132px); }
+  #app[lang="en"] .hero-name { font-size: clamp(80px, 8vw, 112px); }
+  .lp-cols { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); grid-template-areas: "steps card" "hours card"; gap: 56px 64px; align-items: start; }
+  .lp { gap: 72px; }
+}
+
+/* ---------- stepper / set logger ---------- */
+.steppers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stepper { container-type: inline-size; display: grid; gap: 8px; min-inline-size: 0; }
+.stepper-label { font-size: 13px; font-weight: 700; color: var(--ink-2); display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.stepper-val {
+  inline-size: 100%; padding: 2px 0 4px; border: 0; border-block-end: 3px solid var(--ink); border-radius: 0; background: transparent; color: var(--ink);
+  text-align: center; font-size: clamp(44px, 36cqi, 72px); line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; min-inline-size: 0;
+}
+#app[lang="en"] .stepper-val { font-stretch: 75%; font-weight: 700; }
+#app[lang="fa"] .stepper-val { font-weight: 800; line-height: 1.3; }
+.stepper-val.long { font-size: clamp(36px, 28cqi, 58px); }
+.stepper-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sbtn { min-block-size: 56px; min-inline-size: 56px; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--card); transition-property: background-color, color, transform; transition-duration: 120ms; }
+.sbtn .ic { inline-size: 28px; block-size: 28px; stroke-width: 2; }
+.sbtn:hover { background: var(--paper-2); }
+.sbtn:active { background: var(--ink); color: var(--paper); transform: scale(0.97); }
+.stepper--sm { gap: 6px; container-type: normal; }
+.stepper-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: stretch; }
+.stepper--sm .stepper-val { font-size: 20px; border: 1.5px solid var(--ink); border-radius: 0; padding: 0 2px; line-height: 1.2; min-block-size: 44px; background: var(--card); }
+#app[lang="en"] .stepper--sm .stepper-val { font-size: 22px; }
+.stepper--sm .stepper-val:focus-visible { outline-offset: -1px; }
+.stepper--sm .sbtn { min-block-size: 44px; min-inline-size: 44px; border-radius: 0; }
+.stepper--sm .stepper-row > .sbtn:first-child { border-start-start-radius: var(--r); border-end-start-radius: var(--r); }
+.stepper--sm .stepper-row > .sbtn:last-child { border-start-end-radius: var(--r); border-end-end-radius: var(--r); }
+.stepper--sm .sbtn .ic { inline-size: 18px; block-size: 18px; }
+.stepper--sm .stepper-label { font-size: 12px; }
+
+.bb { display: grid; gap: 8px; padding: 12px 12px 10px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--card); }
+.bb .bbsvg { inline-size: 100%; block-size: auto; display: block; direction: ltr; }
+.bb-bar { fill: var(--ink-2); }
+.bb-sleeve { fill: var(--ink-3); }
+.bb-collar { fill: var(--ink); }
+.bb-knurl { stroke: var(--ink); stroke-width: 7; stroke-dasharray: 1.2 2.6; fill: none; }
+.pl { stroke: var(--ink); stroke-width: 1.25; }
+.pl--red { fill: var(--plate-red); }
+.pl--blue { fill: var(--plate-blue); }
+.pl--yellow { fill: var(--plate-yellow); }
+.pl--green { fill: var(--plate-green); }
+.pl--white { fill: var(--plate-white); }
+.pl--silver { fill: var(--ink-3); }
+.bb-info { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.bb-side { font-weight: 800; font-size: 15px; }
+.pchips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.pchip { min-inline-size: 30px; padding: 0 8px; border: 1.25px solid var(--ink); border-radius: var(--r); font-size: 13px; font-weight: 800; line-height: 1.7; text-align: center; }
+.pchip--red { background: var(--plate-red); color: var(--on-plate); border-color: var(--plate-red); }
+.pchip--blue { background: var(--plate-blue); color: var(--on-plate); border-color: var(--plate-blue); }
+.pchip--yellow { background: var(--plate-yellow); color: var(--on-yellow); border-color: var(--plate-yellow); }
+.pchip--green { background: var(--plate-green); color: var(--on-plate); border-color: var(--plate-green); }
+.pchip--white { background: var(--plate-white); color: #141614; }
+.pchip--silver { background: var(--ink-3); color: var(--paper); border-color: var(--ink-3); }
+.bb-note { font-size: 14px; color: var(--ink-2); display: flex; gap: 8px; align-items: flex-start; }
+.bb-note .ic { margin-block-start: 3px; }
+.bb-note.warn { color: var(--ink); font-weight: 600; }
+
+/* ---------- workout ---------- */
+.wk-head { display: grid; gap: 8px; padding-block: 12px 12px; }
+.wk-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; color: var(--ink-2); align-items: center; }
+.wk-meta .num { color: var(--ink); font-size: 16px; }
+.segs { display: flex; gap: 3px; align-items: center; }
+.segs i { flex: 1 1 0; block-size: 6px; border-radius: 1px; background: var(--paper-2); border: 1px solid var(--rule); }
+.segs i.on { background: var(--plate-green); border-color: var(--plate-green); }
+.segs i.cur { border-color: var(--ink); }
+.segs i.gap { flex: 0 0 6px; background: transparent; border: 0; }
+.exstrip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; scroll-snap-type: x proximity; scrollbar-width: thin; margin-inline: -2px; }
+.exchip { flex: none; scroll-snap-align: center; min-block-size: 56px; min-inline-size: 118px; padding: 6px 12px; display: grid; gap: 0; align-content: center; text-align: start; border: 1.5px solid var(--ink-3); border-radius: var(--r); background: var(--card); line-height: 1.35; transition-property: background-color, border-color; transition-duration: 150ms; }
+.exchip b { font-size: 14px; font-weight: 700; }
+.exchip small { font-size: 12px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 4px; }
+.exchip[aria-current="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.exchip[aria-current="true"] small { color: var(--paper-2); }
+.exchip.done small { color: var(--plate-green); font-weight: 700; }
+.exchip.done[aria-current="true"] small { color: var(--paper-2); }
+.excard { display: grid; gap: 16px; padding: 16px; }
+.ex-title { display: grid; gap: 2px; }
+.ex-title h2 { font-size: 22px; line-height: 1.3; font-weight: 800; }
+#app[lang="en"] .ex-title h2 { font-stretch: 112%; font-size: 20px; }
+.ex-title .alt { font-size: 14px; color: var(--ink-3); }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-block: 1px solid var(--rule); }
+.fact { padding: 8px 0; display: grid; gap: 0; }
+.fact + .fact { padding-inline-start: 12px; border-inline-start: 1px solid var(--rule); }
+.fact .k { font-size: 12px; font-weight: 700; color: var(--ink-3); }
+.fact .v { font-size: 17px; font-weight: 700; line-height: 1.4; }
+.rpe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.rpe .lbl { inline-size: 100%; }
+.rest { display: grid; grid-template-columns: auto 1fr; gap: 12px 16px; align-items: center; padding: 14px; border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--card); }
+.rest.is-done { border-color: var(--plate-green); }
+.ring { position: relative; inline-size: 68px; block-size: 68px; flex: none; }
+.ring svg { inline-size: 100%; block-size: 100%; transform: rotate(-90deg); }
+.ring .trk { fill: none; stroke: var(--paper-2); stroke-width: 6; }
+.ring .bar { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: butt; }
+.rest.is-done .ring .bar { stroke: var(--plate-green); }
+.ring .t { position: absolute; inset: 0; display: grid; place-items: center; font-size: 18px; }
+.rest-txt { display: grid; gap: 0; }
+.rest-txt b { font-size: 16px; }
+.rest-btns { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sets { display: grid; border: 1.5px solid var(--rule-strong); border-radius: var(--r); background: var(--card); }
+.sets-head, .setrow { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; padding: 10px 14px; }
+.sets-head { font-size: 12px; font-weight: 700; color: var(--ink-3); border-block-end: 1.5px solid var(--rule-strong); }
+.setrow { border-block-end: 1px solid var(--rule); min-block-size: 52px; }
+.setrow:last-child { border-block-end: 0; }
+.setrow .no { font-size: 20px; }
+.setrow .rw { font-size: 22px; line-height: 1.2; }
+.setrow .rw small { font-size: 13px; color: var(--ink-3); font-weight: 600; margin-inline-start: 6px; }
+.setrow .e1 { font-size: 15px; color: var(--ink-2); text-align: end; display: grid; gap: 2px; justify-items: end; }
+.setrow.fresh { animation: rowin 220ms var(--ease) both; }
+@keyframes rowin { from { background: var(--paper-2); } to { background: transparent; } }
+.sets-tally { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; min-block-size: 52px; border-block-end: 1px solid var(--rule); }
+.sets-empty { padding: 16px 14px; color: var(--ink-2); font-size: 14px; }
+.sets-foot { padding: 8px 14px; font-size: 12px; color: var(--ink-3); border-block-start: 1px solid var(--rule); }
+.donebox { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border: 1.5px solid var(--plate-green); border-radius: var(--r); }
+.donebox b { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ---------- charts ---------- */
+.chartbox { padding: 14px 12px 8px; display: grid; gap: 8px; }
+.chart svg { display: block; inline-size: 100%; block-size: auto; direction: ltr; overflow: visible; }
+.ch-grid { stroke: var(--rule); stroke-width: 1; }
+.ch-base { stroke: var(--rule-strong); stroke-width: 1.5; }
+.ch-txt { fill: var(--ink-3); font-size: 12px; font-family: inherit; font-variant-numeric: tabular-nums; }
+.ch-txt--ink { fill: var(--ink); font-weight: 800; font-size: 13px; }
+.ch-line { fill: none; stroke: var(--ink); stroke-width: 2.25; stroke-linejoin: round; stroke-linecap: round; }
+.ch-dot { fill: var(--card); stroke: var(--ink); stroke-width: 1.75; }
+.ch-end { fill: var(--plate-red); stroke: var(--card); stroke-width: 2.5; }
+.ch-end--ink { fill: var(--ink); }
+.ch-ring { fill: none; stroke: var(--plate-red); stroke-width: 1.5; }
+.ch-bar { fill: var(--ink-2); }
+.ch-bar--cur { fill: url(#vhatch); stroke: var(--ink); stroke-width: 1.5; }
+.ch-pbg { fill: var(--card); }
+.ch-pline { stroke: var(--ink); stroke-width: 2; }
+.ch-bar--max { fill: var(--ink); }
+.pick { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; margin-inline: -2px; scrollbar-width: thin; }
+.pick .chip { flex: none; font-size: 14px; }
+.prs { display: grid; }
+.pr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: baseline; padding: 12px 16px; border-block-end: 1px solid var(--rule); }
+.pr:last-child { border-block-end: 0; }
+.pr .k { font-weight: 700; }
+.pr .d { grid-column: 1; font-size: 13px; color: var(--ink-3); }
+.pr .v { grid-column: 2; grid-row: 1 / span 2; font-size: 30px; line-height: 1; text-align: end; }
+.pr .v small { font-size: 14px; font-weight: 600; color: var(--ink-2); margin-inline-start: 4px; }
+
+/* ---------- coach ---------- */
+.coach { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.rail { display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; border-block-end: 1.5px solid var(--rule-strong); margin-block-end: 16px; padding-block-end: 0; }
+.rail::-webkit-scrollbar { display: none; }
+.rail-brand { display: none; }
+.rail-who { display: none; }
+.ritem { flex: none; min-block-size: 48px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; font-weight: 700; font-size: 14px; color: var(--ink-2); text-decoration: none; white-space: nowrap; border-block-end: 3px solid transparent; margin-block-end: -1.5px; background: none; text-align: start; }
+.ritem[aria-current="page"] { color: var(--ink); border-block-end-color: var(--ink); }
+.ritem:hover { color: var(--ink); }
+.ritem--sub { font-weight: 600; font-size: 13px; }
+.ritem small { font-size: 11px; font-weight: 700; color: var(--ink-3); border: 1px solid var(--rule); border-radius: var(--r); padding: 0 4px; line-height: 1.5; }
+.cmain { display: grid; gap: 24px; min-inline-size: 0; align-content: start; }
+.dgrid { display: grid; gap: 24px; align-items: start; }
+.dgrid > .dcol { display: contents; }
+.o-agenda { order: 1; }
+.o-req { order: 2; }
+.o-nudge { order: 3; }
+.o-feed { order: 4; }
+.panel { padding: 16px; display: grid; gap: 12px; align-content: start; }
+.panel > .sl { margin-block-end: 0; }
+.panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.panel-head .sl { margin: 0; }
+.heat { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.hday { display: grid; justify-items: center; gap: 2px; padding: 8px 2px 6px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--card); text-align: center; position: relative; min-inline-size: 0; }
+.hday .wd { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.hday .wd-l { display: none; }
+@media (min-width: 720px) { .hday .wd-l { display: inline; } .hday .wd-n { display: none; } }
+.hday .big { font-size: 28px; line-height: 1.1; }
+.hday .of { font-size: 12px; color: var(--ink-3); }
+.hday .meter { inline-size: 100%; block-size: 6px; background: var(--paper-2); margin-block-start: 4px; position: relative; overflow: hidden; border-radius: 1px; }
+.hday .meter i { position: absolute; inset-block: 0; inset-inline-start: 0; background: var(--plate-blue); }
+.hday.is-today { border-color: var(--ink); border-width: 1.5px; }
+.hday.is-fri { background: var(--paper-2); }
+.hday.is-fri .big { font-size: 14px; padding-block: 8px 6px; color: var(--ink-3); }
+.hday.is-fri .meter { background-image: var(--hatch); background-color: transparent; }
+.tl { position: relative; display: grid; }
+.tl-item { display: grid; grid-template-columns: 58px 14px minmax(0, 1fr); gap: 0 10px; position: relative; padding-block: 8px; min-block-size: 60px; }
+.tl-time { font-size: 18px; padding-block-start: 2px; text-align: start; }
+.tl-dot { position: relative; }
+.tl-dot::before { content: ""; position: absolute; inset-block: -8px; inset-inline-start: 6px; border-inline-start: 1.5px solid var(--rule-strong); }
+.tl-item:first-child .tl-dot::before { inset-block-start: 12px; }
+.tl-item:last-child .tl-dot::before { inset-block-end: calc(100% - 20px); }
+.tl-dot::after { content: ""; position: absolute; inset-block-start: 8px; inset-inline-start: 1px; inline-size: 12px; block-size: 12px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--r); }
+.tl-item.is-done .tl-dot::after { background: var(--plate-green); border-color: var(--plate-green); }
+.tl-item.is-live .tl-dot::after { background: var(--ink); border-color: var(--ink); }
+.tl-item.is-done .tl-name { color: var(--ink-2); }
+.tl-body { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding-block-end: 6px; min-inline-size: 0; }
+.tl-name { font-weight: 700; display: grid; gap: 0; min-inline-size: 0; }
+.tl-act { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs button { min-block-size: 44px; padding: 0 14px; border: 1.5px solid var(--ink-3); border-radius: var(--r); font-weight: 700; font-size: 14px; background: var(--card); }
+.tabs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.req { display: grid; gap: 8px; padding-block: 12px; border-block-end: 1px solid var(--rule); }
+.req:first-of-type { border-block-start: 1px solid var(--rule); }
+.req-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.req-top b { font-weight: 800; }
+.req-note { font-size: 14px; color: var(--ink-2); }
+.req-btns { display: flex; gap: 8px; }
+.req-btns .btn { flex: 1 1 0; }
+.nudge { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 8px; border-block-end: 1px solid var(--rule); min-block-size: 56px; }
+.nudge .d { font-size: 26px; line-height: 1; }
+.nudge .d small { font-size: 13px; color: var(--ink-3); font-weight: 600; margin-inline-start: 4px; }
+.feed li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; align-items: baseline; padding-block: 10px; border-block-end: 1px solid var(--rule); }
+.feed li:first-child { border-block-start: 1px solid var(--rule); }
+.feed .who { font-weight: 700; }
+.feed .what { font-size: 14px; color: var(--ink-2); grid-column: 1; }
+.feed .best { grid-column: 2; grid-row: 1 / span 2; text-align: end; font-size: 18px; line-height: 1.2; display: grid; justify-items: end; gap: 2px; }
+.feed .best small { font-size: 12px; color: var(--ink-3); font-weight: 600; }
+.status { font-size: 14px; color: var(--ink-2); min-block-size: 22px; }
+.infull { display: grid; gap: 12px; justify-items: start; padding: 24px 16px; border: 1.5px dashed var(--ink-3); border-radius: var(--r); background: var(--card); max-inline-size: 560px; }
+.infull .t2 { font-size: 20px; }
+@media (min-width: 900px) {
+  .coach { grid-template-columns: 224px minmax(0, 1fr); gap: 40px; }
+  .rail { flex-direction: column; align-items: stretch; gap: 2px; overflow: visible; border-block-end: 0; border-inline-end: 1.5px solid var(--rule-strong); margin: 0; padding-inline-end: 16px; position: sticky; inset-block-start: calc(var(--chrome-h) + 24px); min-block-size: 520px; align-self: start; }
+  .rail-brand { display: flex; flex-direction: column; gap: 2px; padding-block: 4px 20px; }
+  .rail-brand .wordmark { font-size: 24px; }
+  .rail-who { display: block; margin-block-start: auto; padding-block-start: 16px; font-size: 13px; color: var(--ink-3); }
+  .ritem { border-block-end: 0; border-inline-start: 3px solid transparent; margin: 0; min-block-size: 44px; padding: 0 12px; }
+  .ritem[aria-current="page"] { border-inline-start-color: var(--ink); background: var(--card); }
+  .ritem--sub { margin-inline-start: 16px; }
+}
+@media (min-width: 1100px) {
+  .dgrid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px; }
+  .dgrid > .dcol { display: grid; gap: 24px; align-content: start; }
+  .dgrid .full { grid-column: 1 / -1; }
+}
+
+/* ---------- builder ---------- */
+.bld { display: grid; gap: 24px; align-items: start; }
+.bdays { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.bdays .chip { min-inline-size: 76px; }
+.brow { display: grid; gap: 12px; padding: 12px 14px 14px; background: var(--card); border: 1.5px solid var(--rule-strong); border-radius: var(--r); }
+.brow.fresh { animation: rowflash 700ms var(--ease) both; }
+@keyframes rowflash { from { background: var(--paper-2); } to { background: var(--card); } }
+.brow-top { display: flex; align-items: center; gap: 8px; }
+.grip { color: var(--ink-3); cursor: grab; display: inline-flex; align-items: center; justify-content: center; inline-size: 24px; flex: none; }
+.brow-no { font-size: 18px; inline-size: 24px; text-align: center; flex: none; }
+.brow-name { flex: 1 1 auto; min-inline-size: 0; display: grid; gap: 0; font-weight: 800; line-height: 1.4; }
+.brow-name small { font-weight: 500; font-size: 13px; color: var(--ink-3); }
+.brow-btns { display: flex; gap: 4px; flex: none; }
+.brow { container-type: inline-size; }
+.bfields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@container (min-width: 600px) { .bfields { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.bfields .wide { grid-column: 1 / -1; }
+.hint { font-size: 12px; color: var(--ink-3); }
+.pv { position: relative; }
+.empty { padding: 24px 16px; border: 1.5px dashed var(--ink-3); border-radius: var(--r); display: grid; gap: 12px; justify-items: start; color: var(--ink-2); }
+.savebar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.crumbs { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 14px; color: var(--ink-3); }
+.crumbs a { color: var(--ink-2); display: inline-flex; align-items: center; justify-content: center; min-block-size: 44px; min-inline-size: 44px; }
+.bk > .btn { justify-self: start; }
+.tlink { display: inline-flex; align-items: center; min-block-size: 44px; text-decoration: underline; text-underline-offset: 4px; }
+@media (min-width: 1100px) {
+  .bld { grid-template-columns: minmax(0, 1fr) 380px; gap: 32px; }
+  .pv { position: sticky; inset-block-start: calc(var(--chrome-h) + 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-delay: 0ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+</style>
+<div id="app" lang="fa" dir="rtl">
+  <header class="chrome">
+    <div class="chrome-in gutter">
+      <div class="pv-brand"><b id="pv-title">دفتر</b><span class="pv-note" id="pv-note"></span></div>
+      <nav class="pv-nav" id="pv-nav" aria-label="Preview screens"></nav>
+      <div class="pv-ctl">
+        <div class="seg" role="group" aria-label="Language / زبان">
+          <button type="button" id="lang-fa" data-act="lang" data-lang="fa" lang="fa" aria-pressed="true">فارسی</button>
+          <button type="button" id="lang-en" data-act="lang" data-lang="en" lang="en" aria-pressed="false">English</button>
+        </div>
+        <button type="button" class="iconbtn" id="theme-btn" data-act="theme" aria-pressed="false"></button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap gutter" id="main-wrap">
+    <p class="pv-note-m" id="pv-note-m"></p>
+    <main id="main">
+      <section class="screen" id="screen-landing" hidden></section>
+      <section class="screen" id="screen-book" hidden></section>
+      <section class="screen" id="screen-workout" hidden></section>
+      <section class="screen" id="screen-progress" hidden></section>
+      <section class="screen" id="screen-coach" hidden></section>
+      <section class="screen" id="screen-builder" hidden></section>
+    </main>
+  </div>
+  <div id="sheet-root"></div>
+  <div id="live" class="sr-only" role="status" aria-live="polite"></div>
+</div>
+<script>
+(function () {
+'use strict';
+
+/* ==========================================================================
+   Helpers
+   ========================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+const r1 = (n) => Math.round(n * 10) / 10;
+const r2 = (n) => Math.round(n * 100) / 100;
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } }
+};
+
+let lang = 'fa';
+const L = (f, e) => (lang === 'fa' ? f : e);
+const isFa = () => lang === 'fa';
+const rtl = () => lang === 'fa';
+/* separator between a label and a date/number: Persian comma in fa (the Persian zero is itself a dot), middle dot in en */
+const SEP = () => (lang === 'fa' ? '،' : ' ·');
+
+/* ---------- digits & number formatting ---------- */
+const PERSIAN = '۰۱۲۳۴۵۶۷۸۹';
+function toLatinDigits(s) {
+  return String(s == null ? '' : s)
+    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06F0))
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660));
+}
+/* Accepts 30, ۳۰, ٣٠, 27.5, 27,5, ۲۷٫۵ ... returns NaN when there is nothing numeric. */
+function parseNum(s) {
+  let t = toLatinDigits(s).replace(/[٬\s]/g, '').replace(/[٫,،\/]/g, '.').replace(/[^\d.\-]/g, '');
+  const i = t.indexOf('.');
+  if (i >= 0) t = t.slice(0, i + 1) + t.slice(i + 1).replace(/\./g, '');
+  if (t === '' || t === '.' || t === '-') return NaN;
+  return parseFloat(t);
+}
+const NF = {};
+function fmt(n, o) {
+  if (!isFinite(n)) return '—';
+  const k = lang + (o ? JSON.stringify(o) : '');
+  const f = NF[k] || (NF[k] = new Intl.NumberFormat(lang === 'fa' ? 'fa-IR' : 'en-US', Object.assign({ useGrouping: false, maximumFractionDigits: 2 }, o)));
+  return f.format(n);
+}
+const fmtG = (n) => fmt(n, { useGrouping: true, maximumFractionDigits: 0 });
+const pad2 = (n) => fmt(n, { minimumIntegerDigits: 2 });
+const hm = (h, m = 0) => pad2(h) + ':' + pad2(m);
+const fdig = (s) => (lang === 'fa' ? String(s).replace(/\d/g, (d) => PERSIAN[d]) : String(s));
+const kgU = () => L('کیلو', 'kg');
+
+/* ---------- time: all wall-clock logic is Asia/Tehran (UTC+3:30, no DST) ---------- */
+const TZ = 'Asia/Tehran';
+const OFF = 12600000;
+const DAY = 86400000;
+const HOUR = 3600000;
+const todayNum = () => Math.floor((Date.now() + OFF) / DAY);
+const dow = (d) => (((d + 4) % 7) + 7) % 7; /* 0 = Sunday */
+const weekStart = (d) => (isFa() ? d - ((dow(d) + 1) % 7) : d - ((dow(d) + 6) % 7));
+const inst = (d, min) => d * DAY + min * 60000 - OFF;
+const startOf = (d, h) => inst(d, h * 60);
+const dayOfInst = (ms) => Math.floor((ms + OFF) / DAY);
+const isFriday = (d) => dow(d) === 5;
+const DF = {};
+function dfmt(d, o) {
+  const k = lang + JSON.stringify(o);
+  const f = DF[k] || (DF[k] = new Intl.DateTimeFormat(isFa() ? 'fa-IR' : 'en-GB', Object.assign({ timeZone: TZ, calendar: isFa() ? 'persian' : 'gregory' }, o)));
+  return f.format(new Date(d * DAY + 12 * HOUR - OFF));
+}
+const dWeekday = (d) => dfmt(d, { weekday: 'long' });
+const dWeekdayShort = (d) => (isFa() ? dfmt(d, { weekday: 'narrow' }) : dfmt(d, { weekday: 'short' }));
+const dNum = (d) => dfmt(d, { day: 'numeric' });
+const dMonth = (d) => dfmt(d, { month: 'long' });
+const dShort = (d) => dfmt(d, { day: 'numeric', month: 'short' });
+const dLong = (d) => dfmt(d, { weekday: 'long', day: 'numeric', month: 'long' });
+const dFull = (d) => dfmt(d, { day: 'numeric', month: 'long', year: 'numeric' });
+const RTF = {};
+function ago(ms) {
+  const k = lang;
+  const f = RTF[k] || (RTF[k] = new Intl.RelativeTimeFormat(isFa() ? 'fa' : 'en', { numeric: 'auto' }));
+  const m = Math.max(0, Math.round((Date.now() - ms) / 60000));
+  if (m < 1) return L('همین الان', 'just now');
+  if (m < 60) return f.format(-m, 'minute');
+  if (m < 1440) return f.format(-Math.round(m / 60), 'hour');
+  return f.format(-Math.round(m / 1440), 'day');
+}
+
+/* ---------- people & copy constants ---------- */
+const COACH = { fa: 'آرش کمالی', en: 'Arash Kamali' };
+const STUDIO = { fa: 'باشگاه قدرتی کمالی، سعادت‌آباد، تهران', en: 'Kamali Strength, Saadat Abad, Tehran' };
+const COACH_PHONE = '0912 000 0000';
+const PEOPLE = {
+  sara: { fa: 'سارا محمدی', en: 'Sara Mohammadi' },
+  nima: { fa: 'نیما رضایی', en: 'Nima Rezaei' },
+  maryam: { fa: 'مریم احمدی', en: 'Maryam Ahmadi' },
+  ali: { fa: 'علی کریمی', en: 'Ali Karimi' },
+  parisa: { fa: 'پریسا نوری', en: 'Parisa Nouri' },
+  hamed: { fa: 'حامد صادقی', en: 'Hamed Sadeghi' }
+};
+const OTHERS = ['nima', 'maryam', 'ali', 'parisa', 'hamed'];
+const nm = (id) => PEOPLE[id][lang];
+const initials = (id) => (isFa() ? PEOPLE[id].fa.split(' ').map((w) => w[0]).join('‌') : PEOPLE[id].en.split(' ').map((w) => w[0]).join(''));
+
+/* ---------- icons: 24px, 1.75 stroke, lucide-style, drawn inline ---------- */
+const IC = {
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  minus: '<path d="M5 12h14"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  chevR: '<path d="m9 18 6-6-6-6"/>',
+  chevL: '<path d="m15 18-6-6 6-6"/>',
+  arrowUp: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+  arrowDown: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+  arrowR: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+  calCheck: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+  pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  grip: '<circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  dash: '<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  gear: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  dumbbell: '<path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/>',
+  trend: '<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+  repeat: '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+  timer: '<path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/>',
+  list: '<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>',
+  play: '<path d="M6 3 20 12 6 21Z"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  save: '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>'
+};
+const ico = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${IC[n]}</svg>`;
+const icoD = (n) => ico(n, 'flip');
+
+/* ==========================================================================
+   Exercise library (25 of the 1,324 in data/exercises, real Persian names)
+   ========================================================================== */
+const EX = [ { "id": "0025", "en": "barbell bench press", "fa": "پرس سینه هالتر", "eq": "barbell", "bp": "chest" },
+ { "id": "0314", "en": "dumbbell incline bench press", "fa": "پرس بالاسینه دمبل", "eq": "dumbbell", "bp": "chest" },
+ { "id": "0047", "en": "barbell incline bench press", "fa": "پرس بالاسینه هالتر", "eq": "barbell", "bp": "chest" },
+ { "id": "0308", "en": "dumbbell fly", "fa": "قفسه سینه دمبل", "eq": "dumbbell", "bp": "chest" },
+ { "id": "0405", "en": "dumbbell seated shoulder press", "fa": "پرس سرشانه دمبل نشسته", "eq": "dumbbell", "bp": "shoulders" },
+ { "id": "0091", "en": "barbell seated overhead press", "fa": "پرس سرشانه هالتر نشسته", "eq": "barbell", "bp": "shoulders" },
+ { "id": "0334", "en": "dumbbell lateral raise", "fa": "نشر از جانب دمبل", "eq": "dumbbell", "bp": "shoulders" },
+ { "id": "0201", "en": "cable pushdown", "fa": "پشت‌بازو سیم‌کش", "eq": "cable", "bp": "arms" },
+ { "id": "0031", "en": "barbell curl", "fa": "جلوبازو هالتر", "eq": "barbell", "bp": "arms" },
+ { "id": "0313", "en": "dumbbell hammer curl", "fa": "جلوبازو دمبل چکشی", "eq": "dumbbell", "bp": "arms" },
+ { "id": "0198", "en": "cable pulldown", "fa": "لت از جلو سیم‌کش", "eq": "cable", "bp": "back" },
+ { "id": "0027", "en": "barbell bent over row", "fa": "زیربغل هالتر خم", "eq": "barbell", "bp": "back" },
+ { "id": "0861", "en": "cable seated row", "fa": "زیربغل سیم‌کش نشسته", "eq": "cable", "bp": "back" },
+ { "id": "0652", "en": "pull-up", "fa": "بارفیکس", "eq": "body", "bp": "back" },
+ { "id": "1326", "en": "chin-up", "fa": "بارفیکس دست‌برعکس", "eq": "body", "bp": "back" },
+ { "id": "0043", "en": "barbell full squat", "fa": "اسکات کامل هالتر", "eq": "barbell", "bp": "legs" },
+ { "id": "0042", "en": "barbell front squat", "fa": "اسکات از جلو هالتر", "eq": "barbell", "bp": "legs" },
+ { "id": "0739", "en": "sled 45° leg press", "fa": "پرس پا دستگاه اسلد ۴۵ درجه", "eq": "machine", "bp": "legs" },
+ { "id": "0585", "en": "lever leg extension", "fa": "جلوپا دستگاه", "eq": "machine", "bp": "legs" },
+ { "id": "0599", "en": "lever seated leg curl", "fa": "پشت‌پا نشسته دستگاه", "eq": "machine", "bp": "legs" },
+ { "id": "0605", "en": "lever standing calf raise", "fa": "ساق پا ایستاده دستگاه", "eq": "machine", "bp": "legs" },
+ { "id": "0032", "en": "barbell deadlift", "fa": "ددلیفت هالتر", "eq": "barbell", "bp": "legs" },
+ { "id": "0085", "en": "barbell romanian deadlift", "fa": "ددلیفت رومانیایی هالتر", "eq": "barbell", "bp": "legs" },
+ { "id": "1409", "en": "barbell glute bridge", "fa": "پل باسن هالتر", "eq": "barbell", "bp": "legs" },
+ { "id": "2135", "en": "weighted front plank", "fa": "پلانک جلو با وزنه", "eq": "weighted", "bp": "core" } ];
+const EXB = {};
+EX.forEach((e) => { EXB[e.id] = e; });
+const cap1 = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const exName = (id) => (isFa() ? EXB[id].fa : cap1(EXB[id].en));
+const exAlt = (id) => (isFa() ? cap1(EXB[id].en) : EXB[id].fa);
+const EQ = {
+  barbell: ['هالتر', 'Barbell'], dumbbell: ['دمبل', 'Dumbbell'], cable: ['سیم‌کش', 'Cable'],
+  machine: ['دستگاه', 'Machine'], body: ['وزن بدن', 'Bodyweight'], weighted: ['با وزنه', 'Weighted']
+};
+const BP = {
+  chest: ['سینه', 'Chest'], back: ['پشت', 'Back'], legs: ['پا و باسن', 'Legs'],
+  shoulders: ['سرشانه', 'Shoulders'], arms: ['بازو', 'Arms'], core: ['میان‌تنه', 'Core']
+};
+const eqLabel = (k) => EQ[k][isFa() ? 0 : 1];
+const bpLabel = (k) => BP[k][isFa() ? 0 : 1];
+
+/* ==========================================================================
+   Bookings: one store feeds the client timetable, the coach agenda and requests
+   ========================================================================== */
+const hoursOf = (d) => {
+  const w = dow(d);
+  if (w === 5) return [];
+  if (w === 4) return [8, 9, 10, 11];
+  return [7, 8, 9, 10, 16, 17, 18, 19, 20];
+};
+function hash(n) {
+  n = Math.imul(n ^ 61, 1) ^ (n >>> 16);
+  n = (n + (n << 3)) | 0;
+  n ^= n >>> 4;
+  n = Math.imul(n, 0x27d4eb2d);
+  n ^= n >>> 15;
+  return n >>> 0;
+}
+let BID = 1;
+const bookings = [];
+const slotMap = new Map();
+const sk = (d, h) => d + ':' + h;
+const isLive = (b) => b.status === 'confirmed' || b.status === 'pending';
+function addBk(o) {
+  o.id = 'bk' + BID++;
+  bookings.push(o);
+  if (isLive(o)) slotMap.set(sk(o.day, o.hour), o);
+  return o;
+}
+function claim(d, h, o) {
+  const k = sk(d, h);
+  const prev = slotMap.get(k);
+  if (prev) { prev.status = 'moved'; slotMap.delete(k); }
+  return addBk(Object.assign({ day: d, hour: h }, o));
+}
+const noteText = (b) => (b && b.note && typeof b.note === 'object' ? b.note[lang] : (b && b.note) || '');
+
+/* the next three working days that still have a slot to come: the coach's agenda window */
+function windowDays() {
+  const out = [];
+  const t = todayNum();
+  for (let d = t; out.length < 3 && d < t + 12; d++) {
+    const hs = hoursOf(d);
+    if (!hs.length) continue;
+    if (startOf(d, hs[hs.length - 1] + 1) <= Date.now()) continue;
+    out.push(d);
+  }
+  return out;
+}
+let LASTDAY = 0;
+
+function seedBookings() {
+  const t = todayNum();
+  const now = Date.now();
+  for (let d = t - 14; d <= t + 32; d++) {
+    hoursOf(d).forEach((h) => {
+      const x = hash(d * 97 + h * 13 + 7);
+      if (x % 100 < 58) addBk({ client: OTHERS[(x >>> 8) % 5], day: d, hour: h, status: 'confirmed', created: startOf(d, h) - 3 * DAY, note: '' });
+    });
+  }
+  /* Sara: two finished sessions, so "last time" has a date */
+  [5, 12].forEach((back) => {
+    let d = t - back;
+    while (!hoursOf(d).length) d--;
+    const hs = hoursOf(d);
+    claim(d, hs.includes(17) ? 17 : hs[1], { client: 'sara', status: 'confirmed', created: startOf(d, 8) - 4 * DAY, note: '' });
+    if (!LASTDAY) LASTDAY = d;
+  });
+  const wd = windowDays();
+  /* Sara B1: confirmed, inside the 24 h cancellation window when the clock allows it */
+  let b1 = null;
+  for (let d = t; d <= t + 3 && !b1; d++) {
+    for (const h of hoursOf(d)) {
+      const s = startOf(d, h);
+      if (s >= now + 13 * HOUR && s <= now + 23 * HOUR) { b1 = { d, h }; break; }
+    }
+  }
+  if (!b1 && wd[1]) b1 = { d: wd[1], h: hoursOf(wd[1]).includes(18) ? 18 : hoursOf(wd[1])[2] };
+  if (b1) claim(b1.d, b1.h, { client: 'sara', status: 'confirmed', created: now - 2 * DAY, note: { fa: 'روز سینه و سرشانه.', en: 'Push day.' } });
+  /* Sara B2: pending, outside the window */
+  const d2 = wd[2] || wd[wd.length - 1];
+  if (d2) {
+    const hs = hoursOf(d2);
+    let h2 = hs.includes(17) ? 17 : hs[hs.length - 2];
+    if (b1 && b1.d === d2 && b1.h === h2) h2 = hs[0];
+    claim(d2, h2, { client: 'sara', status: 'pending', created: now - 5 * HOUR, note: { fa: 'اگر شد، روز پشت و جلوبازو.', en: 'Pull day, if you can.' } });
+  }
+  /* requests from other clients on the first two agenda days */
+  const reqs = [
+    [0, 0.2, 'nima', { fa: 'این هفته روز پا بزنیم؟', en: 'Can we do legs this week?' }, 95],
+    [0, 0.75, 'maryam', { fa: 'ساعت‌های عصر برایم بهتر است.', en: 'Evenings suit me better.' }, 40],
+    [1, 0.45, 'ali', { fa: '', en: '' }, 210]
+  ];
+  reqs.forEach(([i, frac, who, note, minsAgo]) => {
+    const d = wd[i];
+    if (!d) return;
+    const fut = hoursOf(d).filter((h) => startOf(d, h) > now && !(slotMap.get(sk(d, h)) && slotMap.get(sk(d, h)).client === 'sara'));
+    if (!fut.length) return;
+    const h = fut[Math.min(fut.length - 1, Math.floor(fut.length * frac))];
+    claim(d, h, { client: who, status: 'pending', created: now - minsAgo * 60000, note });
+  });
+}
+
+/* ==========================================================================
+   Training data: Sara's Day A, last session, previous bests
+   ========================================================================== */
+const DAYA = [
+  { ex: '0025', sets: 3, reps: 8, kg: 30, rest: 90, prev: 36, short: ['پرس سینه', 'Bench press'] },
+  { ex: '0314', sets: 3, reps: 10, kg: 15, rest: 90, prev: 21, short: ['پرس بالاسینه', 'Incline press'] },
+  { ex: '0405', sets: 3, reps: 10, kg: 12.5, rest: 90, prev: 17.5, short: ['پرس سرشانه', 'Shoulder press'] },
+  { ex: '0334', sets: 3, reps: 12, kg: 7.5, rest: 60, prev: 11, short: ['نشر از جانب', 'Lateral raise'] },
+  { ex: '0201', sets: 3, reps: 12, kg: 25, rest: 60, prev: 40, short: ['پشت‌بازو سیم‌کش', 'Pushdown'] }
+];
+const LASTSETS = {
+  '0025': [[8, 27.5], [8, 27.5], [8, 27.5]],
+  '0314': [[10, 12.5], [10, 12.5], [9, 12.5]],
+  '0405': [[10, 10], [10, 10], [9, 10]],
+  '0334': [[12, 5], [12, 5], [12, 5]],
+  '0201': [[12, 22.5], [12, 22.5], [11, 22.5]]
+};
+const e1rm = (w, r) => (r >= 1 && r <= 12 && w > 0 ? w * (1 + r / 30) : null);
+const topOf = (arr) => arr.reduce((a, s) => (s[1] > a[1] || (s[1] === a[1] && s[0] > a[0]) ? s : a), arr[0]);
+
+/* live workout state: set 1 of bench press is already in the book */
+const W = {
+  startedAt: Date.now() - (18 * 60 + 40) * 1000,
+  cur: 0,
+  vals: DAYA.map((d) => ({ w: d.kg, r: d.reps })),
+  rpe: null,
+  sets: [{ id: 's1', ex: 0, n: 1, r: 8, w: 27.5, rpe: null, e1: r1(e1rm(27.5, 8)), pr: false, at: Date.now() - 9 * 60000 }],
+  best: DAYA.map((d) => d.prev),
+  rest: null,
+  fresh: null,
+  seq: 1
+};
+const setsOf = (ex) => W.sets.filter((s) => s.ex === ex);
+
+/* ==========================================================================
+   Progress data: 9 earlier weeks per exercise, week 0 comes from today's log
+   ========================================================================== */
+function mkHist(weights, reps) {
+  return weights.map((w, i) => { const r = reps[i % reps.length]; return [[r, w], [r, w], [Math.max(1, r - 1), w]]; });
+}
+const HIST = {
+  '0025': [
+    [[8, 20], [8, 20], [7, 20]], [[8, 22.5], [8, 22.5], [7, 22.5]], [[8, 22.5], [8, 22.5], [8, 22.5]],
+    [[8, 25], [8, 25], [6, 25]], [[8, 25], [8, 25], [8, 25]], [[6, 27.5], [6, 27.5], [5, 27.5]],
+    [[8, 25], [8, 25], [8, 25]], [[6, 30], [6, 30], [5, 30]], [[8, 27.5], [8, 27.5], [8, 27.5]]
+  ],
+  '0043': mkHist([40, 42.5, 42.5, 45, 47.5, 45, 50, 50, 52.5], [8, 8, 8, 6, 8, 8, 6, 8, 6]),
+  '0032': mkHist([50, 52.5, 55, 57.5, 60, 60, 62.5, 65, 67.5], [5, 5, 5, 5, 5, 5, 5, 5, 5]),
+  '0027': mkHist([30, 32.5, 35, 35, 37.5, 40, 37.5, 42.5, 45], [8, 8, 8, 8, 8, 8, 8, 8, 8]),
+  '0405': mkHist([7.5, 7.5, 10, 10, 10, 12.5, 10, 12.5, 12.5], [10, 10, 10, 10, 10, 8, 10, 8, 10])
+};
+const WEEK0 = { '0043': [[6, 55], [6, 55]], '0032': [[5, 70]], '0027': [[8, 45], [8, 45]], '0405': [[10, 12.5]] };
+const PICK = ['0025', '0043', '0032', '0027', '0405'];
+const VOLW = [5200, 5650, 6100, 5480, 6420, 6900, 6180];
+const sessionDay = (wk) => (wk === 0 ? todayNum() : weekStart(todayNum()) + 7 * wk + 3);
+function histSets(ex) {
+  /* returns [{wk, sets:[[r,w]...]}] for wk -9..0 */
+  const out = HIST[ex].map((sets, i) => ({ wk: i - 9, sets }));
+  let cur = WEEK0[ex] || [];
+  if (ex === '0025') cur = setsOf(0).map((s) => [s.r, s.w]);
+  if (ex === '0405') cur = setsOf(2).map((s) => [s.r, s.w]).concat(WEEK0[ex]);
+  out.push({ wk: 0, sets: cur });
+  return out;
+}
+function progressStats(ex) {
+  const hs = histSets(ex);
+  const pts = hs.map((h) => {
+    let best = 0;
+    h.sets.forEach(([r, w]) => { const e = e1rm(w, r); if (e && e > best) best = e; });
+    return { wk: h.wk, v: best ? r1(best) : null };
+  });
+  let bestE = { v: 0, wk: 0 }, best5 = { v: 0, wk: 0 }, bestVol = { v: 0, wk: 0 };
+  hs.forEach((h) => {
+    let vol = 0;
+    h.sets.forEach(([r, w]) => {
+      const e = e1rm(w, r);
+      if (e && r1(e) >= bestE.v) bestE = { v: r1(e), wk: h.wk };
+      if (r >= 5 && w >= best5.v) best5 = { v: w, wk: h.wk };
+      vol += r * w;
+    });
+    if (vol >= bestVol.v && vol > 0) bestVol = { v: vol, wk: h.wk };
+  });
+  return { pts, bestE, best5, bestVol };
+}
+function weeklyVolume() {
+  const today = W.sets.reduce((a, s) => a + s.r * s.w, 0);
+  const vals = VOLW.concat([2150 + today]);
+  return vals.map((v, i) => ({ wk: i - 7, v }));
+}
+
+/* ==========================================================================
+   Program (coach builder). Titles are stored per language and edited per language.
+   ========================================================================== */
+let UID = 100;
+const uidn = () => ++UID;
+function it(ex, sets, rmin, rmax, kg, rest, note) { return { uid: uidn(), ex, sets, rmin, rmax, kg, rest, note: note || { fa: '', en: '' } }; }
+const P = {
+  title: { fa: 'قدرت پایه — ۸ هفته', en: 'Base strength — 8 weeks' },
+  active: 'A',
+  saved: true,
+  savedAt: 0,
+  freshUid: 0,
+  days: [
+    {
+      k: 'A', title: { fa: 'سینه و سرشانه', en: 'Push' }, items: [
+        it('0025', 3, 8, null, 30, 90, { fa: 'پایین آوردن میله: ۲ ثانیه.', en: 'Two-second descent.' }),
+        it('0314', 3, 10, null, 15, 90),
+        it('0405', 3, 10, null, 12.5, 90),
+        it('0334', 3, 12, null, 7.5, 60),
+        it('0201', 3, 12, null, 25, 60, { fa: 'آرنج‌ها ثابت.', en: 'Elbows pinned.' })
+      ]
+    },
+    {
+      k: 'B', title: { fa: 'پشت و جلوبازو', en: 'Pull' }, items: [
+        it('0198', 3, 10, null, 40, 90),
+        it('0027', 3, 8, null, 40, 90, { fa: 'کمر صاف، نگاه به زمین.', en: 'Flat back, eyes down.' }),
+        it('0861', 3, 10, 12, 35, 75),
+        it('0031', 3, 10, null, 20, 60),
+        it('0313', 3, 12, null, 10, 60)
+      ]
+    },
+    {
+      k: 'C', title: { fa: 'پا', en: 'Legs' }, items: [
+        it('0043', 4, 6, null, 50, 120, { fa: 'عمق کامل.', en: 'Full depth.' }),
+        it('0085', 3, 8, null, 50, 120),
+        it('0739', 3, 10, 12, 100, 90),
+        it('0599', 3, 12, null, 30, 60),
+        it('0605', 4, 12, null, 40, 45)
+      ]
+    }
+  ]
+};
+const dayOf = (k) => P.days.find((d) => d.k === k);
+/* ==========================================================================
+   Signature components: Stamp, SectionLabel, Tally, TrainingCard, Stepper, BarbellDiagram
+   ========================================================================== */
+const stamp = (kind, text, extra) => `<span class="stamp stamp--${kind}${extra ? ' ' + extra : ''}">${text}</span>`;
+const bdn = (s) => `<bdi dir="${rtl() ? 'rtl' : 'ltr'}">${s}</bdi>`;
+const sl = (text) => `<h2 class="sl">${text}</h2>`;
+const kgTxt = (n) => `${fmt(n)} ${kgU()}`;
+const repsStr = (min, max) => (max && max !== min ? `${fmt(min)}–${fmt(max)}` : fmt(min));
+function target(sets, rmin, rmax, kg) {
+  const base = `${fmt(sets)} × ${repsStr(rmin, rmax)}`;
+  if (!kg) return base;
+  return isFa() ? `${base} — ${fmt(kg)} ${kgU()}` : `${base} @ ${fmt(kg)} ${kgU()}`;
+}
+
+/* Tally: groups of five, the fifth stroke crosses the four. `fresh` is the index of the stroke to draw. */
+function tally(n, fresh, label) {
+  if (n <= 0) return '';
+  let out = '';
+  let idx = 0;
+  const groups = Math.ceil(n / 5);
+  for (let g = 0; g < groups; g++) {
+    const cnt = Math.min(5, n - g * 5);
+    const strokes = Math.min(cnt, 4);
+    let p = '';
+    for (let i = 0; i < strokes; i++) {
+      const x = 5 + i * 9;
+      const j = (((g * 7 + i * 3) % 5) - 2) * 0.35;
+      const k = (((g * 5 + i * 2) % 4) - 1.5) * 0.6;
+      p += `<path pathLength="1"${idx === fresh ? ' class="fresh"' : ''} d="M${r2(x + j + 0.8)} ${r2(3 + k)} L${r2(x - j - 0.7)} ${r2(29 - k)}"/>`;
+      idx++;
+    }
+    if (cnt === 5) {
+      p += `<path pathLength="1"${idx === fresh ? ' class="fresh"' : ''} d="M0.5 25 C12 18.5 27 11 40.5 5"/>`;
+      idx++;
+    }
+    const w = cnt >= 5 ? 43 : strokes * 9 + 3;
+    out += `<svg class="tally" viewBox="0 0 ${w} 32" width="${w}" height="32" aria-hidden="true">${p}</svg>`;
+  }
+  return `<span class="tallies" role="img" aria-label="${esc(label || '')}">${out}</span>`;
+}
+
+function strokeSvg(i) {
+  const j = ((i * 5) % 3 - 1) * 0.5;
+  return `<svg class="tc-stroke" viewBox="0 0 6 22" aria-hidden="true"><path d="M${r2(3 + j)} 2 L${r2(2.2 - j)} 20"/></svg>`;
+}
+
+/* TrainingCard: rows = [{ex, sets, rmin, rmax, kg, done:[[reps, kg] | null, ...]}] */
+function trainingCard(o) {
+  let totalSets = 0, volume = 0;
+  const rows = o.rows.map((r) => {
+    let cells = '';
+    for (let i = 0; i < r.sets; i++) {
+      const d = r.done && r.done[i];
+      if (d) {
+        totalSets++;
+        volume += d[0] * d[1];
+        cells += `<div class="tc-set tc-set--done num">${strokeSvg(i)}${bdn(fmt(d[0]) + (d[1] ? ' × ' + fmt(d[1]) : ''))}</div>`;
+      } else {
+        cells += `<div class="tc-set tc-set--none" role="img" aria-label="${L('ثبت نشده', 'Not logged')}"></div>`;
+      }
+    }
+    return `<div class="tc-row"><div class="tc-name">${esc(exName(r.ex))}</div><div class="tc-target num">${bdn(target(r.sets, r.rmin, r.rmax, r.kg))}</div><div class="tc-sets" style="--n:${r.sets}">${cells}</div></div>`;
+  }).join('');
+  const foot = o.showTotals
+    ? `<div class="tc-foot"><span><b class="num">${fmt(totalSets)}</b> ${L('ست', 'sets')}</span><span>${L('حجم', 'Volume')} <b class="num">${fmtG(volume)}</b> ${kgU()}</span></div>`
+    : '';
+  return `<article class="tc" aria-label="${esc(L('کارت تمرین', 'Training card'))}">
+    <div class="tc-head"><b>${esc(o.who)}</b><span>${esc(o.title)}</span><span class="num">${esc(dShort(o.day))}</span></div>
+    ${rows || `<div class="tc-row"><div class="tc-name muted">${L('هنوز حرکتی اضافه نشده.', 'No exercises yet.')}</div></div>`}
+    ${foot}
+  </article>`;
+}
+
+/* Stepper: big (set logger) or small (builder). The number is an editable input. */
+function stepper(o) {
+  const txt = fmt(o.value);
+  const attrs = o.attrs || '';
+  const input = `<input class="stepper-val num${!o.small && txt.length > 4 ? ' long' : ''}" id="${o.id}" type="text" inputmode="${o.mode || 'decimal'}" autocomplete="off" autocorrect="off" spellcheck="false" dir="ltr" data-in="${o.act}" ${attrs} value="${esc(txt)}" aria-describedby="${o.id}-hint">`;
+  const dec = `<button type="button" class="sbtn" id="${o.id}-dec" data-act="${o.act}-step" data-d="-1" ${attrs} aria-label="${esc(o.decLabel)}">${ico('minus')}</button>`;
+  const inc = `<button type="button" class="sbtn" id="${o.id}-inc" data-act="${o.act}-step" data-d="1" ${attrs} aria-label="${esc(o.incLabel)}">${ico('plus')}</button>`;
+  const hint = `<span class="sr-only" id="${o.id}-hint">${L('عدد را تایپ کن یا با دکمه‌ها تغییر بده.', 'Type a number or use the buttons.')}</span>`;
+  const label = `<div class="stepper-label"><label for="${o.id}">${o.label}</label>${o.unit ? `<span aria-hidden="true">${o.unit}</span>` : ''}</div>`;
+  if (o.small) return `<div class="stepper stepper--sm">${label}<div class="stepper-row">${dec}${input}${inc}</div>${hint}</div>`;
+  return `<div class="stepper">${label}${input}${hint}<div class="stepper-btns">${dec}${inc}</div></div>`;
+}
+
+/* BarbellDiagram: 20 kg bar, plates per side picked greedily, drawn mirrored */
+const BAR = 20;
+const PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
+const PSTY = {
+  25: { h: 98, w: 16, c: 'red' }, 20: { h: 88, w: 15, c: 'blue' }, 15: { h: 76, w: 13, c: 'yellow' },
+  10: { h: 64, w: 12, c: 'green' }, 5: { h: 52, w: 9, c: 'white' }, 2.5: { h: 42, w: 7, c: 'red' }, 1.25: { h: 34, w: 6, c: 'silver' }
+};
+function loadPlates(w) {
+  if (!(w >= BAR)) return { state: 'below', plates: [] };
+  let rem = (w - BAR) / 2;
+  const plates = [];
+  PLATES.forEach((p) => { while (rem + 1e-9 >= p) { plates.push(p); rem -= p; } });
+  const exact = rem < 1e-6;
+  const side = plates.reduce((a, b) => a + b, 0);
+  return { state: exact ? (plates.length ? 'ok' : 'empty') : 'inexact', plates, side, loaded: BAR + 2 * side };
+}
+function barbell(w) {
+  const lp = loadPlates(w);
+  const plates = lp.plates;
+  const gap = 1.5;
+  const total = plates.reduce((a, p) => a + PSTY[p].w, 0) + gap * Math.max(0, plates.length - 1);
+  const k = total > 114 ? (114 - gap * Math.max(0, plates.length - 1)) / plates.reduce((a, p) => a + PSTY[p].w, 0) : 1;
+  let plL = '', plR = '';
+  let cl = 123, cr = 237;
+  plates.forEach((p) => {
+    const s = PSTY[p];
+    const pw = r2(s.w * k);
+    plL += `<rect class="pl pl--${s.c}" x="${r2(cl - pw)}" y="${r2(55 - s.h / 2)}" width="${pw}" height="${s.h}" rx="2.5"/>`;
+    plR += `<rect class="pl pl--${s.c}" x="${r2(cr)}" y="${r2(55 - s.h / 2)}" width="${pw}" height="${s.h}" rx="2.5"/>`;
+    cl -= pw + gap;
+    cr += pw + gap;
+  });
+  const desc = lp.state === 'ok' ? L(`هر طرف ${fmt(lp.side)} کیلو صفحه`, `${fmt(lp.side)} kg of plates per side`) : L('میله', 'Bar');
+  const svg = `<svg class="bbsvg" viewBox="0 2 360 106" role="img" aria-label="${esc(desc)}">
+    <rect class="bb-bar" x="4" y="52" width="352" height="6" rx="1"/>
+    <rect class="bb-sleeve" x="4" y="50" width="123" height="10" rx="1"/>
+    <rect class="bb-sleeve" x="233" y="50" width="123" height="10" rx="1"/>
+    <path class="bb-knurl" d="M150 55H210"/>
+    <rect class="bb-collar" x="127" y="41" width="5" height="28" rx="1"/>
+    <rect class="bb-collar" x="228" y="41" width="5" height="28" rx="1"/>
+    ${plL}${plR}
+  </svg>`;
+  /* chips: group equal plates */
+  const groups = [];
+  plates.forEach((p) => { const g = groups[groups.length - 1]; if (g && g.p === p) g.n++; else groups.push({ p, n: 1 }); });
+  const chips = groups.map((g) => `<span class="pchip pchip--${PSTY[g.p].c} num">${g.n > 1 ? fmt(g.n) + '×' : ''}${fmt(g.p)}</span>`).join('');
+  let info = '', note = '';
+  if (lp.state === 'ok') info = `<span class="bb-side num">${L('هر طرف: ', 'per side: ')}${fmt(lp.side)} ${kgU()}</span><span class="pchips">${chips}</span>`;
+  else if (lp.state === 'empty') note = `<div class="bb-note">${ico('info')}<span>${L('فقط میله — ۲۰ کیلو.', 'Empty bar, 20 kg.')}</span></div>`;
+  else if (lp.state === 'inexact') {
+    info = `<span class="bb-side num">${L('هر طرف: ', 'per side: ')}${fmt(lp.side)} ${kgU()}</span><span class="pchips">${chips}</span>`;
+    note = `<div class="bb-note warn">${ico('alert')}<span>${L(`با صفحه‌های معمولی نمی‌شود ${fmt(w)} کیلو بست؛ نزدیک‌ترین: ${fmt(lp.loaded)} کیلو.`, `${fmt(w)} kg can't be loaded with standard plates. Nearest: ${fmt(lp.loaded)} kg.`)}</span></div>`;
+  } else {
+    note = `<div class="bb-note warn">${ico('alert')}<span>${w > 0 ? L(`${fmt(w)} کیلو از وزن میله (۲۰ کیلو) کمتر است.`, `${fmt(w)} kg is under the 20 kg bar.`) : L('وزنه‌ای انتخاب نشده.', 'No weight selected.')}</span></div>`;
+  }
+  return `${svg}${info ? `<div class="bb-info">${info}</div>` : ''}${note}`;
+}
+/* ==========================================================================
+   Timetable (mini / full grid / phone day list) + landing + booking screens
+   ========================================================================== */
+const ROWS = [7, 8, 9, 10, 11, 'gap', 16, 17, 18, 19, 20];
+const weekDays = (offset) => { const s = weekStart(todayNum()) + 7 * offset; return [0, 1, 2, 3, 4, 5, 6].map((i) => s + i); };
+
+function slotInfo(d, h) {
+  if (!hoursOf(d).includes(h)) return { valid: false };
+  const s = startOf(d, h);
+  const now = Date.now();
+  const bk = slotMap.get(sk(d, h));
+  let raw = 'open';
+  if (bk) raw = bk.client === 'sara' ? (bk.status === 'confirmed' ? 'mine-c' : 'mine-p') : 'taken';
+  let time = 'ok';
+  if (s < now) time = 'past';
+  else if (s < now + 12 * HOUR) time = 'soon';
+  else if (s > now + 21 * DAY) time = 'far';
+  return { valid: true, raw, time, bk, s };
+}
+const bookable = (i) => i.valid && i.raw === 'open' && i.time === 'ok';
+function slotStatus(i) {
+  if (i.raw === 'mine-c') return L('تأیید شد', 'Confirmed');
+  if (i.raw === 'mine-p') return L('در انتظار تأیید', 'Pending');
+  if (i.raw === 'taken') return L('پر', 'Taken');
+  if (i.time === 'past') return L('گذشته', 'Past');
+  if (i.time === 'soon') return L('کمتر از ۱۲ ساعت مانده', 'Starts in under 12 hours');
+  if (i.time === 'far') return L('هنوز باز نشده', 'Not open yet');
+  return L('خالی', 'Open');
+}
+function openCount(days) {
+  let n = 0;
+  days.forEach((d) => hoursOf(d).forEach((h) => { if (bookable(slotInfo(d, h))) n++; }));
+  return n;
+}
+/* the live week: this week, unless it is nearly over, then next week (labelled honestly) */
+function defaultOffset() { return openCount(weekDays(0)) < 6 ? 1 : 0; }
+const weekName = (off) => (off === 0 ? L('این هفته', 'This week') : off === 1 ? L('هفته‌ی بعد', 'Next week') : L(`${fmt(off)} هفته‌ی دیگر`, `In ${off} weeks`));
+function weekRange(days) {
+  const a = days[0], b = days[6];
+  if (dMonth(a) === dMonth(b)) return isFa() ? `${dNum(a)} تا ${dNum(b)} ${dMonth(b)}` : `${dNum(a)} – ${dNum(b)} ${dMonth(b)}`;
+  return isFa() ? `${dNum(a)} ${dMonth(a)} تا ${dNum(b)} ${dMonth(b)}` : `${dNum(a)} ${dMonth(a)} – ${dNum(b)} ${dMonth(b)}`;
+}
+
+function headCell(d, mini) {
+  const fri = isFriday(d), today = d === todayNum();
+  return `<div class="tt-day${today ? ' is-today' : ''}${fri ? ' is-fri' : ''}"><span class="tt-wd">${mini ? dWeekdayShort(d) : dWeekday(d)}</span><span class="tt-dn num">${dNum(d)}</span>${mini ? '' : (fri ? `<span class="tt-off">${L('تعطیل', 'Closed')}</span>` : `<span class="tt-mo">${dMonth(d)}</span>`)}</div>`;
+}
+function cellHtml(d, h, mode) {
+  if (isFriday(d)) return '<div class="c c--fri" aria-hidden="true"></div>';
+  const i = slotInfo(d, h);
+  if (!i.valid) return '<div class="c c--closed" aria-hidden="true"></div>';
+  const raw = mode === 'mini' && i.raw.indexOf('mine') === 0 ? 'taken' : i.raw;
+  const cls = `c c--${raw}${i.time !== 'ok' ? ' is-off' : ''}`;
+  if (mode === 'mini') return `<div class="${cls}" aria-hidden="true"></div>`;
+  const label = `${dLong(d)}، ${hm(h)} — ${slotStatus(i)}`;
+  if (bookable(i)) return `<button type="button" class="${cls}" id="slot-${d}-${h}" data-act="slot" data-day="${d}" data-hour="${h}" aria-label="${esc(label)}">${ico('plus', 'c-plus')}</button>`;
+  const txt = i.raw === 'mine-c' ? L('تأیید شد', 'Confirmed') : i.raw === 'mine-p' ? L('در انتظار', 'Pending') : '';
+  return `<div class="${cls}" id="slot-${d}-${h}" role="img" aria-label="${esc(label)}">${txt}</div>`;
+}
+function ttGrid(off, mode) {
+  const days = weekDays(off);
+  const mini = mode === 'mini';
+  let h = `<div class="tt ${mini ? 'tt--mini' : 'tt--full'}"${mini ? ' aria-hidden="true"' : ` role="group" aria-label="${esc(L('جدول رزرو هفته', 'Booking timetable for the week'))}"`}>`;
+  h += '<div class="tt-corner"></div>' + days.map((d) => headCell(d, mini)).join('');
+  ROWS.forEach((r) => {
+    if (r === 'gap') { h += '<div class="tt-gap"></div>'; return; }
+    h += `<div class="tt-hour num">${mini ? pad2(r) : hm(r)}</div>` + days.map((d) => cellHtml(d, r, mode)).join('');
+  });
+  return h + '</div>';
+}
+const legend = (mine) => `<div class="tt-legend" aria-hidden="true">
+  <span><i class="sw sw--open"></i>${L('خالی', 'Open')}</span>
+  <span><i class="sw sw--taken"></i>${L('پر', 'Taken')}</span>
+  ${mine ? `<span><i class="sw sw--c"></i>${L('تأییدشده‌ی تو', 'Yours, confirmed')}</span><span><i class="sw sw--p"></i>${L('در انتظار تأیید', 'Yours, pending')}</span>` : ''}
+</div>`;
+
+/* ---------- landing ---------- */
+function viewLanding() {
+  const off = defaultOffset();
+  const days = weekDays(off);
+  const n = openCount(days);
+  const [w1, w2] = COACH[lang].split(' ');
+  const last = LASTDAY || todayNum() - 5;
+  const rows = DAYA.map((d) => ({ ex: d.ex, sets: d.sets, rmin: d.reps, rmax: null, kg: d.kg, done: LASTSETS[d.ex] }));
+  const boardLabel = `${weekName(off)}${SEP()} ${weekRange(days)}`;
+  const countTxt = L(`ساعت خالی ${off === 0 ? 'در این هفته' : 'در هفته‌ی بعد'}`, `open ${n === 1 ? 'slot' : 'slots'} ${off === 0 ? 'this week' : 'next week'}`);
+  return `<div class="lp">
+    <div class="lp-top"><span class="wordmark"><i></i>${L('دفتر', 'Daftar')}</span><span class="cap">${L('رزرو و دفتر تمرین', 'Booking and training log')}</span></div>
+    <section class="hero" aria-labelledby="lp-name">
+      <div>
+        ${sl(L('مربی شخصی، سعادت‌آباد', 'Personal coach · Saadat Abad'))}
+        <h1 class="hero-name display" id="lp-name"><span>${esc(w1)}</span><span>${esc(w2)}</span></h1>
+        <p class="lede">${L('جلسه‌های خصوصی تمرین قدرتی در سعادت‌آباد. تو وزنه می‌زنی، من تک‌تک تکرارها را می‌بینم و ست بعدی را توی دفترت می‌نویسم.', 'One-on-one strength sessions in Saadat Abad. You lift, I watch every rep and write the next one down.')}</p>
+        <div class="cta">
+          <a class="btn btn--red btn--xl" id="lp-book" href="#book">${L('رزرو جلسه', 'Book a session')}${icoD('chevR')}</a>
+          <p class="count"><span class="num">${fmt(n)}</span><span>${countTxt}</span></p>
+        </div>
+      </div>
+      <a class="tt-link" href="#book" aria-label="${esc(L(`جدول ${weekName(off)}؛ ${fmt(n)} ساعت خالی. رفتن به رزرو.`, `${weekName(off)} timetable, ${n} open. Go to booking.`))}">
+        <div class="card board">
+          <div class="board-head"><h2 class="sl">${esc(boardLabel)}</h2></div>
+          ${ttGrid(off, 'mini')}
+          ${legend(false)}
+        </div>
+      </a>
+    </section>
+    <div class="lp-cols">
+      <section class="a-steps" aria-labelledby="lp-how">
+        <h2 class="sl" id="lp-how">${L('چطور کار می‌کند', 'How it works')}</h2>
+        <ol class="steps">
+          <li class="step"><span class="n num">${fmt(1)}</span><h3>${L('ساعتت را انتخاب کن', 'Pick a slot')}</h3><p>${L('از جدول بالا یک ساعت خالی بردار.', 'Take any open hour on the timetable.')}</p></li>
+          <li class="step"><span class="n num">${fmt(2)}</span><h3>${L('من تأیید می‌کنم', 'I confirm')}</h3><p>${L('معمولاً تا چند ساعت دیگر خبرت می‌کنم.', 'Usually within a few hours.')}</p></li>
+          <li class="step"><span class="n num">${fmt(3)}</span><h3>${L('تمرین می‌کنیم', 'We train')}</h3><p>${L('تو ست‌هایت را ثبت می‌کنی، من برنامه‌ی بعدی را می‌نویسم.', 'You log your sets. I write the next program.')}</p></li>
+        </ol>
+      </section>
+      <section class="a-card" aria-labelledby="lp-card">
+        <h2 class="sl" id="lp-card">${L('کارت تمرین', 'The training card')}</h2>
+        ${trainingCard({ who: nm('sara'), title: L('روز A — سینه و سرشانه', 'Day A — Push'), day: last, rows, showTotals: true })}
+        <p class="cap" style="margin-block-start:10px">${L('جلسه‌ی قبل سارا. با هر ست که ثبت کنی، یک خط روی کارت کشیده می‌شود.', "Sara's last session. Every set you log gets a stroke here.")}</p>
+      </section>
+      <section class="a-hours" aria-labelledby="lp-hours">
+        <h2 class="sl" id="lp-hours">${L('ساعت کار و آدرس', 'Hours and location')}</h2>
+        <table class="ledger">
+          <tbody>
+            <tr><th scope="row">${L('شنبه تا چهارشنبه', 'Saturday to Wednesday')}</th><td class="num">${rng(7, 11)} ${L('و', '&amp;')} ${rng(16, 21)}</td></tr>
+            <tr><th scope="row">${L('پنجشنبه', 'Thursday')}</th><td class="num">${rng(8, 12)}</td></tr>
+            <tr><th scope="row">${L('جمعه', 'Friday')}</th><td>${L('تعطیل', 'Closed')}</td></tr>
+            <tr><th scope="row">${L('هر جلسه', 'Each session')}</th><td>${L(`${fmt(60)} دقیقه`, `${fmt(60)} minutes`)}</td></tr>
+            <tr><th scope="row">${L('آدرس', 'Address')}</th><td>${esc(STUDIO[lang])}</td></tr>
+            <tr><th scope="row">${L('تلفن', 'Phone')}</th><td><a class="tlink" href="tel:09120000000"><bdi dir="ltr" class="num">${fdig(COACH_PHONE)}</bdi></a></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+    <footer class="foot">
+      <span class="fine">${L('© ' + COACH.fa + '، سعادت‌آباد، تهران', '© ' + COACH.en + ' · Saadat Abad, Tehran')}</span>
+      <div class="seg" role="group" aria-label="${L('زبان', 'Language')}">
+        <button type="button" id="foot-lang-fa" data-act="lang" data-lang="fa" aria-pressed="${lang === 'fa'}">فارسی</button>
+        <button type="button" id="foot-lang-en" data-act="lang" data-lang="en" aria-pressed="${lang === 'en'}">English</button>
+      </div>
+    </footer>
+  </div>`;
+}
+
+/* ---------- booking (client) ---------- */
+const B = { offset: null, day: null, ask: null, focusAfter: null };
+const isWide = () => window.matchMedia('(min-width: 720px)').matches;
+const bookOffset = () => { if (B.offset == null) B.offset = defaultOffset(); return B.offset; };
+function bookDay(days) {
+  if (B.day != null && days.includes(B.day)) return B.day;
+  const t = todayNum();
+  let pick = days.find((d) => hoursOf(d).some((h) => bookable(slotInfo(d, h))));
+  if (pick == null) pick = days.find((d) => d >= t && !isFriday(d));
+  if (pick == null) pick = days[0];
+  B.day = pick;
+  return pick;
+}
+const rng = (a, b) => (isFa() ? bdn(`${hm(a)} تا ${hm(b)}`) : `<bdi>${hm(a)}–${hm(b)}</bdi>`);
+const rangeTxt = (h) => rng(h, h + 1);
+
+function dayStripHtml(days, sel) {
+  return `<div class="daystrip" role="group" aria-label="${esc(L('روزهای هفته', 'Days of the week'))}">` + days.map((d) => {
+    const c = hoursOf(d).filter((h) => bookable(slotInfo(d, h))).length;
+    const fri = isFriday(d);
+    const label = `${dLong(d)}${fri ? '، ' + L('تعطیل', 'closed') : '، ' + L(`${fmt(c)} ساعت خالی`, `${c} open`)}`;
+    return `<button type="button" class="dchip${d === sel ? ' is-sel' : ''}${fri ? ' is-fri' : ''}${d < todayNum() ? ' is-past' : ''}" id="dchip-${d}" data-act="pick-day" data-day="${d}" aria-pressed="${d === sel}" aria-label="${esc(label)}"><span class="dchip-wd">${dWeekdayShort(d)}</span><span class="dchip-n num">${dNum(d)}</span><span class="dchip-c num">${fri ? '' : (c ? fmt(c) : '–')}</span></button>`;
+  }).join('') + '</div>';
+}
+function slotListHtml(d) {
+  const hs = hoursOf(d);
+  if (!hs.length) return `<div class="dayoff">${L('جمعه تعطیل است.', 'Friday is a day off.')}</div>`;
+  return `<ul class="slotlist" aria-label="${esc(dLong(d))}">` + hs.map((h) => {
+    const i = slotInfo(d, h);
+    const cls = `slotrow slotrow--${i.raw}${i.time !== 'ok' ? ' is-off' : ''}`;
+    const label = `${dLong(d)}، ${hm(h)} — ${slotStatus(i)}`;
+    const time = `<span class="time num">${rangeTxt(h)}</span>`;
+    if (bookable(i)) return `<li><button type="button" class="${cls}" id="slot-${d}-${h}" data-act="slot" data-day="${d}" data-hour="${h}" aria-label="${esc(label)}">${time}<span class="st">${L('رزرو', 'Book')}${icoD('chevR')}</span></button></li>`;
+    const st = i.raw === 'mine-c' ? ico('check') + L('تأیید شد', 'Confirmed') : i.raw === 'mine-p' ? ico('clock') + L('در انتظار تأیید', 'Pending') : slotStatus(i);
+    return `<li><div class="${cls}" id="slot-${d}-${h}" role="img" aria-label="${esc(label)}">${time}<span class="st">${st}</span></div></li>`;
+  }).join('') + '</ul>';
+}
+const canCancel = (b) => startOf(b.day, b.hour) - Date.now() >= 24 * HOUR;
+
+function bookingRow(b) {
+  const s = startOf(b.day, b.hour);
+  const upcoming = s > Date.now();
+  let st, actions = '';
+  if (b.status === 'cancelled') st = stamp('mute', L('لغو شد', 'Cancelled'));
+  else if (b.status === 'declined') st = stamp('danger', L('رد شد', 'Declined'));
+  else if (!upcoming) st = stamp('green', L('انجام شد', 'Done'));
+  else if (b.status === 'confirmed') st = stamp('blue', L('تأیید شد', 'Confirmed'));
+  else st = stamp('yellow', L('در انتظار تأیید', 'Pending'));
+  if (isLive(b) && upcoming) {
+    if (B.ask === b.id) {
+      actions = `<div class="ask" role="group" aria-label="${esc(L('تأیید لغو', 'Confirm cancellation'))}"><b>${L('این رزرو لغو شود؟', 'Cancel this booking?')}</b><button type="button" class="btn btn--sm btn--danger" id="${b.id}-yes" data-act="bk-yes" data-id="${b.id}">${L('بله، لغو کن', 'Yes, cancel')}</button><button type="button" class="btn btn--sm" id="${b.id}-no" data-act="bk-no" data-id="${b.id}">${L('نه، بماند', 'Keep it')}</button></div>`;
+    } else if (canCancel(b)) {
+      actions = `<div class="bk-actions"><button type="button" class="btn btn--sm btn--quiet" id="${b.id}-cancel" data-act="bk-ask" data-id="${b.id}">${L('لغو رزرو', 'Cancel booking')}</button><span class="cap">${L('تا ۲۴ ساعت قبل از جلسه رایگان است.', 'Free until 24 hours before.')}</span></div>`;
+    } else {
+      actions = `<div class="bk-actions"><button type="button" class="btn btn--sm" id="${b.id}-cancel" disabled aria-describedby="${b.id}-why">${L('لغو رزرو', 'Cancel booking')}</button></div>
+        <p class="cap" id="${b.id}-why">${ico('info')} ${L('مهلت لغو (۲۴ ساعت قبل از جلسه) تمام شده. برای تغییر با مربی تماس بگیر.', 'The 24-hour cancellation window has closed. To change it, call your coach.')}</p>
+        <a class="btn btn--sm" href="tel:09120000000" id="${b.id}-call">${ico('phone')}<bdi dir="ltr" class="num">${fdig(COACH_PHONE)}</bdi></a>`;
+    }
+  }
+  const note = noteText(b);
+  return `<li class="bk${upcoming && isLive(b) ? '' : ' is-past'}" id="${b.id}-row" tabindex="-1">
+    <div class="bk-top"><div><h3>${dLong(b.day)}</h3><div class="num">${rangeTxt(b.hour)}</div></div>${st}</div>
+    ${note ? `<p class="fine">${L('پیام تو: ', 'Your note: ')}${esc(note)}</p>` : ''}
+    ${actions}
+  </li>`;
+}
+function myBookings() {
+  const mine = bookings.filter((b) => b.client === 'sara' && b.status !== 'moved');
+  const now = Date.now();
+  const up = mine.filter((b) => isLive(b) && startOf(b.day, b.hour) > now).sort((a, b) => startOf(a.day, a.hour) - startOf(b.day, b.hour));
+  const rest = mine.filter((b) => !up.includes(b)).sort((a, b) => startOf(b.day, b.hour) - startOf(a.day, a.hour)).slice(0, 4);
+  return { up, rest };
+}
+function viewBook() {
+  const wide = isWide();
+  const off = bookOffset();
+  const days = weekDays(off);
+  const sel = bookDay(days);
+  const { up, rest } = myBookings();
+  const nav = `<div class="weeknav">
+    <button type="button" class="iconbtn" id="wk-prev" data-act="wk" data-d="-1" aria-label="${esc(L('هفته‌ی قبل', 'Previous week'))}" ${off <= 0 ? 'disabled' : ''}>${icoD('chevL')}</button>
+    <div class="wk"><span class="num">${esc(weekRange(days))}</span><div class="cap">${esc(weekName(off) + SEP() + ' ' + dfmt(days[3], { year: 'numeric' }))}</div></div>
+    <button type="button" class="iconbtn" id="wk-next" data-act="wk" data-d="1" aria-label="${esc(L('هفته‌ی بعد', 'Next week'))}" ${off >= 3 ? 'disabled' : ''}>${icoD('chevR')}</button>
+  </div>`;
+  const grid = wide ? ttGrid(off, 'full') : dayStripHtml(days, sel) + `<div style="padding-block-start:12px">${slotListHtml(sel)}</div>`;
+  return `<div class="frame${wide ? ' frame--wide' : ''}">
+    <div class="fp has-tabs">
+      <div class="apphead"><span class="wordmark"><i></i>${L('دفتر', 'Daftar')}</span><span class="avatar" role="img" aria-label="${esc(nm('sara'))}">${esc(initials('sara'))}</span></div>
+      <div class="pagehead"><h1 class="t1 display">${L('رزرو جلسه', 'Book a session')}</h1><p>${L('یک ساعت خالی را انتخاب کن؛ تا چند ساعت دیگر تأیید می‌کنم.', "Pick an open hour. I'll confirm within a few hours.")}</p></div>
+      <div class="body">
+        <section class="stack" aria-label="${esc(L('جدول رزرو', 'Timetable'))}">
+          ${nav}
+          <div class="${wide ? 'card pad' : ''}" id="tt-host">${grid}</div>
+          ${legend(true)}
+          <p class="cap" aria-live="polite" id="book-hint">${L('ساعت‌های گذشته یا کمتر از ۱۲ ساعت دیگر، کم‌رنگ و غیرفعال‌اند.', 'Slots in the past or under 12 hours away are faded and locked.')}</p>
+        </section>
+        <section aria-labelledby="my-bk">
+          <h2 class="sl" id="my-bk">${L('رزروهای تو', 'Your bookings')}</h2>
+          <div class="card">
+            ${up.length || rest.length ? `<ul>${up.map(bookingRow).join('')}${rest.map(bookingRow).join('')}</ul>` : `<p class="pad muted">${L('هنوز رزروی نداری.', 'No bookings yet.')}</p>`}
+          </div>
+        </section>
+      </div>
+    </div>
+    ${tabbar('book')}
+  </div>`;
+}
+
+function tabbar(cur) {
+  const t = (id, hash, icon, fa, en) => `<a class="tab" href="#${hash}" ${cur === id ? 'aria-current="page"' : ''} id="tab-${id}">${ico(icon)}<span>${L(fa, en)}</span></a>`;
+  return `<nav class="tabbar" aria-label="${esc(L('منوی شاگرد', 'Client menu'))}">${t('workout', 'workout', 'dumbbell', 'امروز', 'Today')}${t('book', 'book', 'calendar', 'رزرو', 'Book')}${t('progress', 'progress', 'trend', 'پیشرفت', 'Progress')}</nav>`;
+}
+/* ==========================================================================
+   Bottom sheet (focus-trapped, Esc closes) used by booking and the builder
+   ========================================================================== */
+const SH = { open: false, kind: null, day: 0, hour: 0, note: '', step: 'form', err: '', q: '', ret: null, timer: 0 };
+function announce(msg) {
+  const el = $('#live');
+  if (!el) return;
+  el.textContent = '';
+  setTimeout(() => { el.textContent = msg; }, 30);
+}
+const RE_YEH = new RegExp(String.fromCharCode(0x64A), 'g');
+const RE_KAF = new RegExp(String.fromCharCode(0x643), 'g');
+const RE_MARKS = new RegExp('[' + String.fromCharCode(0x200c, 0x200e, 0x200f) + String.fromCharCode(0x64B) + '-' + String.fromCharCode(0x65F) + ']', 'g');
+function normSearch(s) {
+  /* Arabic yeh/kaf -> Persian, drop ZWNJ and harakat, Persian/Arabic digits -> Latin */
+  return toLatinDigits(String(s)).replace(RE_YEH, String.fromCharCode(0x6CC)).replace(RE_KAF, String.fromCharCode(0x6A9)).replace(RE_MARKS, '').toLowerCase().trim();
+}
+function searchEx(q) {
+  const tokens = normSearch(q).split(/\s+/).filter(Boolean);
+  return EX.filter((e) => {
+    const hay = normSearch([e.fa, e.en, EQ[e.eq][0], EQ[e.eq][1], BP[e.bp][0], BP[e.bp][1]].join(' '));
+    return tokens.every((t) => hay.indexOf(t) !== -1);
+  });
+}
+function resultsHtml(list) {
+  if (!list.length) return `<li class="pad muted">${L('چیزی پیدا نشد. اسم دیگری را امتحان کن.', 'Nothing found. Try another name.')}</li>`;
+  return list.map((e) => `<li><button type="button" class="res" id="res-${e.id}" data-act="addex-pick" data-ex="${e.id}">
+      <b>${esc(exName(e.id))}</b>
+      <span class="sub latin"><bdi>${esc(exAlt(e.id))}</bdi></span>
+      <span class="tags"><span class="tag">${esc(eqLabel(e.eq))}</span><span class="tag">${esc(bpLabel(e.bp))}</span></span>
+    </button></li>`).join('');
+}
+function sheetBody() {
+  if (SH.kind === 'book') {
+    const d = SH.day, h = SH.hour;
+    if (SH.step === 'sent') {
+      return `<div class="sent" role="status">
+        <h2 class="sr-only" id="sheet-title">${L('درخواست ثبت شد', 'Request sent')}</h2>
+        ${stamp('yellow', L('درخواست ثبت شد', 'Request sent'), 'stamp--lg stamp--land')}
+        <p class="pretty">${L(`${COACH.fa.split(' ')[0]} تا چند ساعت دیگر تأیید می‌کند. وضعیتش را پایین همین صفحه می‌بینی.`, `${COACH.en.split(' ')[0]} will confirm within a few hours. You can follow it under Your bookings.`)}</p>
+        <button type="button" class="btn" id="sheet-done" data-act="sheet-close">${L('باشه', 'Done')}</button>
+      </div>`;
+    }
+    return `<div class="sheet-head">
+        <h2 class="t2" id="sheet-title">${L('رزرو جلسه', 'Book a session')}</h2>
+        <button type="button" class="iconbtn" id="sheet-x" data-act="sheet-close" aria-label="${esc(L('بستن', 'Close'))}">${ico('x')}</button>
+      </div>
+      <div class="sheet-sum">
+        <div class="big">${esc(dLong(d))}</div>
+        <div class="big num">${rangeTxt(h)}</div>
+        <div class="cap">${ico('pin')} ${esc(STUDIO[lang])}</div>
+      </div>
+      <div class="field">
+        <label for="book-note">${L('پیام برای مربی (اختیاری)', 'Note for your coach (optional)')}</label>
+        <textarea class="input" id="book-note" data-in="book-note" rows="2" maxlength="200">${esc(SH.note)}</textarea>
+      </div>
+      <p class="policy">${ico('info')}<span>${L('تا ۲۴ ساعت قبل می‌توانی لغو کنی.', 'Free cancellation until 24 hours before.')}</span></p>
+      <p class="err" id="book-err" role="alert">${SH.err ? esc(SH.err) : ''}</p>
+      <div class="row">
+        <button type="button" class="btn btn--red grow btn--xl" id="book-confirm" data-act="book-confirm">${L('ثبت درخواست', 'Confirm request')}</button>
+        <button type="button" class="btn" id="book-dismiss" data-act="sheet-close">${L('انصراف', 'Cancel')}</button>
+      </div>`;
+  }
+  /* add exercise */
+  const res = searchEx(SH.q);
+  return `<div class="sheet-head">
+      <h2 class="t2" id="sheet-title">${L('افزودن حرکت', 'Add exercise')}</h2>
+      <button type="button" class="iconbtn" id="sheet-x" data-act="sheet-close" aria-label="${esc(L('بستن', 'Close'))}">${ico('x')}</button>
+    </div>
+    <div class="field">
+      <label for="ex-search">${L('جست‌وجو (فارسی یا English)', 'Search (Persian or English)')}</label>
+      <input class="input" id="ex-search" type="search" data-in="ex-search" value="${esc(SH.q)}" autocomplete="off" spellcheck="false" enterkeyhint="search">
+    </div>
+    <p class="cap" id="ex-count" aria-live="polite">${L(`${fmt(res.length)} حرکت`, `${res.length} exercises`)}</p>
+    <ul class="results" id="ex-results">${resultsHtml(res)}</ul>`;
+}
+function openSheet(kind, data) {
+  const ret = document.activeElement && document.activeElement.id ? document.activeElement.id : null;
+  Object.assign(SH, { open: true, kind, step: 'form', err: '', q: '', note: '', ret }, data || {});
+  $('#sheet-root').innerHTML = `<div class="scrim" id="scrim" data-act="sheet-scrim"><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div class="sheet-grab" aria-hidden="true"></div><div id="sheet-body">${sheetBody()}</div></div></div>`;
+  $('.chrome').inert = true;
+  $('#main-wrap').inert = true;
+  const first = $(kind === 'book' ? '#book-note' : '#ex-search') || $('#sheet-x');
+  if (first) first.focus({ preventScroll: true });
+}
+function refreshSheet() {
+  const a = document.activeElement && document.activeElement.id;
+  $('#sheet-body').innerHTML = sheetBody();
+  const el = a && $('#' + a);
+  if (el && $('#sheet').contains(el)) el.focus({ preventScroll: true });
+}
+function closeSheet() {
+  if (!SH.open) return;
+  clearTimeout(SH.timer);
+  SH.open = false;
+  $('#sheet-root').innerHTML = '';
+  $('.chrome').inert = false;
+  $('#main-wrap').inert = false;
+  const target = (SH.focusAfter && $('#' + SH.focusAfter)) || (SH.ret && $('#' + SH.ret));
+  SH.focusAfter = null;
+  if (target) target.focus({ preventScroll: false });
+}
+function trapTab(e) {
+  const sheet = $('#sheet');
+  if (!sheet) return;
+  const f = $$('button:not([disabled]), input, textarea, select, a[href], [tabindex]:not([tabindex="-1"])', sheet).filter((x) => x.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && (document.activeElement === first || !sheet.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (document.activeElement === last || !sheet.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+}
+
+/* ==========================================================================
+   Workout (live set logging)
+   ========================================================================== */
+const mmss = (sec) => `${fmt(Math.floor(sec / 60))}:${pad2(sec % 60)}`;
+function fmtElapsed() {
+  const s = Math.max(0, Math.floor((Date.now() - W.startedAt) / 1000));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+  return h ? `${fmt(h)}:${pad2(m)}:${pad2(ss)}` : `${pad2(m)}:${pad2(ss)}`;
+}
+const totalTarget = () => DAYA.reduce((a, d) => a + d.sets, 0);
+function lastTime(i) {
+  const ls = LASTSETS[DAYA[i].ex];
+  return target(ls.length, ls[0][0], null, ls[0][1]);
+}
+function bbContent() {
+  const d = DAYA[W.cur];
+  const eq = EXB[d.ex].eq;
+  if (eq === 'barbell') return barbell(W.vals[W.cur].w);
+  const t = eq === 'dumbbell' ? L('دمبل: وزن هر دست را وارد کن.', 'Dumbbells: enter the weight of one hand.') : L('سیم‌کش: وزنه‌ی انتخاب‌شده روی دستگاه را وارد کن.', 'Cable: enter the weight on the stack.');
+  return `<div class="bb-note">${ico('info')}<span>${t}</span></div>`;
+}
+function e1Preview() {
+  const v = W.vals[W.cur];
+  const e = e1rm(v.w, v.r);
+  return e == null ? '—' : fmt(r1(e), { minimumFractionDigits: 1 });
+}
+function restHtml() {
+  const r = W.rest;
+  if (!r) return '';
+  const C = 2 * Math.PI * 29;
+  const remain = r.done ? 0 : Math.max(0, r.endsAt - Date.now());
+  const frac = r.done ? 0 : clamp(remain / r.total, 0, 1);
+  return `<div class="rest${r.done ? ' is-done' : ''}" role="group" aria-label="${esc(L('زمان‌سنج استراحت', 'Rest timer'))}">
+    <div class="ring"><svg viewBox="0 0 68 68" aria-hidden="true"><circle class="trk" cx="34" cy="34" r="29"/><circle class="bar" id="rest-bar" cx="34" cy="34" r="29" stroke-dasharray="${r2(C)}" stroke-dashoffset="${r2(C * (1 - frac))}"/></svg><span class="t num" id="rest-time">${mmss(Math.ceil(remain / 1000))}</span></div>
+    <div class="rest-txt"><b>${r.done ? L('استراحت تمام شد', 'Rest is over') : L('استراحت', 'Rest')}</b><span class="cap">${r.done ? L('ست بعدی را ثبت کن.', 'Log the next set.') : L('تا ست بعدی', 'until your next set')}</span></div>
+    <div class="rest-btns">
+      <button type="button" class="btn btn--sm" id="rest-skip" data-act="rest-skip">${r.done ? L('بستن', 'Dismiss') : L('پایان استراحت', 'Skip rest')}</button>
+      <button type="button" class="btn btn--sm" id="rest-add" data-act="rest-add">${isFa() ? fmt(30) + ' ثانیه بیشتر' : '+30 s'}</button>
+    </div>
+  </div>`;
+}
+function setRowHtml(s) {
+  return `<div class="setrow${W.fresh === s.id ? ' fresh' : ''}" id="${s.id}">
+    <span class="no num">${fmt(s.n)}</span>
+    <span class="rw num">${bdn(fmt(s.r) + ' × ' + fmt(s.w))}<small>${kgU()}${s.rpe ? SEP() + ' RPE ' + fmt(s.rpe) : ''}</small></span>
+    <span class="e1"><span class="num">${s.e1 == null ? '—' : fmt(s.e1, { minimumFractionDigits: 1 })}</span>${s.pr ? stamp('red', L('رکورد', 'PR')) : ''}</span>
+  </div>`;
+}
+function viewWorkout() {
+  const cur = W.cur, d = DAYA[cur], ex = d.ex;
+  const mine = setsOf(cur);
+  const v = W.vals[cur];
+  const doneAll = W.sets.length;
+  const nextN = mine.length + 1;
+  const complete = mine.length >= d.sets;
+  const freshIdx = W.fresh && mine.some((s) => s.id === W.fresh) ? mine.length - 1 : -1;
+  const segs = DAYA.map((x, i) => {
+    const n = setsOf(i).length;
+    let s = '';
+    for (let k = 0; k < x.sets; k++) s += `<i class="${k < n ? 'on' : ''}${i === cur ? ' cur' : ''}"></i>`;
+    return s;
+  }).join('<i class="gap"></i>');
+  const strip = DAYA.map((x, i) => {
+    const n = setsOf(i).length;
+    const ok = n >= x.sets;
+    return `<button type="button" class="exchip${ok ? ' done' : ''}" id="exc-${i}" data-act="ex-pick" data-i="${i}" aria-current="${i === cur}" aria-label="${esc(exName(x.ex) + '، ' + L(`${fmt(n)} از ${fmt(x.sets)} ست`, `${n} of ${x.sets} sets`))}"><b>${esc(x.short[isFa() ? 0 : 1])}</b><small class="num">${ok ? ico('check') : ''}${fmt(n)}/${fmt(x.sets)}</small></button>`;
+  }).join('');
+  const rpe = [6, 7, 8, 9, 10].map((n) => `<button type="button" class="chip num" id="rpe-${n}" data-act="rpe" data-v="${n}" aria-pressed="${W.rpe === n}">${fmt(n)}</button>`).join('');
+  return `<div class="frame">
+    <div class="fp has-tabs">
+      <div class="apphead"><span class="wordmark"><i></i>${L('دفتر', 'Daftar')}</span><span class="avatar" role="img" aria-label="${esc(nm('sara'))}">${esc(initials('sara'))}</span></div>
+      <div class="wk-head">
+        <h1 class="t1 display">${L('روز A — سینه و سرشانه', 'Day A — Push')}</h1>
+        <div class="wk-meta">
+          <span>${esc(dLong(todayNum()))}</span>
+          <span class="row" style="gap:6px">${ico('clock')}<span class="num" id="w-elapsed" role="timer" aria-label="${esc(L('زمان گذشته', 'Elapsed time'))}">${fmtElapsed()}</span></span>
+          <span><b class="num" id="w-count">${fmt(doneAll)}</b> ${L('از', 'of')} <span class="num">${fmt(totalTarget())}</span> ${L('ست', 'sets')}</span>
+        </div>
+        <div class="segs" aria-hidden="true">${segs}</div>
+      </div>
+      <div class="body">
+        <div class="exstrip" id="exstrip" data-keepscroll role="group" aria-label="${esc(L('حرکت‌های امروز', "Today's exercises"))}">${strip}</div>
+        <section class="card excard" aria-labelledby="ex-h">
+          <div class="ex-title"><h2 id="ex-h">${esc(exName(ex))}</h2><span class="alt latin"><bdi>${esc(exAlt(ex))}</bdi></span></div>
+          <div class="facts">
+            <div class="fact"><span class="k">${L('هدف', 'Target')}</span><span class="v num">${bdn(target(d.sets, d.reps, null, d.kg))}</span></div>
+            <div class="fact"><span class="k">${L('دفعه‌ی قبل', 'Last time')}</span><span class="v num">${bdn(lastTime(cur))}</span></div>
+          </div>
+          <div class="steppers">
+            ${stepper({ id: 'w-in', act: 'lg', attrs: 'data-f="w"', label: L('وزنه', 'Weight'), unit: kgU(), value: v.w, decLabel: L('کم کردن ۲٫۵ کیلو', 'Decrease by 2.5 kg'), incLabel: L('زیاد کردن ۲٫۵ کیلو', 'Increase by 2.5 kg') })}
+            ${stepper({ id: 'r-in', act: 'lg', attrs: 'data-f="r"', label: L('تکرار', 'Reps'), unit: '', mode: 'numeric', value: v.r, decLabel: L('یک تکرار کمتر', 'One rep fewer'), incLabel: L('یک تکرار بیشتر', 'One rep more') })}
+          </div>
+          <div class="row row--between row--wrap">
+            <button type="button" class="btn btn--sm" id="same-btn" data-act="same">${ico('repeat')}${L('مثل ست قبل', 'Same as last set')}</button>
+            <span class="cap">${L('حداکثر تخمینی: ', 'e1RM: ')}<b class="num" id="e1-prev" style="color:var(--ink)">${e1Preview()}</b> ${kgU()}</span>
+          </div>
+          <div class="bb" id="bb">${bbContent()}</div>
+          <div class="rpe" role="group" aria-labelledby="rpe-l"><span class="lbl" id="rpe-l">${L('سختی ست (RPE) — اختیاری', 'Effort (RPE), optional')}</span>${rpe}</div>
+          <button type="button" class="btn btn--red btn--xl btn--block" id="log-btn" data-act="log">${L(`ثبت ست ${fmt(nextN)}${complete ? ' (اضافه)' : ''}`, `Log set ${nextN}${complete ? ' (extra)' : ''}`)}</button>
+        </section>
+        <div id="rest-box">${restHtml()}</div>
+        ${complete ? `<div class="donebox"><b>${ico('check')}${L('همه‌ی ست‌های این حرکت تمام شد.', 'All sets for this exercise are done.')}</b>${cur < DAYA.length - 1 ? `<button type="button" class="btn btn--sm" id="next-ex" data-act="ex-pick" data-i="${cur + 1}">${L('حرکت بعدی', 'Next exercise')}${icoD('chevR')}</button>` : ''}</div>` : ''}
+        <section aria-labelledby="sets-h">
+          <h2 class="sl" id="sets-h">${L('ست‌های ثبت‌شده', 'Sets logged')}</h2>
+          <div class="sets">
+            ${mine.length ? `<div class="sets-tally">${tally(mine.length, freshIdx, L(`${fmt(mine.length)} ست`, `${mine.length} sets`))}<span class="cap num">${L(`${fmt(mine.length)} از ${fmt(d.sets)} ست`, `${mine.length} of ${d.sets} sets`)}</span></div>` : ''}
+            <div class="sets-head"><span>${L('ست', 'Set')}</span><span>${L('تکرار × وزنه', 'Reps × weight')}</span><span>${L('حداکثر تخمینی', 'e1RM')}</span></div>
+            ${mine.length ? mine.map(setRowHtml).join('') : `<div class="sets-empty">${L('هنوز ستی ثبت نکرده‌ای.', 'No sets logged yet.')}</div>`}
+            <div class="sets-foot">${L('حداکثر تخمینی: وزنه‌ای که احتمالاً می‌توانی یک بار بزنی (فرمول اپلی).', 'e1RM: estimated one-rep max, Epley formula.')}</div>
+          </div>
+        </section>
+      </div>
+    </div>
+    ${tabbar('workout')}
+  </div>`;
+}
+function syncLogger() {
+  const v = W.vals[W.cur];
+  const wi = $('#w-in'), ri = $('#r-in');
+  if (wi && document.activeElement !== wi) wi.value = fmt(v.w);
+  if (ri && document.activeElement !== ri) ri.value = fmt(v.r);
+  [wi, ri].forEach((i) => { if (i) { i.classList.toggle('long', i.value.length > 4); i.removeAttribute('aria-invalid'); } });
+  const bb = $('#bb');
+  if (bb) bb.innerHTML = bbContent();
+  const pv = $('#e1-prev');
+  if (pv) pv.textContent = e1Preview();
+  $$('.rpe .chip').forEach((c) => c.setAttribute('aria-pressed', String(W.rpe === +c.dataset.v)));
+}
+function logSet() {
+  const cur = W.cur, v = W.vals[cur];
+  const n = setsOf(cur).length + 1;
+  const e = e1rm(v.w, v.r);
+  const e1 = e == null ? null : r1(e);
+  let pr = false;
+  if (e1 != null && e1 > W.best[cur] + 1e-9) { pr = true; W.best[cur] = e1; }
+  const s = { id: 's' + (++W.seq), ex: cur, n, r: v.r, w: v.w, rpe: W.rpe, e1, pr, at: Date.now() };
+  W.sets.push(s);
+  W.fresh = s.id;
+  W.rpe = null;
+  W.rest = { endsAt: Date.now() + DAYA[cur].rest * 1000, total: DAYA[cur].rest * 1000, done: false };
+  rerender('workout');
+  announce(L(`ست ${fmt(n)} ثبت شد: ${fmt(s.r)} × ${fmt(s.w)} ${kgU()}.${pr ? ' رکورد جدید!' : ''}`, `Set ${n} logged: ${s.r} × ${s.w} kg.${pr ? ' New record!' : ''}`));
+  setTimeout(() => { W.fresh = null; }, 700);
+}
+function tickWorkout() {
+  const el = $('#w-elapsed');
+  if (el) el.textContent = fmtElapsed();
+  const r = W.rest;
+  if (!r || r.done) return;
+  const remain = r.endsAt - Date.now();
+  const t = $('#rest-time'), bar = $('#rest-bar');
+  if (remain <= 0) {
+    r.done = true;
+    const box = $('#rest-box');
+    if (box) box.innerHTML = restHtml();
+    announce(L('استراحت تمام شد. ست بعدی را ثبت کن.', 'Rest is over. Log your next set.'));
+    return;
+  }
+  if (t) t.textContent = mmss(Math.ceil(remain / 1000));
+  if (bar) bar.setAttribute('stroke-dashoffset', String(r2(2 * Math.PI * 29 * (1 - clamp(remain / r.total, 0, 1)))));
+}
+
+/* ==========================================================================
+   Progress
+   ========================================================================== */
+const PG = { ex: '0025' };
+function niceScale(min, max) {
+  const span = Math.max(1, max - min);
+  const step = [1, 2, 2.5, 5, 10, 20, 25, 50, 100, 200].find((c) => span / c <= 4.2) || 200;
+  const lo = Math.floor((min - span * 0.08) / step) * step;
+  const hi = Math.ceil((max + span * 0.08) / step) * step;
+  const ticks = [];
+  for (let v = lo; v <= hi + 1e-9; v += step) ticks.push(r2(v));
+  return { lo, hi: ticks[ticks.length - 1], ticks };
+}
+const wkLabel = (wk) => dShort(weekStart(todayNum()) + 7 * wk);
+function viewProgress() {
+  const st = progressStats(PG.ex);
+  const pick = PICK.map((id) => `<button type="button" class="chip" id="pg-${id}" data-act="pg-ex" data-ex="${id}" aria-pressed="${PG.ex === id}">${esc(exName(id))}</button>`).join('');
+  const wkTxt = (wk) => (wk === 0 ? L('این هفته', 'this week') : dShort(sessionDay(wk)));
+  const pr = (k, v, unit, wk) => `<div class="pr"><span class="k">${k}</span><span class="v num">${v}<small>${unit}</small></span><span class="d">${wk == null ? '' : wkTxt(wk)}</span></div>`;
+  const e1v = st.bestE.v ? fmt(st.bestE.v, { minimumFractionDigits: 1 }) : '—';
+  return `<div class="frame">
+    <div class="fp has-tabs">
+      <div class="apphead"><span class="wordmark"><i></i>${L('دفتر', 'Daftar')}</span><span class="avatar" role="img" aria-label="${esc(nm('sara'))}">${esc(initials('sara'))}</span></div>
+      <div class="pagehead"><h1 class="t1 display">${L('پیشرفت', 'Progress')}</h1><p>${L('ده هفته‌ی اخیر؛ ستی که ثبت کنی همین‌جا اثر می‌گذارد.', 'The last ten weeks. Every set you log moves these numbers.')}</p></div>
+      <div class="body">
+        <div class="pick" id="pick" data-keepscroll role="group" aria-label="${esc(L('انتخاب حرکت', 'Choose exercise'))}">${pick}</div>
+        <section aria-labelledby="ch1">
+          <h2 class="sl" id="ch1">${L('حداکثر تخمینی (e1RM)', 'Estimated 1RM (e1RM)')}</h2>
+          <div class="card chartbox"><div class="chart" id="chart-e1"></div><p class="cap">${L('بهترین ست هر هفته، به کیلو.', 'Best set of each week, in kg.')}</p></div>
+        </section>
+        <section aria-labelledby="ch2">
+          <h2 class="sl" id="ch2">${L('رکوردها', 'Records')}</h2>
+          <div class="card prs">
+            ${pr(L('بهترین حداکثر تخمینی', 'Best e1RM'), e1v, kgU(), st.bestE.wk)}
+            ${pr(L('سنگین‌ترین وزنه‌ی ۵ تکراری', 'Best 5-rep weight'), st.best5.v ? fmt(st.best5.v) : '—', kgU(), st.best5.v ? st.best5.wk : null)}
+            ${pr(L('بیشترین حجم در یک روز', 'Best volume day'), st.bestVol.v ? fmtG(st.bestVol.v) : '—', kgU(), st.bestVol.v ? st.bestVol.wk : null)}
+          </div>
+        </section>
+        <section aria-labelledby="ch3">
+          <h2 class="sl" id="ch3">${L('حجم هفتگی', 'Weekly volume')}</h2>
+          <div class="card chartbox"><div class="chart" id="chart-vol"></div><p class="cap">${L('مجموع تکرار × وزنه در همه‌ی حرکت‌ها. هفته‌ی جاری هنوز تمام نشده.', 'Reps × weight across all exercises. This week is still running.')}</p></div>
+        </section>
+      </div>
+    </div>
+    ${tabbar('progress')}
+  </div>`;
+}
+function chartX(i, n, W_, m) {
+  const x0 = m.s + 12, x1 = W_ - m.e - 8;
+  const t = n > 1 ? i / (n - 1) : 0;
+  return rtl() ? (W_ - m.s - 12) - t * ((W_ - m.s - 12) - (m.e + 8)) : x0 + t * (x1 - x0);
+}
+function drawCharts() {
+  const e1 = $('#chart-e1'), vol = $('#chart-vol');
+  if (!e1 || !vol) return;
+  /* --- e1RM line --- */
+  {
+    const Wd = Math.max(260, Math.round(e1.clientWidth || 320));
+    const H = 220, m = { t: 30, b: 34, s: 42, e: 14 };
+    const st = progressStats(PG.ex);
+    const pts = st.pts.map((p, i) => ({ i, wk: p.wk, v: p.v })).filter((p) => p.v != null);
+    const vs = pts.map((p) => p.v);
+    const sc = niceScale(Math.min.apply(null, vs), Math.max.apply(null, vs));
+    const yOf = (v) => m.t + (1 - (v - sc.lo) / (sc.hi - sc.lo)) * (H - m.t - m.b);
+    const ax = rtl() ? Wd - m.s + 8 : m.s - 8;
+    const gx1 = rtl() ? m.e : m.s, gx2 = rtl() ? Wd - m.s : Wd - m.e;
+    let g = '';
+    sc.ticks.forEach((t) => {
+      const y = r2(yOf(t));
+      g += `<line class="${t === sc.lo ? 'ch-base' : 'ch-grid'}" x1="${gx1}" x2="${gx2}" y1="${y}" y2="${y}"/><text class="ch-txt" x="${ax}" y="${r2(y + 4)}" text-anchor="${rtl() ? 'start' : 'end'}">${fmt(t)}</text>`;
+    });
+    g += `<text class="ch-txt" x="${rtl() ? Wd - 2 : 2}" y="${m.t - 14}" text-anchor="${rtl() ? 'end' : 'start'}">${kgU()}</text>`;
+    const n = pts.length;
+    const P_ = pts.map((p) => ({ x: r2(chartX(p.i, 10, Wd, m)), y: r2(yOf(p.v)), v: p.v, wk: p.wk }));
+    g += `<polyline class="ch-line" points="${P_.map((p) => p.x + ',' + p.y).join(' ')}"/>`;
+    const bestV = Math.max.apply(null, vs);
+    const bestP = P_.filter((p) => p.v === bestV).pop();
+    P_.forEach((p, idx) => { if (idx < n - 1) g += `<circle class="ch-dot" cx="${p.x}" cy="${p.y}" r="3.5"/>`; });
+    const last = P_[n - 1];
+    const lastIsBest = bestP === last;
+    if (!lastIsBest) g += `<circle class="ch-ring" cx="${bestP.x}" cy="${bestP.y}" r="9"/><text class="ch-txt ch-txt--ink" x="${bestP.x}" y="${r2(bestP.y - 15)}" text-anchor="middle">${fmt(bestP.v, { minimumFractionDigits: 1 })}</text>`;
+    g += `<circle class="ch-end${lastIsBest ? '' : ' ch-end--ink'}" cx="${last.x}" cy="${last.y}" r="7"/><text class="ch-txt ch-txt--ink" x="${last.x}" y="${r2(last.y - 14)}" text-anchor="${rtl() ? 'start' : 'end'}">${fmt(last.v, { minimumFractionDigits: 1 })}</text>`;
+    for (let i = 0; i < 10; i++) {
+      if (i % 3 !== 0 && i !== 9) continue;
+      g += `<text class="ch-txt" x="${r2(chartX(i, 10, Wd, m))}" y="${H - 10}" text-anchor="${i === 9 ? (rtl() ? 'start' : 'end') : 'middle'}">${i === 9 ? L('این هفته', 'This week') : wkLabel(i - 9)}</text>`;
+    }
+    const sum = L(`نمودار حداکثر تخمینی ${exName(PG.ex)}: از ${fmt(vs[0])} تا ${fmt(vs[vs.length - 1])} کیلو در ده هفته`, `Estimated 1RM for ${exName(PG.ex)}: from ${vs[0]} to ${vs[vs.length - 1]} kg over ten weeks`);
+    e1.innerHTML = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="${esc(sum)}">${g}</svg>`;
+  }
+  /* --- weekly volume bars --- */
+  {
+    const Wd = Math.max(260, Math.round(vol.clientWidth || 320));
+    const H = 200, m = { t: 30, b: 34, s: 42, e: 14 };
+    const data = weeklyVolume();
+    const mx = Math.max.apply(null, data.map((d) => d.v));
+    const top = Math.max(2000, Math.ceil(mx / 2000) * 2000);
+    const yOf = (v) => m.t + (1 - v / top) * (H - m.t - m.b);
+    const ax = rtl() ? Wd - m.s + 8 : m.s - 8;
+    const gx1 = rtl() ? m.e : m.s, gx2 = rtl() ? Wd - m.s : Wd - m.e;
+    let g = '<defs><pattern id="vhatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" class="ch-pbg"/><line x1="0" y1="0" x2="0" y2="6" class="ch-pline"/></pattern></defs>';
+    for (let t = 0; t <= top; t += 2000) {
+      const y = r2(yOf(t));
+      g += `<line class="${t === 0 ? 'ch-base' : 'ch-grid'}" x1="${gx1}" x2="${gx2}" y1="${y}" y2="${y}"/><text class="ch-txt" x="${ax}" y="${r2(y + 4)}" text-anchor="${rtl() ? 'start' : 'end'}">${fmt(t / 1000)}</text>`;
+    }
+    g += `<text class="ch-txt" x="${rtl() ? Wd - 2 : 2}" y="${m.t - 14}" text-anchor="${rtl() ? 'end' : 'start'}">${L('هزار کیلو', '×1,000 kg')}</text>`;
+    const slot = (Wd - m.s - m.e) / data.length;
+    const bw = Math.min(30, slot * 0.58);
+    data.forEach((d, i) => {
+      const cx = rtl() ? Wd - m.s - slot * (i + 0.5) : m.s + slot * (i + 0.5);
+      const y = yOf(d.v);
+      const cur = i === data.length - 1;
+      g += `<rect class="ch-bar${cur ? ' ch-bar--cur' : ''}" x="${r2(cx - bw / 2)}" y="${r2(y)}" width="${r2(bw)}" height="${r2(yOf(0) - y)}"/>`;
+      g += `<text class="ch-txt${cur ? ' ch-txt--ink' : ''}" x="${r2(cx)}" y="${r2(y - 6)}" text-anchor="middle">${fmt(d.v / 1000, { maximumFractionDigits: 1 })}</text>`;
+      if (i % 2 === 1) g += `<text class="ch-txt" x="${r2(cx)}" y="${H - 10}" text-anchor="middle">${wkLabel(d.wk)}</text>`;
+    });
+    const sum = L(`حجم هفتگی هشت هفته‌ی اخیر، از ${fmtG(data[0].v)} تا ${fmtG(data[data.length - 1].v)} کیلو`, `Weekly volume over eight weeks, from ${fmtG(data[0].v)} to ${fmtG(data[data.length - 1].v)} kg`);
+    vol.innerHTML = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="${esc(sum)}">${g}</svg>`;
+  }
+}
+/* ==========================================================================
+   Coach: shell, dashboard, program builder
+   ========================================================================== */
+const C = { page: 'dash', tab: 0, started: null, nudged: {}, msg: '' };
+const FULL = {
+  schedule: { icon: 'calendar', t: ['تقویم', 'Schedule'], d: ['نمای هفتگی رزروها روی ساعت‌های کاری، ویرایش ساعت کاری و ثبت مرخصی.', 'A week view of bookings over your availability, an availability editor and time off.'] },
+  clients: { icon: 'users', t: ['شاگردها', 'Clients'], d: ['جدول شاگردها با جست‌وجو، پروفایل، یادداشت خصوصی مربی و تاریخچه‌ی تمرین.', 'A searchable client table with profiles, private coach notes and workout history.'] },
+  exercises: { icon: 'dumbbell', t: ['حرکت‌ها', 'Exercises'], d: ['کتابخانه‌ی ۱٬۳۲۴ حرکت با جست‌وجوی فارسی و انگلیسی، فیلتر دستگاه و عضله، و افزودن حرکت دلخواه.', 'The full library of 1,324 exercises, searchable in Persian and English, with custom exercises.'] },
+  settings: { icon: 'gear', t: ['تنظیمات', 'Settings'], d: ['مدت جلسه، مهلت لغو، حداقل زمان رزرو و وزن میله.', 'Session length, cancellation window, minimum notice and bar weight.'] }
+};
+function coachShell(active, inner) {
+  const item = (id, href, icon, label, extra) => `<a class="ritem${extra && extra.sub ? ' ritem--sub' : ''}" id="r-${id}" href="${href}" data-act="cpage" data-page="${id}"${active === id ? ' aria-current="page"' : ''}>${ico(icon)}<span>${label}</span></a>`;
+  return `<div class="coach">
+    <nav class="rail" aria-label="${esc(L('منوی مربی', 'Coach menu'))}">
+      <div class="rail-brand"><span class="wordmark"><i></i>${L('دفتر', 'Daftar')}</span><span class="cap">${L('پنل مربی', 'Coach panel')}</span></div>
+      ${item('dash', '#coach', 'dash', L('داشبورد', 'Dashboard'))}
+      ${item('schedule', '#coach', 'calendar', L('تقویم', 'Schedule'))}
+      ${item('clients', '#coach', 'users', L('شاگردها', 'Clients'))}
+      <a class="ritem ritem--sub" id="r-builder" href="#builder"${active === 'builder' ? ' aria-current="page"' : ''}>${ico('list')}<span>${L('برنامه‌ی سارا', "Sara's program")}</span></a>
+      ${item('exercises', '#coach', 'dumbbell', L('حرکت‌ها', 'Exercises'))}
+      ${item('settings', '#coach', 'gear', L('تنظیمات', 'Settings'))}
+      <div class="rail-who"><b>${esc(COACH[lang])}</b><br>${L('مربی', 'Coach')}</div>
+    </nav>
+    <div class="cmain">${inner}</div>
+  </div>`;
+}
+function agendaLabel(d, i) {
+  const t = todayNum();
+  if (d === t) return L('امروز', 'Today');
+  if (d === t + 1) return L('فردا', 'Tomorrow');
+  return dWeekday(d);
+}
+function tlItem(b, nextId) {
+  const s = startOf(b.day, b.hour), e = startOf(b.day, b.hour + 1), now = Date.now();
+  const done = e <= now;
+  const live = !done && (C.started === b.id || s <= now);
+  let st = '', act = '';
+  if (done) st = stamp('green', L('انجام شد', 'Done'));
+  else if (live) st = stamp('', L('در حال جلسه', 'In session'));
+  else st = stamp('blue', L('تأیید شد', 'Confirmed'), b.fresh ? 'stamp--land' : '');
+  if (!done && !live && b.id === nextId) act = `<button type="button" class="btn btn--sm btn--ink" id="start-${b.id}" data-act="start" data-id="${b.id}">${ico('play')}${L('شروع جلسه', 'Start session')}</button>`;
+  if (live && b.client === 'sara') act = `<a class="btn btn--sm" id="open-${b.id}" href="#workout">${L('باز کردن دفتر', 'Open logbook')}${icoD('chevR')}</a>`;
+  const note = noteText(b);
+  return `<li class="tl-item${done ? ' is-done' : ''}${live ? ' is-live' : ''}" id="tl-${b.id}">
+    <span class="tl-time num">${hm(b.hour)}</span><span class="tl-dot" aria-hidden="true"></span>
+    <div class="tl-body"><div class="tl-name"><b><bdi>${esc(nm(b.client))}</bdi></b><span class="cap">${note ? esc(note) : L(`${fmt(60)} دقیقه`, `${fmt(60)} min`)}</span></div><div class="tl-act">${st}${act}</div></div>
+  </li>`;
+}
+const NUDGE = [{ id: 'hamed', days: 12 }, { id: 'maryam', days: 9 }, { id: 'ali', days: 7 }];
+const FEED = [
+  { c: 'nima', ex: '0043', r: 5, w: 80, ago: 14, pr: true },
+  { c: 'parisa', ex: '0652', r: 8, w: 0, ago: 41, pr: false },
+  { c: 'ali', ex: '0032', r: 5, w: 100, ago: 66, pr: false },
+  { c: 'maryam', ex: '0198', r: 10, w: 40, ago: 190, pr: false },
+  { c: 'hamed', ex: '0025', r: 6, w: 70, ago: 1500, pr: false }
+];
+function feedItems() {
+  const out = [];
+  const last = W.sets[W.sets.length - 1];
+  if (last) out.push({ c: 'sara', ex: DAYA[last.ex].ex, r: last.r, w: last.w, at: last.at, pr: last.pr });
+  FEED.forEach((f) => out.push({ c: f.c, ex: f.ex, r: f.r, w: f.w, at: Date.now() - f.ago * 60000, pr: f.pr }));
+  return out.slice(0, 5);
+}
+function viewCoachDash() {
+  const t = todayNum();
+  const wd = windowDays();
+  C.tab = clamp(C.tab, 0, Math.max(0, wd.length - 1));
+  const day = wd[C.tab];
+  const sessions = day == null ? [] : bookings.filter((b) => b.day === day && b.status === 'confirmed').sort((a, b) => a.hour - b.hour);
+  const nextUp = C.tab === 0 ? sessions.find((b) => startOf(b.day, b.hour + 1) > Date.now() && C.started !== b.id && startOf(b.day, b.hour) > Date.now()) : null;
+  const tabs = wd.map((d, i) => `<button type="button" id="ctab-${i}" data-act="ctab" data-i="${i}" aria-pressed="${i === C.tab}">${esc(agendaLabel(d, i))}</button>`).join('');
+  const pending = bookings.filter((b) => b.status === 'pending' && startOf(b.day, b.hour) > Date.now()).sort((a, b) => startOf(a.day, a.hour) - startOf(b.day, b.hour));
+  const wk = weekDays(0);
+  let bookedAll = 0, totalAll = 0;
+  const heat = wk.map((d) => {
+    const hs = hoursOf(d);
+    const booked = hs.filter((h) => slotMap.has(sk(d, h))).length;
+    bookedAll += booked; totalAll += hs.length;
+    const fri = isFriday(d);
+    const label = `${dWeekday(d)}، ${fri ? L('تعطیل', 'closed') : L(`${fmt(booked)} از ${fmt(hs.length)} ساعت پر`, `${booked} of ${hs.length} hours booked`)}`;
+    return `<div class="hday${d === t ? ' is-today' : ''}${fri ? ' is-fri' : ''}" role="group" aria-label="${esc(label)}">
+      <span class="wd"><span class="wd-n">${dWeekdayShort(d)}</span><span class="wd-l">${dfmt(d, { weekday: 'short' })}</span></span>
+      ${fri ? `<span class="big">${L('تعطیل', 'Off')}</span><span class="of">&nbsp;</span>` : `<span class="big num">${fmt(booked)}</span><span class="of num">${L('از', 'of')} ${fmt(hs.length)}</span>`}
+      <span class="meter"><i style="inline-size:${hs.length ? Math.round((booked / hs.length) * 100) : 0}%"></i></span>
+    </div>`;
+  }).join('');
+  const reqs = pending.map((b) => `<li class="req" id="req-${b.id}">
+      <div class="req-top"><b><bdi>${esc(nm(b.client))}</bdi></b><span class="cap num">${esc(dWeekday(b.day) + ' ' + dShort(b.day) + SEP())} <bdi>${hm(b.hour)}</bdi></span></div>
+      ${noteText(b) ? `<p class="req-note">${esc(noteText(b))}</p>` : ''}
+      <span class="cap">${esc(ago(b.created))}</span>
+      <div class="req-btns">
+        <button type="button" class="btn btn--sm btn--quiet" id="no-${b.id}" data-act="req-no" data-id="${b.id}">${ico('x')}${L('رد درخواست', 'Decline')}</button>
+        <button type="button" class="btn btn--sm btn--blue" id="yes-${b.id}" data-act="req-yes" data-id="${b.id}">${ico('check')}${L('تأیید', 'Confirm')}</button>
+      </div>
+    </li>`).join('');
+  const nudges = NUDGE.map((n) => `<li class="nudge"><div><b><bdi>${esc(nm(n.id))}</bdi></b><div class="cap">${L('آخرین تمرین', 'Last workout')}</div></div>
+      <span class="d num">${fmt(n.days)}<small>${L('روز', 'days')}</small></span>
+      <button type="button" class="btn btn--sm" id="nudge-${n.id}" data-act="nudge" data-id="${n.id}"${C.nudged[n.id] ? ' disabled' : ''}>${C.nudged[n.id] ? ico('check') + L('فرستاده شد', 'Sent') : L('یادآوری', 'Nudge')}</button></li>`).join('');
+  const feed = feedItems().map((f) => `<li><span class="who"><bdi>${esc(nm(f.c))}</bdi></span><span class="what">${esc(exName(f.ex))}</span>
+      <span class="best num"><span>${bdn(fmt(f.r) + (f.w ? ' × ' + fmt(f.w) + ' ' + kgU() : ' ' + L('تکرار', 'reps')))}</span>${f.pr ? stamp('red', L('رکورد', 'PR')) : ''}<small>${esc(ago(f.at))}</small></span></li>`).join('');
+  return `<header class="pagehead" style="padding-block-start:0"><h1 class="t1 display">${L('داشبورد', 'Dashboard')}</h1><p>${esc(dLong(t))}</p></header>
+    <section aria-labelledby="c-week">
+      <div class="panel-head" style="margin-block-end:12px"><h2 class="sl" id="c-week" style="margin:0">${esc(L('این هفته', 'This week') + SEP() + ' ' + weekRange(wk))}</h2><span class="fine num">${L(`${fmt(bookedAll)} از ${fmt(totalAll)} ساعت پر`, `${bookedAll} of ${totalAll} hours booked`)}</span></div>
+      <div class="heat">${heat}</div>
+    </section>
+    <div class="dgrid">
+      <div class="dcol">
+        <section class="card panel o-agenda" aria-labelledby="c-today">
+          <div class="panel-head"><h2 class="sl" id="c-today">${L('برنامه‌ی روز', 'Agenda')}</h2><div class="tabs" role="group" aria-label="${esc(L('انتخاب روز', 'Choose day'))}">${tabs}</div></div>
+          ${day != null ? `<p class="fine">${esc(dLong(day))}</p>` : ''}
+          ${sessions.length ? `<ol class="tl">${sessions.map((b) => tlItem(b, nextUp && nextUp.id)).join('')}</ol>` : `<p class="muted">${L('جلسه‌ای در این روز نیست.', 'No sessions this day.')}</p>`}
+          <p class="status" id="coach-status" role="status" aria-live="polite">${esc(C.msg)}</p>
+        </section>
+        <section class="card panel o-nudge" aria-labelledby="c-nudge">
+          <h2 class="sl" id="c-nudge">${L('نیاز به یادآوری', 'Needs a nudge')}</h2>
+          <p class="cap">${L('بیش از ۷ روز بدون تمرین', 'No workout in 7+ days')}</p>
+          <ul>${nudges}</ul>
+        </section>
+      </div>
+      <section class="card panel o-req" aria-labelledby="c-req">
+        <div class="panel-head"><h2 class="sl" id="c-req">${L('درخواست‌ها', 'Requests')}</h2><span class="stamp ${pending.length ? 'stamp--yellow' : 'stamp--mute'} num">${fmt(pending.length)}</span></div>
+        ${pending.length ? `<ul>${reqs}</ul>` : `<p class="muted">${L('درخواستی در صف نیست.', 'No requests waiting.')}</p>`}
+      </section>
+      <section class="card panel full o-feed" aria-labelledby="c-feed">
+        <h2 class="sl" id="c-feed">${L('آخرین ست‌ها', 'Recent sets')}</h2>
+        <ul class="feed">${feed}</ul>
+      </section>
+    </div>`;
+}
+function viewCoach() {
+  if (C.page !== 'dash' && FULL[C.page]) {
+    const f = FULL[C.page];
+    return coachShell(C.page, `<header class="pagehead" style="padding-block-start:0"><h1 class="t1 display">${f.t[isFa() ? 0 : 1]}</h1></header>
+      <div class="infull">${stamp('mute', L('در نسخه‌ی کامل', 'In the full app'))}<h2 class="t2">${f.t[isFa() ? 0 : 1]}</h2><p class="pretty muted">${f.d[isFa() ? 0 : 1]}</p><p class="cap">${L('این بخش در پیش‌نمایش طراحی نیست؛ داشبورد و ساخت برنامه کار می‌کنند.', 'Not in this design preview. The dashboard and the program builder are live.')}</p><button type="button" class="btn btn--sm" id="back-dash" data-act="cpage" data-page="dash">${L('برگشت به داشبورد', 'Back to dashboard')}</button></div>`);
+  }
+  return coachShell('dash', viewCoachDash());
+}
+
+/* ---------- program builder ---------- */
+const dayTitle = (d) => L(`روز ${d.k} — ${d.title.fa}`, `Day ${d.k} — ${d.title.en}`);
+function nextSessionDay() {
+  const m = myBookings().up[0];
+  return m ? m.day : todayNum();
+}
+function parseReps(txt) {
+  const t = toLatinDigits(txt).replace(/[٫]/g, '.');
+  const parts = t.split(/\s*(?:-|–|—|~|تا|to)\s*/i).map((x) => parseInt(x.replace(/\D/g, ''), 10)).filter((x) => !isNaN(x));
+  if (parts.length === 1 && parts[0] >= 1) return { rmin: Math.min(parts[0], 100), rmax: null };
+  if (parts.length === 2 && parts[0] >= 1 && parts[1] > parts[0]) return { rmin: Math.min(parts[0], 100), rmax: Math.min(parts[1], 100) };
+  return null;
+}
+function bValText(it, f) {
+  if (f === 'reps') return repsStr(it.rmin, it.rmax);
+  if (f === 'note') return it.note[lang] || '';
+  return fmt(it[f]);
+}
+function previewCard() {
+  const day = dayOf(P.active);
+  return trainingCard({
+    who: nm('sara'), title: dayTitle(day), day: nextSessionDay(),
+    rows: day.items.map((x) => ({ ex: x.ex, sets: x.sets, rmin: x.rmin, rmax: x.rmax, kg: x.kg, done: [] }))
+  });
+}
+function savedText() {
+  return P.saved ? L('ذخیره شد', 'Saved') : L('تغییرات ذخیره نشده', 'Unsaved changes');
+}
+function browHtml(x, i, n) {
+  const id = (f) => `bi-${x.uid}-${f}`;
+  const at = (f) => `data-uid="${x.uid}" data-f="${f}"`;
+  return `<li class="brow${P.freshUid === x.uid ? ' fresh' : ''}" id="brow-${x.uid}">
+    <div class="brow-top">
+      <span class="grip" aria-hidden="true">${ico('grip')}</span>
+      <span class="brow-no num">${fmt(i + 1)}</span>
+      <div class="brow-name"><span>${esc(exName(x.ex))}</span><small class="latin"><bdi>${esc(exAlt(x.ex))}</bdi></small></div>
+      <div class="brow-btns">
+        <button type="button" class="iconbtn" id="${id('up')}" data-act="b-move" data-uid="${x.uid}" data-d="-1" aria-label="${esc(L('بردن به بالا', 'Move up'))}"${i === 0 ? ' disabled' : ''}>${ico('arrowUp')}</button>
+        <button type="button" class="iconbtn" id="${id('down')}" data-act="b-move" data-uid="${x.uid}" data-d="1" aria-label="${esc(L('بردن به پایین', 'Move down'))}"${i === n - 1 ? ' disabled' : ''}>${ico('arrowDown')}</button>
+        <button type="button" class="iconbtn" id="${id('del')}" data-act="b-del" data-uid="${x.uid}" aria-label="${esc(L('حذف حرکت', 'Remove exercise'))}">${ico('trash')}</button>
+      </div>
+    </div>
+    <div class="bfields">
+      ${stepper({ id: id('sets'), act: 'bf', attrs: at('sets'), label: L('ست', 'Sets'), value: x.sets, small: true, mode: 'numeric', decLabel: L('یک ست کمتر', 'One set fewer'), incLabel: L('یک ست بیشتر', 'One set more') })}
+      <div class="field"><label for="${id('reps')}">${L('تکرار', 'Reps')}</label><input class="input num" id="${id('reps')}" type="text" inputmode="numeric" autocomplete="off" dir="ltr" style="text-align:center" data-in="bf" ${at('reps')} value="${esc(bValText(x, 'reps'))}" aria-describedby="${id('reps')}-h"><span class="hint" id="${id('reps')}-h">${L('یک عدد یا بازه، مثلاً', 'One number or a range, e.g.')} ${bdn(repsStr(8, 12))}</span></div>
+      ${stepper({ id: id('kg'), act: 'bf', attrs: at('kg'), label: `${L('وزنه', 'Weight')} (${kgU()})`, value: x.kg, small: true, decLabel: L('کم کردن ۲٫۵ کیلو', 'Decrease by 2.5 kg'), incLabel: L('زیاد کردن ۲٫۵ کیلو', 'Increase by 2.5 kg') })}
+      ${stepper({ id: id('rest'), act: 'bf', attrs: at('rest'), label: `${L('استراحت', 'Rest')} (${L('ثانیه', 's')})`, value: x.rest, small: true, mode: 'numeric', decLabel: L('۱۵ ثانیه کمتر', '15 seconds less'), incLabel: L('۱۵ ثانیه بیشتر', '15 seconds more') })}
+      <div class="field wide"><label for="${id('note')}">${L('یادداشت برای شاگرد', 'Note for the client')}</label><input class="input" id="${id('note')}" type="text" autocomplete="off" data-in="bf" ${at('note')} value="${esc(bValText(x, 'note'))}"></div>
+    </div>
+  </li>`;
+}
+function viewBuilder() {
+  const day = dayOf(P.active);
+  const tabs = P.days.map((d) => `<button type="button" class="chip" id="bd-${d.k}" data-act="bday" data-k="${d.k}" aria-pressed="${d.k === P.active}">${L('روز', 'Day')} ${d.k}</button>`).join('')
+    + (P.days.length < 6 ? `<button type="button" class="chip" id="bd-add" data-act="bday-add">${ico('plus')}&nbsp;${L('افزودن روز', 'Add day')}</button>` : '');
+  const rows = day.items.length
+    ? `<ol class="stack" style="gap:12px">${day.items.map((x, i) => browHtml(x, i, day.items.length)).join('')}</ol>`
+    : `<div class="empty"><p>${L('این روز هنوز حرکتی ندارد.', 'This day has no exercises yet.')}</p></div>`;
+  return coachShell('builder', `
+    <div class="crumbs"><a href="#coach" data-act="cpage" data-page="dash">${L('داشبورد', 'Dashboard')}</a><span aria-hidden="true">/</span><span>${L('شاگردها', 'Clients')}</span><span aria-hidden="true">/</span><span><bdi>${esc(nm('sara'))}</bdi></span></div>
+    <header class="row row--between row--wrap" style="align-items:flex-end">
+      <div class="pagehead" style="padding:0"><h1 class="t1 display">${L('برنامه‌ی تمرینی', 'Training program')}</h1><p><bdi>${esc(nm('sara'))}</bdi></p></div>
+      <div class="savebar"><span class="status" id="save-status" role="status" aria-live="polite">${savedText()}</span><button type="button" class="btn btn--ink" id="b-save" data-act="b-save">${ico('save')}${L('ذخیره', 'Save')}</button></div>
+    </header>
+    <div class="bld">
+      <div class="stack" style="gap:16px">
+        <div class="field"><label for="prog-title">${L('عنوان برنامه', 'Program title')}</label><input class="input" id="prog-title" type="text" data-in="prog-title" value="${esc(P.title[lang])}" autocomplete="off"></div>
+        <div class="bdays" role="group" aria-label="${esc(L('روزهای برنامه', 'Program days'))}">${tabs}</div>
+        <div class="field"><label for="day-title">${L(`عنوان روز ${day.k}`, `Title of day ${day.k}`)}</label><input class="input" id="day-title" type="text" data-in="day-title" value="${esc(day.title[lang])}" autocomplete="off"></div>
+        ${rows}
+        <button type="button" class="btn btn--block" id="b-add" data-act="b-add">${ico('plus')}${L('افزودن حرکت', 'Add exercise')}</button>
+      </div>
+      <aside class="pv" aria-labelledby="pv-h">
+        <h2 class="sl" id="pv-h">${L('پیش‌نمایش کارت شاگرد', "What the client sees")}</h2>
+        <div id="pv-card">${previewCard()}</div>
+        <p class="cap" style="margin-block-start:10px">${L('کارت با هر تغییر به‌روز می‌شود.', 'The card updates as you edit.')}</p>
+      </aside>
+    </div>`);
+}
+/* ==========================================================================
+   Wiring: chrome, routing, rendering, events
+   ========================================================================== */
+const app = $('#app');
+const VIEWS = { landing: viewLanding, book: viewBook, workout: viewWorkout, progress: viewProgress, coach: viewCoach, builder: viewBuilder };
+const SCREENS = Object.keys(VIEWS);
+const state = { screen: 'landing' };
+const NAV = [
+  ['landing', ['صفحه‌ی اصلی', 'Landing']], 'sep',
+  ['book', ['شاگرد: رزرو', 'Client: Book']], ['workout', ['شاگرد: تمرین', 'Client: Workout']], ['progress', ['شاگرد: پیشرفت', 'Client: Progress']], 'sep',
+  ['coach', ['مربی: داشبورد', 'Coach: Dashboard']], ['builder', ['مربی: ساخت برنامه', 'Coach: Program builder']]
+];
+const effTheme = () => document.documentElement.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+function applyRoot() {
+  app.setAttribute('lang', lang);
+  app.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', lang);
+}
+function renderChrome() {
+  $('#pv-title').textContent = L('دفتر', 'Daftar');
+  const note = L('پیش‌نمایش طراحی — داده‌ی نمونه', 'Design preview — sample data');
+  $('#pv-note').textContent = note;
+  $('#pv-note-m').textContent = note;
+  $('#pv-nav').innerHTML = NAV.map((n) => (n === 'sep' ? '<span class="pv-sep" aria-hidden="true"></span>' : `<a class="pv-link" id="nav-${n[0]}" href="#${n[0]}"${state.screen === n[0] ? ' aria-current="page"' : ''}>${n[1][isFa() ? 0 : 1]}</a>`)).join('');
+  $('#pv-nav').setAttribute('aria-label', L('صفحه‌های پیش‌نمایش', 'Preview screens'));
+  $('#lang-fa').setAttribute('aria-pressed', String(lang === 'fa'));
+  $('#lang-en').setAttribute('aria-pressed', String(lang === 'en'));
+  const dark = effTheme() === 'dark';
+  const tb = $('#theme-btn');
+  tb.setAttribute('aria-pressed', String(dark));
+  tb.setAttribute('aria-label', L('حالت تیره', 'Dark mode'));
+  tb.innerHTML = `${ico(dark ? 'sun' : 'moon')}<span class="pv-theme-txt">${L('حالت تیره', 'Dark mode')}</span>`;
+  const cur = $('#nav-' + state.screen);
+  if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+
+const AFTER = {
+  progress: () => drawCharts(),
+  coach: () => {},
+  workout: () => {}
+};
+function rerender(name) {
+  name = name || state.screen;
+  if (name !== state.screen) return;
+  const host = $('#screen-' + name);
+  const ae = document.activeElement;
+  const fid = ae && ae.id && host.contains(ae) ? ae.id : null;
+  let sel = null;
+  if (fid && ae.setSelectionRange && ae.type !== 'button' && ae.type !== 'submit') { try { sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; } }
+  const sc = {};
+  $$('[data-keepscroll]', host).forEach((el) => { if (el.id) sc[el.id] = el.scrollLeft; });
+  host.innerHTML = VIEWS[name]();
+  Object.keys(sc).forEach((id) => { const el = $('#' + id); if (el) el.scrollLeft = sc[id]; });
+  if (fid) {
+    const el = $('#' + fid);
+    if (el && !el.disabled) {
+      el.focus({ preventScroll: true });
+      if (sel && el.setSelectionRange) { try { el.setSelectionRange(sel[0], sel[1]); } catch (e) { /* not selectable */ } }
+    }
+  }
+  if (AFTER[name]) AFTER[name]();
+}
+function route() {
+  const h = location.hash.replace('#', '');
+  const s = SCREENS.indexOf(h) >= 0 ? h : 'landing';
+  if (SH.open) closeSheet();
+  state.screen = s;
+  SCREENS.forEach((x) => {
+    const el = $('#screen-' + x);
+    el.hidden = x !== s;
+    if (x !== s) el.innerHTML = '';
+  });
+  if (s === 'coach' && C.page !== 'dash' && !FULL[C.page]) C.page = 'dash';
+  renderChrome();
+  rerender(s);
+  window.scrollTo(0, 0);
+  const n = NAV.filter((x) => x !== 'sep' && x[0] === s)[0];
+  if (n) announce(n[1][isFa() ? 0 : 1]);
+}
+function setLang(l) {
+  if (l === lang) return;
+  lang = l;
+  store.set('daftar-lang', l);
+  B.offset = null;
+  B.day = null;
+  applyRoot();
+  renderChrome();
+  rerender();
+  if (SH.open) refreshSheet();
+}
+const findItem = (uid) => { for (const d of P.days) { const x = d.items.find((i) => i.uid === uid); if (x) return x; } return null; };
+function builderLive(x, f) {
+  P.saved = false;
+  if (x && f) {
+    const inp = $('#bi-' + x.uid + '-' + f);
+    if (inp && document.activeElement !== inp) inp.value = bValText(x, f);
+  }
+  const pv = $('#pv-card');
+  if (pv) pv.innerHTML = previewCard();
+  const st = $('#save-status');
+  if (st) st.textContent = savedText();
+}
+
+/* ---------- click actions ---------- */
+const ACT = {
+  lang: (t) => setLang(t.dataset.lang),
+  theme: () => {
+    const n = effTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', n);
+    store.set('daftar-theme', n);
+    renderChrome();
+  },
+  /* booking */
+  slot: (t) => openSheet('book', { day: +t.dataset.day, hour: +t.dataset.hour }),
+  'pick-day': (t) => { B.day = +t.dataset.day; rerender('book'); },
+  wk: (t) => { B.offset = clamp(bookOffset() + +t.dataset.d, 0, 3); B.day = null; rerender('book'); },
+  'sheet-close': () => closeSheet(),
+  'sheet-scrim': (t, e) => { if (e.target === t) closeSheet(); },
+  'book-confirm': () => {
+    const mineLive = bookings.filter((b) => b.client === 'sara' && isLive(b) && startOf(b.day, b.hour) > Date.now()).length;
+    const err = $('#book-err');
+    if (mineLive >= 3) { SH.err = L('حداکثر سه رزرو فعال می‌توانی داشته باشی. اول یکی را لغو کن.', 'You can hold up to 3 bookings. Cancel one first.'); err.textContent = SH.err; return; }
+    if (!bookable(slotInfo(SH.day, SH.hour))) { SH.err = L('این ساعت همین الان پر شد.', 'That slot was just taken.'); err.textContent = SH.err; return; }
+    const bk = claim(SH.day, SH.hour, { client: 'sara', status: 'pending', created: Date.now(), note: SH.note.trim() });
+    SH.step = 'sent';
+    SH.focusAfter = bk.id + '-row';
+    refreshSheet();
+    rerender('book');
+    announce(L('درخواست ثبت شد. منتظر تأیید مربی.', 'Request sent. Waiting for your coach to confirm.'));
+    SH.timer = setTimeout(() => { if (SH.open && SH.kind === 'book') closeSheet(); }, 1800);
+  },
+  'bk-ask': (t) => { B.ask = t.dataset.id; rerender('book'); const y = $('#' + t.dataset.id + '-no'); if (y) y.focus(); },
+  'bk-no': (t) => { B.ask = null; rerender('book'); const c = $('#' + t.dataset.id + '-cancel'); if (c) c.focus(); },
+  'bk-yes': (t) => {
+    const b = bookings.find((x) => x.id === t.dataset.id);
+    if (!b || !canCancel(b)) { B.ask = null; rerender('book'); return; }
+    b.status = 'cancelled';
+    slotMap.delete(sk(b.day, b.hour));
+    B.ask = null;
+    rerender('book');
+    announce(L('رزرو لغو شد و ساعتش دوباره خالی است.', 'Booking cancelled. The slot is open again.'));
+  },
+  /* workout */
+  'lg-step': (t) => {
+    const v = W.vals[W.cur];
+    const d = +t.dataset.d;
+    if (t.dataset.f === 'w') v.w = r2(clamp(v.w + d * 2.5, 0, 400));
+    else v.r = clamp(v.r + d, 1, 60);
+    syncLogger();
+  },
+  same: () => {
+    const v = W.vals[W.cur];
+    const mine = setsOf(W.cur);
+    const last = mine[mine.length - 1];
+    const src = last ? { w: last.w, r: last.r } : { w: LASTSETS[DAYA[W.cur].ex][0][1], r: LASTSETS[DAYA[W.cur].ex][0][0] };
+    v.w = src.w; v.r = src.r;
+    syncLogger();
+    announce(L(`${fmt(v.r)} × ${fmt(v.w)} ${kgU()}`, `${v.r} × ${v.w} kg`));
+  },
+  rpe: (t) => { const n = +t.dataset.v; W.rpe = W.rpe === n ? null : n; syncLogger(); },
+  log: () => logSet(),
+  'ex-pick': (t) => {
+    W.cur = +t.dataset.i;
+    rerender('workout');
+    const c = $('#exc-' + W.cur);
+    if (c && c.scrollIntoView) c.scrollIntoView({ inline: 'center', block: 'nearest' });
+  },
+  'rest-skip': () => { W.rest = null; const b = $('#rest-box'); if (b) b.innerHTML = ''; const l = $('#log-btn'); if (l) l.focus(); },
+  'rest-add': () => {
+    const r = W.rest;
+    if (!r) return;
+    if (r.done) { r.endsAt = Date.now() + 30000; r.total = 30000; r.done = false; }
+    else { r.endsAt += 30000; r.total += 30000; }
+    const b = $('#rest-box');
+    if (b) b.innerHTML = restHtml();
+    const a = $('#rest-add');
+    if (a) a.focus();
+  },
+  /* progress */
+  'pg-ex': (t) => { PG.ex = t.dataset.ex; rerender('progress'); },
+  /* coach */
+  cpage: (t, e) => {
+    e.preventDefault();
+    C.page = t.dataset.page;
+    if (state.screen !== 'coach') location.hash = '#coach';
+    else rerender('coach');
+  },
+  ctab: (t) => { C.tab = +t.dataset.i; rerender('coach'); },
+  start: (t) => {
+    const b = bookings.find((x) => x.id === t.dataset.id);
+    if (!b) return;
+    C.started = b.id;
+    C.msg = L(`جلسه‌ی ${nm(b.client)} شروع شد.`, `Session with ${nm(b.client)} started.`);
+    rerender('coach');
+  },
+  nudge: (t) => {
+    C.nudged[t.dataset.id] = true;
+    C.msg = L(`یادآوری برای ${nm(t.dataset.id)} فرستاده شد.`, `Nudge sent to ${nm(t.dataset.id)}.`);
+    rerender('coach');
+  },
+  'req-yes': (t) => {
+    const b = bookings.find((x) => x.id === t.dataset.id);
+    if (!b) return;
+    b.status = 'confirmed';
+    b.fresh = true;
+    const i = windowDays().indexOf(b.day);
+    if (i >= 0) C.tab = i;
+    C.msg = L(`${nm(b.client)} تأیید شد: ${dShort(b.day)}، ${hm(b.hour)}.`, `${nm(b.client)} confirmed: ${dShort(b.day)}, ${hm(b.hour)}.`);
+    rerender('coach');
+    setTimeout(() => { b.fresh = false; }, 700);
+  },
+  'req-no': (t) => {
+    const b = bookings.find((x) => x.id === t.dataset.id);
+    if (!b) return;
+    b.status = 'declined';
+    slotMap.delete(sk(b.day, b.hour));
+    C.msg = L(`درخواست ${nm(b.client)} رد شد؛ ساعت دوباره خالی است.`, `${nm(b.client)}'s request declined. The slot is open again.`);
+    rerender('coach');
+  },
+  /* builder */
+  bday: (t) => { P.active = t.dataset.k; P.freshUid = 0; rerender('builder'); },
+  'bday-add': () => {
+    const k = String.fromCharCode(65 + P.days.length);
+    P.days.push({ k, title: { fa: 'روز جدید', en: 'New day' }, items: [] });
+    P.active = k;
+    P.saved = false;
+    rerender('builder');
+    announce(L(`روز ${k} اضافه شد.`, `Day ${k} added.`));
+    const f = $('#day-title');
+    if (f) { f.focus(); f.select(); }
+  },
+  'b-move': (t) => {
+    const items = dayOf(P.active).items;
+    const uid = +t.dataset.uid, d = +t.dataset.d;
+    const i = items.findIndex((x) => x.uid === uid);
+    const j = i + d;
+    if (i < 0 || j < 0 || j >= items.length) return;
+    const tmp = items[i]; items[i] = items[j]; items[j] = tmp;
+    P.saved = false; P.freshUid = 0;
+    rerender('builder');
+    let b = $('#bi-' + uid + '-' + (d < 0 ? 'up' : 'down'));
+    if (!b || b.disabled) b = $('#bi-' + uid + '-' + (d < 0 ? 'down' : 'up'));
+    if (b) b.focus();
+    announce(L(`به جایگاه ${fmt(j + 1)} رفت.`, `Moved to position ${j + 1}.`));
+  },
+  'b-del': (t) => {
+    const day = dayOf(P.active);
+    const uid = +t.dataset.uid;
+    const x = day.items.find((i) => i.uid === uid);
+    day.items = day.items.filter((i) => i.uid !== uid);
+    P.saved = false;
+    rerender('builder');
+    announce(L(`${exName(x.ex)} حذف شد.`, `${exName(x.ex)} removed.`));
+    const a = $('#b-add');
+    if (a) a.focus();
+  },
+  'bf-step': (t) => {
+    const x = findItem(+t.dataset.uid);
+    if (!x) return;
+    const f = t.dataset.f, d = +t.dataset.d;
+    if (f === 'sets') x.sets = clamp(x.sets + d, 1, 12);
+    else if (f === 'kg') x.kg = r2(clamp(x.kg + d * 2.5, 0, 400));
+    else if (f === 'rest') x.rest = clamp(x.rest + d * 15, 0, 600);
+    builderLive(x, f);
+  },
+  'b-add': () => openSheet('addex'),
+  'addex-pick': (t) => {
+    const e = EXB[t.dataset.ex];
+    const x = it(e.id, 3, 10, null, e.eq === 'barbell' ? 20 : e.eq === 'body' ? 0 : 10, 90);
+    dayOf(P.active).items.push(x);
+    P.saved = false;
+    P.freshUid = x.uid;
+    rerender('builder');
+    SH.focusAfter = 'bi-' + x.uid + '-sets';
+    closeSheet();
+    const f = $('#brow-' + x.uid);
+    if (f && f.scrollIntoView) f.scrollIntoView({ block: 'center' });
+    announce(L(`${exName(e.id)} به روز ${P.active} اضافه شد.`, `${exName(e.id)} added to day ${P.active}.`));
+    setTimeout(() => { P.freshUid = 0; }, 800);
+  },
+  'b-save': () => {
+    P.saved = true;
+    const st = $('#save-status');
+    if (st) st.textContent = L('ذخیره شد، همین الان', 'Saved · just now');
+    announce(L('برنامه ذخیره شد.', 'Program saved.'));
+  }
+};
+app.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (!t || !app.contains(t)) return;
+  if (t.disabled || t.getAttribute('aria-disabled') === 'true') return;
+  const fn = ACT[t.dataset.act];
+  if (fn) fn(t, e);
+});
+
+/* ---------- typing ---------- */
+app.addEventListener('input', (e) => {
+  const t = e.target;
+  const kind = t.dataset && t.dataset.in;
+  if (!kind) return;
+  if (kind === 'lg') {
+    const n = parseNum(t.value);
+    if (isNaN(n)) { t.setAttribute('aria-invalid', 'true'); return; }
+    t.removeAttribute('aria-invalid');
+    const v = W.vals[W.cur];
+    if (t.dataset.f === 'w') v.w = clamp(r2(n), 0, 400);
+    else v.r = clamp(Math.round(n), 1, 60);
+    syncLogger();
+  } else if (kind === 'book-note') {
+    SH.note = t.value;
+  } else if (kind === 'ex-search') {
+    SH.q = t.value;
+    const res = searchEx(SH.q);
+    $('#ex-results').innerHTML = resultsHtml(res);
+    $('#ex-count').textContent = L(`${fmt(res.length)} حرکت`, `${res.length} exercises`);
+  } else if (kind === 'bf') {
+    const x = findItem(+t.dataset.uid);
+    if (!x) return;
+    const f = t.dataset.f;
+    if (f === 'note') x.note[lang] = t.value;
+    else if (f === 'reps') {
+      const r = parseReps(t.value);
+      if (!r) { t.setAttribute('aria-invalid', 'true'); return; }
+      t.removeAttribute('aria-invalid');
+      x.rmin = r.rmin; x.rmax = r.rmax;
+    } else {
+      const n = parseNum(t.value);
+      if (isNaN(n)) { t.setAttribute('aria-invalid', 'true'); return; }
+      t.removeAttribute('aria-invalid');
+      x[f] = f === 'sets' ? clamp(Math.round(n), 1, 12) : f === 'rest' ? clamp(Math.round(n), 0, 600) : clamp(r2(n), 0, 400);
+    }
+    builderLive(x, null);
+  } else if (kind === 'prog-title') {
+    P.title[lang] = t.value; P.saved = false;
+    const st = $('#save-status'); if (st) st.textContent = savedText();
+  } else if (kind === 'day-title') {
+    dayOf(P.active).title[lang] = t.value;
+    builderLive(null, null);
+  }
+});
+app.addEventListener('focusout', (e) => {
+  const t = e.target;
+  const kind = t.dataset && t.dataset.in;
+  if (kind === 'lg') {
+    const v = W.vals[W.cur][t.dataset.f];
+    t.value = fmt(v);
+    t.classList.toggle('long', t.value.length > 4);
+    t.removeAttribute('aria-invalid');
+  } else if (kind === 'bf') {
+    const x = findItem(+t.dataset.uid);
+    if (x) t.value = bValText(x, t.dataset.f);
+    t.removeAttribute('aria-invalid');
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (SH.open) {
+    if (e.key === 'Escape') { e.preventDefault(); closeSheet(); return; }
+    if (e.key === 'Tab') { trapTab(e); return; }
+  }
+  const t = e.target;
+  if (e.key === 'Enter' && t.dataset && (t.dataset.in === 'lg' || t.dataset.in === 'bf') && t.tagName === 'INPUT') { e.preventDefault(); t.blur(); return; }
+  if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].indexOf(e.key) >= 0 && t.classList && t.classList.contains('c--open') && t.closest('.tt--full')) {
+    const cur = t.getBoundingClientRect();
+    const cx = cur.x + cur.width / 2, cy = cur.y + cur.height / 2;
+    let best = null, bd = 1e9;
+    $$('.tt--full button.c--open').forEach((o) => {
+      if (o === t) return;
+      const r = o.getBoundingClientRect();
+      const dx = r.x + r.width / 2 - cx, dy = r.y + r.height / 2 - cy;
+      let ok = false, dist = 0;
+      if (e.key === 'ArrowRight') { ok = dx > 4; dist = Math.abs(dx) + Math.abs(dy) * 3; }
+      else if (e.key === 'ArrowLeft') { ok = dx < -4; dist = Math.abs(dx) + Math.abs(dy) * 3; }
+      else if (e.key === 'ArrowDown') { ok = dy > 4; dist = Math.abs(dy) + Math.abs(dx) * 3; }
+      else { ok = dy < -4; dist = Math.abs(dy) + Math.abs(dx) * 3; }
+      if (ok && dist < bd) { bd = dist; best = o; }
+    });
+    if (best) { e.preventDefault(); best.focus(); }
+  }
+});
+window.addEventListener('hashchange', route);
+const mqWide = window.matchMedia('(min-width: 720px)');
+if (mqWide.addEventListener) mqWide.addEventListener('change', () => rerender());
+let rzT = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(rzT);
+  rzT = setTimeout(() => { if (state.screen === 'progress') drawCharts(); }, 120);
+});
+const mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+if (mqDark.addEventListener) mqDark.addEventListener('change', () => renderChrome());
+setInterval(tickWorkout, 250);
+
+/* ---------- boot ---------- */
+(function boot() {
+  const sl = store.get('daftar-lang');
+  if (sl === 'en' || sl === 'fa') lang = sl;
+  const th = store.get('daftar-theme');
+  if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th);
+  seedBookings();
+  applyRoot();
+  route();
+})();
+})();
+</script>
