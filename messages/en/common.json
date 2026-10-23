@@ -1,0 +1,128 @@
+{
+  "brand": {
+    "name": "Daftar",
+    "tagline": "Training log"
+  },
+  "meta": {
+    "title": "Daftar — coach booking and workout log",
+    "titleTemplate": "%s — Daftar",
+    "description": "Book sessions with your coach, follow your program and log every set."
+  },
+  "nav": {
+    "skip": "Skip to content",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "main": "Main navigation",
+    "client": {
+      "today": "Today",
+      "book": "Book",
+      "program": "Program",
+      "progress": "Progress",
+      "me": "Me"
+    },
+    "coach": {
+      "dashboard": "Dashboard",
+      "schedule": "Schedule",
+      "clients": "Clients",
+      "exercises": "Exercises",
+      "settings": "Settings"
+    },
+    "logout": "Log out",
+    "signedInAs": "Signed in as {name}"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "tryAgain": "Try again",
+    "backHome": "Back to the start"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "noShow": "No-show",
+    "open": "Open",
+    "record": "PR"
+  },
+  "locale": {
+    "switchLabel": "Switch language to Persian",
+    "switchName": "فارسی"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Auto",
+    "toDark": "Switch to dark theme",
+    "toLight": "Switch to light theme"
+  },
+  "field": {
+    "optional": "optional"
+  },
+  "number": {
+    "increase": "Increase",
+    "decrease": "Decrease"
+  },
+  "password": {
+    "show": "Show password",
+    "hide": "Hide password"
+  },
+  "toast": {
+    "dismiss": "Dismiss message",
+    "region": "Notifications"
+  },
+  "barbell": {
+    "title": "Plates per side",
+    "bar": "Bar {kg}",
+    "bareBar": "Just the bar",
+    "alt": "Barbell with {plates} on each side",
+    "cantLoad": "Can't load {kg} with standard plates",
+    "belowBar": "{kg} is lighter than the {bar} bar",
+    "nearest": "Nearest: {below} or {above}",
+    "nearestOnly": "Nearest: {value}"
+  },
+  "errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "This page doesn't exist or has moved.",
+    "serverTitle": "Something broke",
+    "serverBody": "That wasn't supposed to happen. Try again in a moment."
+  },
+  "placeholder": {
+    "emptyTitle": "This screen is being built",
+    "emptyBody": "Check back soon.",
+    "titles": {
+      "landing": "Welcome",
+      "today": "Today",
+      "book": "Book a session",
+      "bookings": "My sessions",
+      "program": "Program",
+      "programNew": "New program",
+      "programEdit": "Edit program",
+      "workout": "Workout",
+      "workoutNew": "New workout",
+      "history": "History",
+      "historyDetail": "Workout details",
+      "progress": "Progress",
+      "me": "Me",
+      "dashboard": "Dashboard",
+      "schedule": "Schedule",
+      "clients": "Clients",
+      "client": "Client",
+      "programBuilder": "Program builder",
+      "exercises": "Exercises",
+      "settings": "Settings"
+    },
+    "panels": {
+      "bookings": "Sessions",
+      "training": "Training"
+    }
+  }
+}

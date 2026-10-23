@@ -1,0 +1,201 @@
+// Daftar data model. Frozen after Phase 1 (see docs/ARCHITECTURE.md).
+// The init migration also carries a raw-SQL partial unique index, `booking_active_slot`,
+// which Prisma cannot express in this file.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  COACH
+  CLIENT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model User {
+  id            String   @id @default(cuid())
+  phone         String   @unique            // normalised E.164, e.g. +989121234567
+  name          String
+  passwordHash  String
+  role          Role     @default(CLIENT)
+  locale        String   @default("fa")
+  active        Boolean  @default(true)
+  coachNotes    String?                     // private, coach-only
+  goal          String?                     // client's own words
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  sessions      Session[]
+  bookings      Booking[]   @relation("ClientBookings")
+  programs      Program[]   @relation("ClientPrograms")
+  programsMade  Program[]   @relation("ProgramAuthor")
+  workouts      WorkoutLog[]
+  exercisesMade Exercise[]
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique                // sha256(token); the raw token only lives in the cookie
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  @@index([userId])
+}
+
+model CoachSettings {                         // singleton row id = 1
+  id                  Int     @id @default(1)
+  coachName           String
+  coachNameFa         String
+  bioEn               String  @default("")
+  bioFa               String  @default("")
+  locationEn          String  @default("")
+  locationFa          String  @default("")
+  timezone            String  @default("Asia/Tehran")
+  slotMinutes         Int     @default(60)
+  bufferMinutes       Int     @default(0)
+  horizonDays         Int     @default(21)   // how far ahead clients can book
+  minNoticeHours      Int     @default(12)   // can't book a slot starting sooner than this
+  cancelWindowHours   Int     @default(24)   // client can cancel until this many hours before
+  requireApproval     Boolean @default(true) // client bookings start PENDING
+  allowSignup         Boolean @default(true)
+  barKg               Decimal @default(20) @db.Decimal(5,2)
+  updatedAt           DateTime @updatedAt
+}
+
+model AvailabilityRule {                      // recurring weekly window, coach wall-clock time
+  id          String  @id @default(cuid())
+  weekday     Int                             // 0 = Sunday … 6 = Saturday (JS convention)
+  startMinute Int                             // minutes from 00:00, e.g. 17:00 = 1020
+  endMinute   Int
+  active      Boolean @default(true)
+}
+
+model TimeOff {
+  id       String   @id @default(cuid())
+  startsAt DateTime
+  endsAt   DateTime
+  reason   String?
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  clientId    String
+  client      User          @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Cascade)
+  startsAt    DateTime
+  endsAt      DateTime
+  status      BookingStatus @default(PENDING)
+  clientNote  String?
+  coachNote   String?
+  cancelledAt DateTime?
+  cancelledByCoach Boolean  @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  workout     WorkoutLog?
+  @@index([startsAt])
+  @@index([clientId, startsAt])
+}
+// + raw SQL in the init migration:
+// CREATE UNIQUE INDEX booking_active_slot ON "Booking"("startsAt") WHERE status IN ('PENDING','CONFIRMED');
+// => a slot can hold only one live booking even under concurrent requests.
+
+model Exercise {
+  id               String   @id @default(cuid())
+  sourceId         String?  @unique             // "0025" from data/exercises
+  nameEn           String
+  nameFa           String?
+  bodyPart         String
+  equipment        String
+  target           String
+  secondaryMuscles String[]
+  stepsEn          String[]
+  stepsFa          String[]
+  isCustom         Boolean  @default(false)
+  createdById      String?
+  createdBy        User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  archived         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  items            ProgramItem[]
+  sets             SetLog[]
+  @@index([nameEn])
+}
+
+model Program {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      User     @relation("ClientPrograms", fields: [clientId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User     @relation("ProgramAuthor", fields: [authorId], references: [id])
+  title       String
+  notes       String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  days        ProgramDay[]
+}
+
+model ProgramDay {
+  id        String  @id @default(cuid())
+  programId String
+  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  order     Int
+  title     String                              // "A — Push" / «روز اول — سینه و سرشانه»
+  items     ProgramItem[]
+  workouts  WorkoutLog[]
+}
+
+model ProgramItem {
+  id            String     @id @default(cuid())
+  dayId         String
+  day           ProgramDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  exerciseId    String
+  exercise      Exercise   @relation(fields: [exerciseId], references: [id])
+  order         Int
+  targetSets    Int
+  targetRepsMin Int
+  targetRepsMax Int?                            // null = fixed reps; else a range 8–12
+  targetWeightKg Decimal?  @db.Decimal(6,2)
+  restSeconds   Int?
+  note          String?
+}
+
+model WorkoutLog {
+  id           String      @id @default(cuid())
+  clientId     String
+  client       User        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  programDayId String?
+  programDay   ProgramDay? @relation(fields: [programDayId], references: [id], onDelete: SetNull)
+  bookingId    String?     @unique
+  booking      Booking?    @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  startedAt    DateTime    @default(now())
+  finishedAt   DateTime?
+  note         String?
+  sets         SetLog[]
+  @@index([clientId, startedAt])
+}
+
+model SetLog {
+  id         String     @id @default(cuid())
+  workoutId  String
+  workout    WorkoutLog @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id])
+  setIndex   Int                                // 1-based within (workout, exercise)
+  reps       Int
+  weightKg   Decimal    @db.Decimal(6,2)        // 0 for bodyweight
+  rpe        Decimal?   @db.Decimal(3,1)
+  isWarmup   Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  @@index([exerciseId])
+}

@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# next.js (NEXT_DIST_DIR may point at .next-<agent>)
+.next*/
+out/
+build/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# tests / qa artifacts
+test-results/
+playwright-report/
+.qa/
+coverage/
+
+# misc
+*.tsbuildinfo
+.DS_Store
+npm-debug.log*

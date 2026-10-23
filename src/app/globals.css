@@ -1,0 +1,580 @@
+/*
+ * Daftar design tokens and base styles. Source of truth: docs/DESIGN.md ("Chalk & Ledger").
+ * Light = cool "chalk on steel" neutrals (deliberately not cream); dark = "rubber floor".
+ *
+ * - Raw hex values live ONLY in this file. Components use the semantic tokens below
+ *   (bg-paper, text-ink, border-rule-strong, bg-plate-red, text-on-red ...).
+ * - Dark follows prefers-color-scheme unless the `theme`
+ *   cookie sets <html data-theme="light|dark">. Any element can also carry data-theme to scope a
+ *   theme (used by the styleguide to show both at once).
+ * - Tailwind's default palette and shadows are removed on purpose: no gradients, no drop shadows,
+ *   only the tokens below. Layout uses logical utilities only (ms-/me-/ps-/pe-/start-/end-/text-start).
+ */
+@import "tailwindcss" source(none);
+@source "../";
+
+/* ------------------------------------------------------------------ raw tokens: light "chalk on steel" */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --paper: #ebece8;
+  --paper-2: #dfe1dc;
+  --card: #f8f8f6;
+  --ink: #141614;
+  --ink-2: #444843;
+  --ink-3: #5f655e;
+  --rule: rgb(20 22 20 / 0.16);
+  --rule-strong: #141614;
+  --hatch: rgb(20 22 20 / 0.3);
+  --scrim: rgb(20 22 20 / 0.55);
+
+  --plate-red: #c0211a;
+  --plate-blue: #1d4c9f;
+  --plate-yellow: #e3ae12;
+  --plate-green: #2b7a42;
+  --plate-white: #fbfbf8;
+  --plate-black: #272a27;
+  --plate-steel: #9a9e97;
+  --danger: #8e1b12;
+
+  /* text sitting ON a plate-coloured fill */
+  --on-red: #ffffff;
+  --on-blue: #ffffff;
+  --on-green: #ffffff;
+  --on-yellow: #141614;
+  --on-danger: #ffffff;
+}
+
+/* --------------------------------------------------------------- raw tokens: dark "rubber floor" */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #111311;
+    --paper-2: #191c19;
+    --card: #1d201d;
+    --ink: #e8eae5;
+    --ink-2: #aeb3ab;
+    --ink-3: #8c9289;
+    --rule: rgb(232 234 229 / 0.15);
+    --rule-strong: #e8eae5;
+    --hatch: rgb(232 234 229 / 0.3);
+    --scrim: rgb(0 0 0 / 0.65);
+
+    --plate-red: #e2463b;
+    --plate-blue: #6a95e6;
+    --plate-yellow: #f0c232;
+    --plate-green: #4fae6a;
+    --plate-white: #e8eae5;
+    --plate-black: #373a37;
+    --plate-steel: #b2b6ae;
+    --danger: #f07466;
+
+    --on-red: #111311;
+    --on-blue: #111311;
+    --on-green: #111311;
+    --on-yellow: #111311;
+    --on-danger: #111311;
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #111311;
+  --paper-2: #191c19;
+  --card: #1d201d;
+  --ink: #e8eae5;
+  --ink-2: #aeb3ab;
+  --ink-3: #8c9289;
+  --rule: rgb(232 234 229 / 0.15);
+  --rule-strong: #e8eae5;
+  --hatch: rgb(232 234 229 / 0.3);
+  --scrim: rgb(0 0 0 / 0.65);
+
+  --plate-red: #e2463b;
+  --plate-blue: #6a95e6;
+  --plate-yellow: #f0c232;
+  --plate-green: #4fae6a;
+  --plate-white: #e8eae5;
+  --plate-black: #373a37;
+  --plate-steel: #b2b6ae;
+  --danger: #f07466;
+
+  --on-red: #111311;
+  --on-blue: #111311;
+  --on-green: #111311;
+  --on-yellow: #111311;
+  --on-danger: #111311;
+}
+
+/* ------------------------------------------------------- non-theme tokens (shape, motion, type) */
+:root {
+  --r: 2px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur: 150ms;
+  --dir-sign: 1; /* +1 in LTR, -1 in RTL: used by slide animations */
+  --bottom-bar: env(safe-area-inset-bottom, 0px); /* space the toast region leaves for fixed bottom UI */
+
+  --font-latin: "Archivo Variable", "Vazirmatn Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-persian: "Vazirmatn Variable", "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-ui: var(--font-latin);
+}
+
+html[dir="rtl"] {
+  --dir-sign: -1;
+}
+
+/* The client app's mobile tab bar (3.5rem + safe area) sits at the bottom: toasts float above it. */
+@media (max-width: 47.999rem) {
+  body:has([data-tabbar]) {
+    --bottom-bar: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+html[lang="fa"] {
+  --font-ui: var(--font-persian);
+  /* Persian needs taller lines (marks above and below the baseline). */
+  --text-xs--line-height: 1.8;
+  --text-sm--line-height: 1.85;
+  --text-base--line-height: 1.75;
+  --text-lg--line-height: 1.75;
+  --text-xl--line-height: 1.65;
+  --text-2xl--line-height: 1.55;
+  --text-3xl--line-height: 1.45;
+  --text-4xl--line-height: 1.35;
+  --text-5xl--line-height: 1.25;
+  --text-6xl--line-height: 1.2;
+}
+
+/* ----------------------------------------------------------------------- Tailwind theme mapping */
+@theme {
+  /* Remove the default palette/shadows so only the tokens below exist. */
+  --color-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --blur-*: initial;
+  --radius-*: initial;
+
+  /* 2px everywhere; `rounded-full` (avatars, plates) is built in and stays 9999px. */
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem;
+  --text-base--line-height: 1.55;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.5;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.4;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.3;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 1.2;
+  --text-4xl: 2.5rem;
+  --text-4xl--line-height: 1.1;
+  --text-5xl: 3.5rem;
+  --text-5xl--line-height: 1.05;
+  --text-6xl: 4.5rem;
+  --text-6xl--line-height: 1;
+
+  --ease-ui: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-hatch: var(--hatch);
+  --color-scrim: var(--scrim);
+
+  --color-plate-red: var(--plate-red);
+  --color-plate-blue: var(--plate-blue);
+  --color-plate-yellow: var(--plate-yellow);
+  --color-plate-green: var(--plate-green);
+  --color-plate-white: var(--plate-white);
+  --color-plate-black: var(--plate-black);
+  --color-plate-steel: var(--plate-steel);
+  --color-danger: var(--danger);
+
+  /* hover shades derived from the live tokens (so they follow nested theme scopes) */
+  --color-plate-red-hover: color-mix(in srgb, var(--plate-red) 84%, var(--ink));
+  --color-ink-hover: color-mix(in srgb, var(--ink) 85%, var(--paper));
+  --color-danger-hover: color-mix(in srgb, var(--danger) 84%, var(--ink));
+
+  /* stamp text: the plate colour pulled toward ink so small bold text clears 4.5:1 in both themes */
+  --color-stamp-red: color-mix(in srgb, var(--plate-red) 80%, var(--ink));
+  --color-stamp-blue: color-mix(in srgb, var(--plate-blue) 80%, var(--ink));
+  --color-stamp-green: color-mix(in srgb, var(--plate-green) 78%, var(--ink));
+
+  --color-on-red: var(--on-red);
+  --color-on-blue: var(--on-blue);
+  --color-on-green: var(--on-green);
+  --color-on-yellow: var(--on-yellow);
+  --color-on-danger: var(--on-danger);
+
+  --font-sans: var(--font-ui);
+}
+
+/* ------------------------------------------------------------------------------------ base */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--rule);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-family: var(--font-ui);
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 1rem;
+    line-height: 1.55; /* en */
+    min-height: 100dvh;
+    text-rendering: optimizeLegibility;
+  }
+
+  html[lang="fa"] body {
+    line-height: 1.75; /* fa: Persian needs taller lines */
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  html[lang="fa"] :is(h1, h2, h3, h4) {
+    letter-spacing: 0; /* never track Persian: it breaks letter joining */
+  }
+
+  p,
+  li,
+  figcaption {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button,
+  [role="button"],
+  a,
+  summary,
+  label,
+  select {
+    touch-action: manipulation;
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* Focus ring (DESIGN.md): 2px ink outline, 2px offset filled with paper. The only allowed shadow. */
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--paper);
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Keep numerals aligned wherever tables / steppers show them. */
+  table,
+  input[inputmode="decimal"],
+  input[inputmode="numeric"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Native dialogs are used for Sheet and Dialog. */
+  dialog {
+    color: inherit;
+  }
+  dialog::backdrop {
+    background: var(--scrim);
+  }
+
+  /* Hide the UA clear / reveal buttons that fight our own controls. */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------------------- utilities */
+/* Archivo width axis: expanded headings, condensed numbers. (No-op for Vazirmatn, which has no wdth axis.) */
+@utility font-expanded {
+  font-stretch: 112%;
+}
+@utility font-condensed {
+  font-stretch: 75%;
+}
+@utility font-normal-width {
+  font-stretch: 100%;
+}
+
+/* Numbers are the hero: weights, reps, times, dates. */
+@utility num {
+  font-stretch: 75%;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: 0;
+}
+
+/* Stamp / ledger labels: uppercase + tracked in Latin; plain bold in Persian. */
+@utility label-caps {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+html[lang="fa"] .label-caps {
+  font-size: 0.8125rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Marker hatching for open slots: 45-degree strokes in the hatch ink. */
+@utility hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--hatch) 0,
+    var(--hatch) 1px,
+    transparent 1px,
+    transparent 7px
+  );
+}
+
+/* Standard colour/opacity/transform transition (never `all`). */
+@utility tx {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: var(--dur);
+  transition-timing-function: var(--ease);
+}
+
+/* Page column: 1200px max, 16px gutter on mobile, 24px from md. */
+@utility page-x {
+  width: 100%;
+  max-width: 75rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (min-width: 48rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* Focus ring drawn on a wrapper when a child control is focused (steppers, password field). */
+@utility focus-wrap {
+  &:has(:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--paper);
+  }
+}
+/* The control inside a focus-wrap draws no ring of its own. */
+@utility focus-bare {
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+/* Numbers / phone numbers inside RTL text stay left-to-right. */
+@utility ltr-isolate {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* A theme scope surface (styleguide, previews). */
+@utility theme-scope {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------------- components */
+@layer components {
+  /* Scroll lock while a native <dialog> is open. */
+  html.modal-open {
+    overflow: hidden;
+  }
+
+  /* <dialog> fills the viewport; the panel inside is what the user sees. */
+  dialog.modal {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+  dialog.modal[open] {
+    display: flex;
+  }
+
+  .sheet-panel {
+    animation: sheet-up 220ms var(--ease) both;
+  }
+  .dialog-panel {
+    animation: dialog-in 160ms var(--ease) both;
+  }
+  .toast-in {
+    animation: toast-in 160ms var(--ease) both;
+  }
+  .stamp-land {
+    animation: stamp-land 180ms var(--ease) both;
+    transform-origin: center;
+  }
+  .tally-new {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    animation: tally-draw 220ms var(--ease) both;
+  }
+  .spin {
+    animation: spin 800ms linear infinite;
+  }
+
+  /* Theme toggle icon: show the sun when dark is active (click = go light), the moon otherwise. */
+  .theme-sun {
+    display: none;
+  }
+  [data-theme="dark"] .theme-sun {
+    display: inline-block;
+  }
+  [data-theme="dark"] .theme-moon {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-sun {
+      display: inline-block;
+    }
+    :root:not([data-theme="light"]) .theme-moon {
+      display: none;
+    }
+    :root:not([data-theme="light"]) [data-theme="light"] .theme-sun {
+      display: none;
+    }
+    :root:not([data-theme="light"]) [data-theme="light"] .theme-moon {
+      display: inline-block;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .sheet-panel {
+      animation-name: sheet-in-end;
+    }
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes sheet-in-end {
+  from {
+    transform: translateX(calc(var(--dir-sign) * 100%));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* The stamp lands: scale 1.12 -> 1 while settling at a slight -3 degree tilt. */
+@keyframes stamp-land {
+  from {
+    opacity: 0;
+    transform: scale(1.12) rotate(0deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-3deg);
+  }
+}
+@keyframes tally-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------------------------ reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* A spinner that never turns reads as broken; keep it but static is acceptable. */
+  .spin {
+    animation: none !important;
+  }
+}

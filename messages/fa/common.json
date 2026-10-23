@@ -1,0 +1,128 @@
+{
+  "brand": {
+    "name": "دفتر",
+    "tagline": "دفتر تمرین"
+  },
+  "meta": {
+    "title": "دفتر — رزرو جلسه و ثبت تمرین",
+    "titleTemplate": "%s — دفتر",
+    "description": "با مربی‌ات جلسه رزرو کن، برنامه‌ی تمرینی‌ات را دنبال کن و هر ست را ثبت کن."
+  },
+  "nav": {
+    "skip": "پرش به محتوا",
+    "menu": "منو",
+    "closeMenu": "بستن منو",
+    "main": "ناوبری اصلی",
+    "client": {
+      "today": "امروز",
+      "book": "رزرو",
+      "program": "برنامه",
+      "progress": "پیشرفت",
+      "me": "پروفایل"
+    },
+    "coach": {
+      "dashboard": "داشبورد",
+      "schedule": "زمان‌بندی",
+      "clients": "شاگردها",
+      "exercises": "حرکت‌ها",
+      "settings": "تنظیمات"
+    },
+    "logout": "خروج",
+    "signedInAs": "وارد شده با نام {name}"
+  },
+  "actions": {
+    "save": "ذخیره",
+    "cancel": "انصراف",
+    "close": "بستن",
+    "confirm": "تأیید",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "add": "افزودن",
+    "tryAgain": "دوباره امتحان کن",
+    "backHome": "بازگشت به صفحه‌ی اول"
+  },
+  "status": {
+    "pending": "در انتظار",
+    "confirmed": "تأیید شد",
+    "cancelled": "لغو شد",
+    "completed": "انجام شد",
+    "noShow": "غیبت",
+    "open": "آزاد",
+    "record": "رکورد"
+  },
+  "locale": {
+    "switchLabel": "تغییر زبان به انگلیسی",
+    "switchName": "English"
+  },
+  "theme": {
+    "label": "حالت نمایش",
+    "light": "روشن",
+    "dark": "تیره",
+    "system": "خودکار",
+    "toDark": "تغییر به حالت تیره",
+    "toLight": "تغییر به حالت روشن"
+  },
+  "field": {
+    "optional": "اختیاری"
+  },
+  "number": {
+    "increase": "افزایش",
+    "decrease": "کاهش"
+  },
+  "password": {
+    "show": "نمایش رمز عبور",
+    "hide": "پنهان کردن رمز عبور"
+  },
+  "toast": {
+    "dismiss": "بستن پیام",
+    "region": "اعلان‌ها"
+  },
+  "barbell": {
+    "title": "صفحه‌ها در هر طرف",
+    "bar": "میله {kg}",
+    "bareBar": "فقط میله",
+    "alt": "هالتر با {plates} در هر طرف",
+    "cantLoad": "با صفحه‌های استاندارد نمی‌شود {kg} بست",
+    "belowBar": "{kg} از میله‌ی {bar} کمتر است",
+    "nearest": "نزدیک‌ترین: {below} یا {above}",
+    "nearestOnly": "نزدیک‌ترین: {value}"
+  },
+  "errors": {
+    "notFoundTitle": "صفحه پیدا نشد",
+    "notFoundBody": "این صفحه وجود ندارد یا جابه‌جا شده است.",
+    "serverTitle": "مشکلی پیش آمد",
+    "serverBody": "این نباید اتفاق می‌افتاد. کمی بعد دوباره امتحان کن."
+  },
+  "placeholder": {
+    "emptyTitle": "این بخش در دست ساخت است",
+    "emptyBody": "به‌زودی سر بزن.",
+    "titles": {
+      "landing": "خوش آمدی",
+      "today": "امروز",
+      "book": "رزرو جلسه",
+      "bookings": "جلسه‌های من",
+      "program": "برنامه‌ی تمرینی",
+      "programNew": "برنامه‌ی جدید",
+      "programEdit": "ویرایش برنامه",
+      "workout": "تمرین",
+      "workoutNew": "تمرین جدید",
+      "history": "سابقه‌ی تمرین",
+      "historyDetail": "جزئیات تمرین",
+      "progress": "پیشرفت",
+      "me": "پروفایل",
+      "dashboard": "داشبورد",
+      "schedule": "زمان‌بندی",
+      "clients": "شاگردها",
+      "client": "شاگرد",
+      "programBuilder": "ساخت برنامه",
+      "exercises": "حرکت‌ها",
+      "settings": "تنظیمات"
+    },
+    "panels": {
+      "bookings": "جلسه‌ها",
+      "training": "تمرین‌ها"
+    }
+  }
+}
