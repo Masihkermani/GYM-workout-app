@@ -116,7 +116,9 @@ Theme follows `prefers-color-scheme`, overridable by a toggle stored in a cookie
 6. Week grids and charts mirror in RTL: Saturday is the rightmost column; time on chart x-axes flows right → left.
 7. Persian copy uses the zero-width non-joiner correctly: `می‌توانید`, `رزروها`, `تمرین‌ها`, `برنامه‌ی`. No Arabic `ي`/`ك` — always Persian `ی`/`ک`.
 8. Mixed-direction strings (an English exercise name inside Persian text, a phone number) are wrapped in `<bdi>`; phone numbers are always `dir="ltr"`.
-9. Set notation: en `3 × 8 @ 30 kg`; fa `۳ × ۸ — ۳۰ کیلو` (the `×` keeps sets first in both).
+9. **Never put the middle dot `·` next to digits in Persian**: Persian zero «۰» is itself a dot, so
+   «۲ آبان · ۰۹:۰۰» reads as an extra zero. Use the Persian comma «،» in fa; `·` is for en only.
+10. Set notation: en `3 × 8 @ 30 kg`; fa `۳ × ۸ — ۳۰ کیلو` (the `×` keeps sets first in both).
 
 ## Signature components
 
