@@ -10,6 +10,7 @@ import { SubmitButton } from '@/components/ui/SubmitButton';
 import { changePasswordAction, type PasswordState } from '@/server/coach';
 import type { CoachErrorCode } from '../schemas';
 import { useManualForm } from '../useManualForm';
+import { isProfileError } from './errors';
 
 export function PasswordForm() {
   const t = useTranslations('coach');
@@ -18,7 +19,9 @@ export function PasswordForm() {
   const formRef = useFocusFirstError<HTMLFormElement>(state);
   const resetRef = useRef<HTMLFormElement | null>(null);
   const e = state.errors ?? {};
-  const err = (code?: CoachErrorCode) => (code ? t(`errors.${code}`) : undefined);
+  // /app/me is the client's page: client-voice wording, with the shared coach wording as a fallback
+  const err = (code?: CoachErrorCode) =>
+    !code ? undefined : isProfileError(code) ? t(`profile.errors.${code}`) : t(`errors.${code}`);
 
   // the fields are cleared after a successful change so the passwords do not linger in the DOM
   useEffect(() => {

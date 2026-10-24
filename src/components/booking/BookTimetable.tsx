@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, type ReactNode } from 'react';
-import { CalendarCheck, Phone } from 'lucide-react';
+import { CalendarCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
@@ -11,13 +11,13 @@ import { Stamp } from '@/components/ui/Stamp';
 import { Textarea } from '@/components/ui/Textarea';
 import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
-import { formatPhone } from '@/lib/phone';
+import { formatNumber } from '@/lib/format';
 import { MAX_LIVE_BOOKINGS, type BookingErrorCode } from '@/lib/scheduling';
 import type { DateKey } from '@/lib/time';
 import { createBooking, type CreatedBooking } from '@/server/booking';
 import { longDate, timeRange } from './dates';
 import { Timetable } from './Timetable';
-import type { CoachContact, PolicyInfo, TimetableCell } from './types';
+import type { PolicyInfo, TimetableCell } from './types';
 
 export interface BookTimetableProps {
   cells: TimetableCell[];
@@ -28,7 +28,6 @@ export interface BookTimetableProps {
   weekStarts: DateKey[];
   initialWeek: DateKey;
   policy: PolicyInfo;
-  coach: CoachContact;
   /** How many future live bookings the client already holds. */
   liveCount: number;
 }
@@ -44,7 +43,6 @@ export function BookTimetable({
   weekStarts,
   initialWeek,
   policy,
-  coach,
   liveCount,
 }: BookTimetableProps) {
   const t = useTranslations('booking');
@@ -61,6 +59,8 @@ export function BookTimetable({
   const [pending, startTransition] = useTransition();
 
   const atLimit = liveCount >= MAX_LIVE_BOOKINGS;
+  // `errors.tooManyBookings` names the cap; the other errors ignore the value
+  const errorValues = { max: formatNumber(MAX_LIVE_BOOKINGS, locale, { grouping: false }) };
 
   const onSelect = (cell: TimetableCell) => {
     setSelected(cell);
@@ -157,14 +157,14 @@ export function BookTimetable({
       <div className="flex flex-col gap-4">
         {summary}
         {atLimit ? (
-          <Flash tone="warning" title={t('errors.tooManyBookings')}>
+          <Flash tone="warning" title={t('errors.tooManyBookings', errorValues)}>
             <ButtonLink href="/app/bookings" variant="outline" size="sm" className="mt-2">
               {t('sheet.mySessions')}
             </ButtonLink>
           </Flash>
         ) : null}
         {error ? (
-          <Flash tone="error" title={t(`errors.${error}`)}>
+          <Flash tone="error" title={t(`errors.${error}`, errorValues)}>
             {STALE.includes(error) ? (
               <Button variant="outline" size="sm" className="mt-2" onClick={() => setOpen(false)}>
                 {t('sheet.pickAnother')}
@@ -210,15 +210,6 @@ export function BookTimetable({
         label={t('book.gridLabel')}
       />
       <Legend />
-      {coach.phone ? (
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-2">
-          <Phone className="size-4 shrink-0" aria-hidden="true" />
-          <span>{t('book.callCoach', { name: coach.name })}</span>
-          <a href={`tel:${coach.phone}`} dir="ltr" className="num font-semibold text-ink underline underline-offset-4">
-            {formatPhone(coach.phone, locale)}
-          </a>
-        </p>
-      ) : null}
 
       <Sheet open={open} onOpenChange={setOpen} title={title} footer={footer}>
         {body}

@@ -2,10 +2,11 @@
 
 import { Prisma } from '@prisma/client';
 import { redirect } from 'next/navigation';
-import { hashPassword, verifyAgainstDummy, verifyPassword } from '@/lib/password';
+import { authThrottle } from '@/lib/auth-throttle';
 import { prisma } from '@/lib/db';
+import { hashPassword, verifyAgainstDummy, verifyPassword } from '@/lib/password';
 import { homeFor, safeNextPath } from '@/lib/redirects';
-import { loginLimiter } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/request-ip';
 import { createSession, destroySession } from '@/lib/session';
 import { getCoachSettings } from '@/lib/settings';
 import {
@@ -29,7 +30,13 @@ export interface AuthFormState {
 const text = (value: FormDataEntryValue | null): string => (typeof value === 'string' ? value : '');
 const localeOf = (value: FormDataEntryValue | null): 'fa' | 'en' => (value === 'en' ? 'en' : 'fa');
 
-/** Login: phone + password. Rate limited to 5 failures per phone per 15 minutes. */
+const retryMinutes = (seconds: number) => Math.max(1, Math.ceil(seconds / 60));
+
+/**
+ * Login: phone + password. Throttled per address+phone (5 per 15 min), per address (30 per 15 min) and per
+ * phone (50 per hour); see lib/auth-throttle.ts. The attempt is reserved before the first await on the
+ * guess, so a concurrent burst cannot evaluate more than the budget.
+ */
 export async function loginAction(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const locale = localeOf(formData.get('locale'));
   const phoneInput = text(formData.get('phone'));
@@ -40,11 +47,11 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
   }
   const { phone, password } = parsed.data;
 
-  const limit = loginLimiter.check(phone);
-  if (!limit.allowed) {
+  const attempt = authThrottle.reserveLogin(await getClientIp(), phone);
+  if (!attempt.allowed) {
     return {
       errors: { form: 'rateLimited' },
-      retryAfterMinutes: Math.max(1, Math.ceil(limit.retryAfterSeconds / 60)),
+      retryAfterMinutes: retryMinutes(attempt.retryAfterSeconds),
       values: { phone: phoneInput },
     };
   }
@@ -58,17 +65,17 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
     user && user.active ? await verifyPassword(user.passwordHash, password) : await verifyAgainstDummy(password);
 
   if (!user || !user.active || !valid) {
-    const after = loginLimiter.recordFailure(phone);
-    return after.allowed
-      ? { errors: { form: 'invalidCredentials' }, values: { phone: phoneInput } }
-      : {
+    const after = attempt.afterFailure();
+    return after.locked
+      ? {
           errors: { form: 'rateLimited' },
-          retryAfterMinutes: Math.max(1, Math.ceil(after.retryAfterSeconds / 60)),
+          retryAfterMinutes: retryMinutes(after.retryAfterSeconds),
           values: { phone: phoneInput },
-        };
+        }
+      : { errors: { form: 'invalidCredentials' }, values: { phone: phoneInput } };
   }
 
-  loginLimiter.reset(phone);
+  attempt.succeed();
   await createSession(user.id, user.role);
   // COACH -> /coach, CLIENT -> /app; `next` only when it stays inside the role's area.
   redirect(safeNextPath(text(formData.get('next')), locale, user.role));
@@ -93,6 +100,12 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
     return { errors: fieldErrorCodes<'name' | 'phone' | 'password'>(parsed.error), values };
   }
   const { name, phone, password } = parsed.data;
+
+  // 10 sign-ups per address per hour (taken numbers count: this is also what slows number enumeration).
+  const gate = authThrottle.reserveRegister(await getClientIp());
+  if (!gate.allowed) {
+    return { errors: { form: 'rateLimited' }, retryAfterMinutes: retryMinutes(gate.retryAfterSeconds), values };
+  }
 
   if (await prisma.user.findUnique({ where: { phone }, select: { id: true } })) {
     return { errors: { phone: 'phoneTaken' }, values };

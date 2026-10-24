@@ -81,7 +81,7 @@ test('register creates a client account and signs in', async ({ page }) => {
   await page.locator('input[name=phone]').fill(phone);
   await page.locator('input[name=password]').fill('short');
   await page.locator('button[type=submit]').click();
-  await expect(page.getByText('Use at least 8 characters.')).toBeVisible();
+  await expect(page.getByText('Use at least 10 characters.')).toBeVisible();
   await page.locator('input[name=password]').fill('long-enough-password');
   await page.locator('button[type=submit]').click();
   await expect(page).toHaveURL(/\/en\/app$/);

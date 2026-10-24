@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SectionLabel } from '@/components/ui/SectionLabel';
+import { requireCoach } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { formatNumber } from '@/lib/format';
 import { getCoachSettings } from '@/lib/settings';
@@ -14,6 +15,7 @@ import { CoachBookingActions } from './CoachBookingActions';
  * that apply (confirm / decline, completed / no-show) and a shortcut to book a slot for them.
  */
 export async function ClientBookingsPanel({ clientId, locale }: { clientId: string; locale: string }) {
+  await requireCoach(locale); // coach-only data: do not rely on the page that renders this being guarded
   const now = new Date();
   const [t, settings, rows] = await Promise.all([
     getTranslations({ locale, namespace: 'booking' }),

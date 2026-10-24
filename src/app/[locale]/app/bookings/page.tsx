@@ -10,7 +10,7 @@ import { SectionLabel } from '@/components/ui/SectionLabel';
 import { requireUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { formatNumber } from '@/lib/format';
-import { MAX_LIVE_BOOKINGS, isLiveStatus } from '@/lib/scheduling';
+import { MAX_LIVE_BOOKINGS, clientCancelState, isLiveStatus } from '@/lib/scheduling';
 import { getCoachContact } from '@/lib/scheduling/load';
 import { coachDisplayName, getCoachSettings } from '@/lib/settings';
 
@@ -27,10 +27,9 @@ export default async function BookingsPage({ params }: { params: Promise<{ local
   if (user.role === 'COACH') redirect(`/${locale}/coach/schedule`);
 
   const now = new Date();
-  const [t, settings, coach, rows] = await Promise.all([
+  const [t, settings, rows] = await Promise.all([
     getTranslations({ locale, namespace: 'booking' }),
     getCoachSettings(),
-    getCoachContact(),
     prisma.booking.findMany({
       where: { clientId: user.id },
       orderBy: { startsAt: 'asc' },
@@ -41,6 +40,13 @@ export default async function BookingsPage({ params }: { params: Promise<{ local
 
   const upcoming = rows.filter((b) => isLiveStatus(b.status) && b.endsAt.getTime() > now.getTime());
   const past = rows.filter((b) => !upcoming.includes(b)).reverse().slice(0, 40);
+
+  // The coach's login phone is read only for a CONFIRMED booking that is inside its cancel window, where
+  // the page shows it instead of a Cancel button; every other row (and every other visit) never touches it.
+  const needsCoachContact = (b: (typeof rows)[number]) =>
+    clientCancelState(b, settings.cancelWindowHours, now) === 'late';
+  const coach = upcoming.some(needsCoachContact) ? await getCoachContact() : null;
+  const coachName = coachDisplayName(settings, locale) || coach?.name || '';
 
   return (
     <div className="page-x flex flex-col gap-10 py-8 md:py-12">
@@ -89,7 +95,7 @@ export default async function BookingsPage({ params }: { params: Promise<{ local
                     locale={locale}
                     timeZone={tz}
                     cancelWindowHours={settings.cancelWindowHours}
-                    coach={{ name: coachDisplayName(settings, locale) || coach.name, phone: coach.phone }}
+                    coach={coach && needsCoachContact(b) ? { name: coachName, phone: coach.phone } : null}
                     now={now}
                   />
                 }

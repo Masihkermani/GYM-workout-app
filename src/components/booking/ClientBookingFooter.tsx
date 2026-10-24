@@ -12,6 +12,10 @@ import type { CoachContact } from './types';
  *   PENDING    "Withdraw request", always: the coach has not committed, so the cancel window does not apply
  *   CONFIRMED  "Cancel session" until the cancel window starts; inside it the button is replaced by an
  *              explanation and the coach's contact (ARCHITECTURE.md, booking rules)
+ *
+ * The coach's phone number is only ever read for that last case: the page passes `coach` for a booking
+ * inside its cancel window and `null` for every other row, so the number is not in the page otherwise
+ * (security review F3: it is the login of the coach account).
  */
 export function ClientBookingFooter({
   booking,
@@ -25,7 +29,7 @@ export function ClientBookingFooter({
   locale: string;
   timeZone: string;
   cancelWindowHours: number;
-  coach: CoachContact;
+  coach: CoachContact | null;
   now: Date;
 }) {
   const t = useTranslations('booking');
@@ -56,7 +60,7 @@ export function ClientBookingFooter({
   return (
     <div className="flex flex-col gap-1.5 border-t border-rule pt-3 text-sm" data-testid="cancel-late">
       <p className="text-ink-2">{t('row.late', { hours: cancelWindowHours })}</p>
-      {coach.phone ? (
+      {coach?.phone ? (
         <p className="flex flex-wrap items-center gap-x-2">
           <Phone className="size-4 shrink-0" aria-hidden="true" />
           <span className="font-semibold">{coach.name}</span>

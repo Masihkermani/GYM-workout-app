@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { parseDecimal, parseInteger } from '@/lib/digits';
-import { normalizePersianText, phoneSchema } from '@/lib/validation';
+import { newPasswordSchema, normalizePersianText, phoneSchema, refuseOwnPhone } from '@/lib/validation';
 
 /**
  * Validation for the coach area and /app/me. Isomorphic (no server-only imports): the same limits
@@ -15,6 +15,7 @@ export const COACH_ERROR_CODES = [
   'nameLong',
   'passwordShort',
   'passwordLong',
+  'passwordWeak',
   'passwordWrong',
   'passwordSame',
   'passwordMismatch',
@@ -52,8 +53,6 @@ export const personNameSchema = z
   .transform(normalizePersianText)
   .pipe(z.string().min(1, 'required').min(2, 'nameShort').max(60, 'nameLong'));
 
-export const newPasswordSchema = z.string().min(1, 'required').min(8, 'passwordShort').max(200, 'passwordLong');
-
 /** A free-text field that may be empty (-> null). Line breaks are kept; invisible control chars are not. */
 export const optionalText = (max: number) =>
   z
@@ -66,12 +65,14 @@ export const optionalText = (max: number) =>
 export const persianise = (v: string) => v.replace(/ي/g, 'ی').replace(/ك/g, 'ک');
 
 // ----------------------------------------------------------------------------------- clients
-export const createClientSchema = z.object({
-  name: personNameSchema,
-  phone: phoneSchema,
-  password: newPasswordSchema,
-  locale: localeSchema,
-});
+export const createClientSchema = z
+  .object({
+    name: personNameSchema,
+    phone: phoneSchema,
+    password: newPasswordSchema,
+    locale: localeSchema,
+  })
+  .superRefine(refuseOwnPhone);
 
 /** The coach corrects a client's name or phone (the phone is the login, so it stays unique). */
 export const updateClientSchema = z.object({

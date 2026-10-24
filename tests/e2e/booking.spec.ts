@@ -93,7 +93,7 @@ test.describe.serial('book -> confirm -> cancel', () => {
     await expect(sheet).toBeVisible();
     // the cancel policy line is built from the settings (24 h in the seed)
     await expect(sheet).toContainText('۲۴ ساعت قبل از جلسه می‌توانی رایگان لغو کنی');
-    await sheet.getByLabel('یادداشت برای مربی').fill(NOTE);
+    await sheet.getByLabel('یادداشت برای من').fill(NOTE);
     await sheet.getByRole('button', { name: 'رزرو این ساعت' }).click();
 
     // the stamp lands: requireApproval is on in the seed, so the words are "request sent"
@@ -271,7 +271,7 @@ test('losing the race shows "just taken" inline and nothing is double booked', a
   });
 
   await sheet.getByRole('button', { name: 'رزرو این ساعت' }).click();
-  await expect(sheet.getByRole('alert')).toContainText('همین حالا رزرو شد');
+  await expect(sheet.getByRole('alert')).toContainText('این ساعت همین چند لحظه پیش رزرو شد');
   await expect(sheet.getByRole('button', { name: 'رزرو این ساعت' })).toBeDisabled();
   if (QA) await page.screenshot({ path: `${QA}/sheet-taken-fa-light-1280.png` });
   await sheet.getByRole('button', { name: 'ساعت دیگری انتخاب کن' }).click();
@@ -311,7 +311,7 @@ test('a client cannot hold more than 3 upcoming sessions', async ({ page }) => {
   await page.getByRole('button', { name: 'هفته‌ی بعد' }).click();
   await page.locator('[role=grid] button[data-tone=open]').last().click();
   const sheet = page.getByRole('dialog', { name: 'تأیید رزرو' });
-  await expect(sheet).toContainText('سه جلسه‌ی پیش‌رو داری');
+  await expect(sheet).toContainText('الان ۳ جلسه‌ی پیش‌رو داری');
   await expect(sheet.getByRole('button', { name: 'رزرو این ساعت' })).toBeDisabled();
 });
 
@@ -498,7 +498,7 @@ test.describe.serial('coach schedule tools', () => {
     const slotSelect = sheet.getByLabel('ساعت');
     await slotSelect.selectOption({ index: 1 });
     const startMs = Number(await slotSelect.inputValue());
-    await sheet.getByLabel('یادداشت برای مربی').fill('e2e-coach-booking');
+    await sheet.getByLabel('یادداشت برای من').fill('e2e-coach-booking');
     await sheet.getByRole('button', { name: 'ثبت جلسه' }).click();
     await expect(page.getByText(`برای ${CLIENT.name} ثبت شد.`)).toBeVisible();
 

@@ -20,6 +20,7 @@ import type { DateKey } from '@/lib/time';
 import { bookForClient, moveBooking, setCoachNote } from '@/server/booking';
 import { CoachBookingActions } from './CoachBookingActions';
 import { longDate, timeRange } from './dates';
+import { coachErrorKey } from './errors';
 import { Timetable } from './Timetable';
 import type { CoachBookingDTO, TimetableCell } from './types';
 
@@ -231,7 +232,7 @@ function BookingDetail({
 
   return (
     <div className="flex flex-col gap-5">
-      {error ? <Flash tone="error">{t(`errors.${error}`)}</Flash> : null}
+      {error ? <Flash tone="error">{t(coachErrorKey(error))}</Flash> : null}
       <div className="flex flex-wrap items-center gap-3">
         <Stamp status={booking.status} label={booking.status === 'PENDING' ? t('legend.awaiting') : undefined} />
         <Link
@@ -360,7 +361,7 @@ function BookForClient({
 
   return (
     <div className="flex flex-col gap-4">
-      {error ? <Flash tone="error">{t(`errors.${error}`)}</Flash> : null}
+      {error ? <Flash tone="error">{t(coachErrorKey(error))}</Flash> : null}
       <Field label={t('coach.client')} required>
         <Select value={clientId} onChange={(e) => setClientId(e.target.value)} disabled={pending}>
           <option value="">{t('coach.pickClient')}</option>

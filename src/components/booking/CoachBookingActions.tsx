@@ -8,6 +8,7 @@ import { Dialog } from '@/components/ui/Dialog';
 import { useToast } from '@/components/ui/Toast';
 import type { ActionResult, BookingStatusCode } from '@/lib/scheduling';
 import { confirmBooking, declineBooking, markCompleted, markNoShow } from '@/server/booking';
+import { coachErrorKey } from './errors';
 
 type Kind = 'confirm' | 'decline' | 'completed' | 'noShow';
 
@@ -52,7 +53,7 @@ export function CoachBookingActions({
         onDone?.();
         toast({ message: t(`coach.toast.${kind}`), tone: 'success' });
       } else {
-        toast({ message: t(`errors.${res.error}`), tone: 'error' });
+        toast({ message: t(coachErrorKey(res.error)), tone: 'error' });
       }
     });
   };

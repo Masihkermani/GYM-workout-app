@@ -21,7 +21,7 @@ test.describe('landing page', () => {
     expect(size).toBeGreaterThanOrEqual(44);
 
     // one sentence in the coach's voice (Persian register: «تو»)
-    await expect(page.getByText('هر جا اعداد درجا زدند', { exact: false })).toBeVisible();
+    await expect(page.getByText('وقتی پیشرفت درجا بزند', { exact: false })).toBeVisible();
 
     // How it works: three ruled lines with real, Persian-digit numbers
     const steps = page.getByTestId('how-it-works').locator('> li');

@@ -3,6 +3,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
+import { requireCoach } from '@/lib/auth';
 import { formatDate, formatKg, formatNumber } from '@/lib/format';
 import { getCoachSettings } from '@/lib/settings';
 import { getClientTrainingOverview } from '@/lib/training/queries';
@@ -39,6 +40,7 @@ function MiniVolume({ weeks, rtl, label }: { weeks: WeeklyBucket[]; rtl: boolean
  * workouts (expandable to the sets) and a mini progress read-out (top lifts, eight weeks of volume).
  */
 export async function ClientTrainingPanel({ clientId, locale }: { clientId: string; locale: string }) {
+  await requireCoach(locale); // coach-only data: do not rely on the page that renders this being guarded
   const settings = await getCoachSettings();
   const timeZone = settings.timezone;
   const [t, data] = await Promise.all([

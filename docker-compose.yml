@@ -70,6 +70,10 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER:-daftar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-daftar}
+      # The app is published on 127.0.0.1 only, so the reverse proxy in front of it is its only client: believe
+      # the X-Forwarded-For that proxy sets, which is what the per-address login and sign-up limits key on
+      # (README, "Sessions, cookies and limits"). TRUST_PROXY=0 in .env switches that off.
+      TRUST_PROXY: ${TRUST_PROXY:-1}
     ports:
       - "127.0.0.1:${APP_PORT:-3000}:3000"
 

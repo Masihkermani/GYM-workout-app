@@ -19,6 +19,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Link } from '@/i18n/navigation';
 import { requireCoach } from '@/lib/auth';
 import { formatNumber } from '@/lib/format';
+import { parsePage } from '@/lib/pagination';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -45,7 +46,7 @@ export default async function CoachExercisesPage({ params, searchParams }: Props
   const showRaw = first(sp.show);
   const show: ExerciseShow = showRaw === 'archived' || showRaw === 'all' ? showRaw : 'active';
   const custom = first(sp.custom) === '1';
-  const pageNumber = Math.max(1, Math.min(10_000, Number.parseInt(first(sp.page) ?? '1', 10) || 1));
+  const pageNumber = parsePage(sp.page);
   const editId = (first(sp.edit) ?? '').slice(0, 64);
 
   const t = await getTranslations('coach');

@@ -9,6 +9,7 @@ import { useRouter } from '@/i18n/navigation';
 import { formatNumber } from '@/lib/format';
 import type { SessionOptionsDTO } from '@/lib/training/dto';
 import { sessionOptionsAction, startWorkoutAction } from '@/server/training';
+import { coachErrorKey } from './errors';
 import { sepFor } from './sep';
 
 const FREE = 'free';
@@ -64,7 +65,7 @@ export function StartSessionButton({
         setChoice(r.options.nextDayId ?? FREE);
         setLoad({ state: 'ready', options: r.options });
       } else {
-        setLoad({ state: 'error', message: t(`errors.${r.error}`) });
+        setLoad({ state: 'error', message: t(coachErrorKey(r.error)) });
       }
     } catch {
       setLoad({ state: 'error', message: t('errors.generic') });
@@ -85,7 +86,7 @@ export function StartSessionButton({
         router.push(workoutHref(r.id));
         return; // keep the spinner until the logger has loaded
       }
-      setError(t(`errors.${r.error}`));
+      setError(t(coachErrorKey(r.error)));
     } catch {
       setError(t('errors.generic'));
     }

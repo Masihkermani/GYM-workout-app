@@ -126,6 +126,18 @@ const toSetDTO = (r: SetRow): SetDTO => ({
 });
 
 const MAX_SETS_PER_EXERCISE = 100;
+/** Workouts a client can start with no program day and no booking, per rolling 24 hours. */
+const MAX_FREE_WORKOUTS_PER_DAY = 10;
+const DAY_MS = 24 * 3600_000;
+
+/**
+ * One writer at a time per workout while set numbers are assigned or shifted (the same pattern as the
+ * booking cap in booking.ts). Without it two taps both read max(setIndex) before either inserts and
+ * produce duplicate numbers or a 101st set. Released when the transaction ends.
+ */
+const lockWorkoutSets = (tx: Prisma.TransactionClient, workoutId: string) =>
+  tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${workoutId}))`;
+
 /** A workout left open longer than this is closed at its last set, not at "now". */
 const STALE_WORKOUT_MS = 12 * 3600_000;
 /** Starting the same program day again within this window resumes the open workout. */
@@ -195,10 +207,23 @@ export async function startWorkoutAction(input: {
     }
 
     try {
-      const created = await prisma.workoutLog.create({
-        data: { clientId, programDayId: dayId ?? null, bookingId: bookingId ?? null },
-        select: { id: true },
+      const created = await prisma.$transaction(async (tx) => {
+        if (dayId || bookingId) {
+          return tx.workoutLog.create({
+            data: { clientId, programDayId: dayId ?? null, bookingId: bookingId ?? null },
+            select: { id: true },
+          });
+        }
+        // A free workout (no program day, no booking) is the only kind a client can start without limit by
+        // tapping again, so it is capped per rolling day; serialised per client so a burst cannot overshoot.
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`free-workouts:${clientId}`}))`;
+        const recent = await tx.workoutLog.count({
+          where: { clientId, programDayId: null, bookingId: null, startedAt: { gte: new Date(Date.now() - DAY_MS) } },
+        });
+        if (recent >= MAX_FREE_WORKOUTS_PER_DAY) return null;
+        return tx.workoutLog.create({ data: { clientId }, select: { id: true } });
       });
+      if (!created) return fail('dailyLimit');
       revalidateTraining();
       return { ok: true, id: created.id, resumed: false };
     } catch (e) {
@@ -239,6 +264,7 @@ export async function logSetAction(input: {
     if (!exercise || exercise.archived) return fail('notFound');
 
     const row = await prisma.$transaction(async (tx) => {
+      await lockWorkoutSets(tx, d.workoutId);
       const agg = await tx.setLog.aggregate({
         where: { workoutId: d.workoutId, exerciseId: d.exerciseId },
         _max: { setIndex: true },
@@ -312,14 +338,17 @@ export async function deleteSetAction(input: { setId: string }): Promise<ActionR
     if (!existing) return fail('notFound');
     if (!canActFor(user, existing.workout.clientId)) return fail('forbidden');
 
-    await prisma.$transaction([
-      prisma.setLog.delete({ where: { id: existing.id } }),
-      prisma.setLog.updateMany({
-        where: { workoutId: existing.workoutId, exerciseId: existing.exerciseId, setIndex: { gt: existing.setIndex } },
+    const removed = await prisma.$transaction(async (tx) => {
+      await lockWorkoutSets(tx, existing.workoutId); // closing the gap must not interleave with a concurrent logSet
+      // the row as it is NOW: a restore that ran while we waited for the lock may have shifted its number
+      const gone = await tx.setLog.delete({ where: { id: existing.id }, select: SET_SELECT });
+      await tx.setLog.updateMany({
+        where: { workoutId: existing.workoutId, exerciseId: gone.exerciseId, setIndex: { gt: gone.setIndex } },
         data: { setIndex: { decrement: 1 } },
-      }),
-    ]);
-    return { ok: true, deleted: toSetDTO(existing), workoutId: existing.workoutId };
+      });
+      return gone;
+    });
+    return { ok: true, deleted: toSetDTO(removed), workoutId: existing.workoutId };
   });
 }
 
@@ -344,6 +373,7 @@ export async function restoreSetAction(input: {
     if (!canActFor(user, workout.clientId)) return fail('forbidden');
 
     const row = await prisma.$transaction(async (tx) => {
+      await lockWorkoutSets(tx, d.workoutId);
       const agg = await tx.setLog.aggregate({
         where: { workoutId: d.workoutId, exerciseId: d.exerciseId },
         _max: { setIndex: true },

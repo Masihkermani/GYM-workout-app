@@ -190,7 +190,17 @@ block is enough (it gets and renews the certificate itself):
 ```
 daftar.example.com {
     encode gzip
-    reverse_proxy 127.0.0.1:3000
+
+    header {
+        # browsers keep using HTTPS for this site (the app itself sends no HSTS: it never sees TLS)
+        Strict-Transport-Security "max-age=31536000"
+    }
+
+    reverse_proxy 127.0.0.1:3000 {
+        # the app rate-limits per client address (TRUST_PROXY=1 in docker-compose.yml): hand it the real one,
+        # replacing whatever the client sent
+        header_up X-Forwarded-For {remote_host}
+    }
 }
 ```
 
@@ -205,8 +215,32 @@ redirects, which is what a reverse proxy needs.
 - `daftar_role`: a non-secret hint the middleware uses to bounce a client from `/coach`. It is never trusted: every page
   and server action re-checks the session.
 - `theme`: light or dark preference (one year).
-- Login rate limiting (5 failures per phone per 15 minutes) lives in memory: right for one app container, reset on
-  restart. Use a shared store before running more than one instance.
+- **Rate limits** (`src/lib/auth-throttle.ts`) live in memory: right for one app container, reset on restart. Use a
+  shared store before running more than one instance. The attempt is counted *before* the password is checked, so
+  parallel requests cannot get around the cap. Login: 5 attempts per address+phone per 15 minutes (a stranger who
+  knows a phone number only locks themselves out of it), 30 per address per 15 minutes across all phones, and a
+  ceiling of 50 per phone per hour across all addresses (the same answer for registered and unregistered numbers;
+  a correct password hands its attempt back). Sign-up: 10 per address per hour. Changing a password: 5 wrong
+  "current password" guesses per account per 15 minutes. Trade-offs: someone controlling many addresses can still
+  burn a number's 50 per hour and so keep it from signing in for the rest of that hour (it takes at least 3
+  addresses: one address can only spend 5 per 15 minutes on one number), and behind carrier-grade NAT many users share one address.
+  The constants at the top of `auth-throttle.ts` are the knobs.
+- **`TRUST_PROXY`**: the per-address limits need the client's address, which the app only gets from
+  `X-Forwarded-For`. `docker-compose.yml` sets `TRUST_PROXY=1` (the app is published on `127.0.0.1` only, so the
+  proxy is its only client) and the Caddy block above overwrites the header. Run the app any other way, directly
+  reachable or behind a proxy that appends to the header instead of replacing it, and leave it unset: the header is
+  then ignored (it would be forgeable) and only the per-phone limits apply.
+- **Passwords**: a new password (sign-up, change password, the one the coach types for a client) needs 10+
+  characters and may not be on the common-password list (including the demo passwords above, `12345678`,
+  `qwertyuiop`…), a repeated or keyboard-walk pattern, or contain the account's own phone number. Login still accepts
+  8-character passwords so existing accounts keep working. Passwords the app generates are not affected.
+- **Response headers** (`src/lib/security-headers.ts`, applied to every route): a Content-Security-Policy
+  (`default-src 'self'`, no framing, no plugins, `form-action 'self'`), `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, a `Permissions-Policy` that turns camera, microphone and
+  geolocation off, and `X-Frame-Options: DENY`. The CSP keeps `'unsafe-inline'` for scripts and styles: Next
+  renders inline bootstrap scripts, and removing that allowance needs per-request nonces (dynamic rendering for every
+  page). The app has no HTML injection point, so the policy is defence in depth; the comment at the top of the file
+  has the trade-off. HSTS comes from the Caddy block, not the app.
 - There are no secrets other than the database password in `.env`. `.env` is git-ignored and excluded from the image.
 
 ### Running in Iran

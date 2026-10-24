@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { requireCoach } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getCoachSettings } from '@/lib/settings';
 import { longDate, timeRange } from './dates';
@@ -6,6 +7,7 @@ import { PendingRequestsList, type PendingItem } from './PendingRequestsList';
 
 /** Coach dashboard: PENDING requests that have not ended yet, soonest first, with one-tap confirm / decline. */
 export async function PendingRequests({ locale }: { locale: string }) {
+  await requireCoach(locale); // coach-only data: do not rely on the page that renders this being guarded
   const [t, settings] = await Promise.all([getTranslations({ locale, namespace: 'booking' }), getCoachSettings()]);
   const tz = settings.timezone;
   const rows = await prisma.booking.findMany({

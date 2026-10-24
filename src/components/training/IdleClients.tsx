@@ -1,11 +1,13 @@
 import { getTranslations } from 'next-intl/server';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Link } from '@/i18n/navigation';
+import { requireCoach } from '@/lib/auth';
 import { formatNumber } from '@/lib/format';
 import { getIdleClients } from '@/lib/training/queries';
 
 /** Coach dashboard: active clients with no workout in the last N days, longest gap first. */
 export async function IdleClients({ locale, days = 7 }: { locale: string; days?: number }) {
+  await requireCoach(locale); // coach-only data: do not rely on the page that renders this being guarded
   const [t, idle] = await Promise.all([getTranslations({ locale, namespace: 'training' }), getIdleClients(days)]);
   if (idle.length === 0) {
     return (

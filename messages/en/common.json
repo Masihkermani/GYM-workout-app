@@ -96,7 +96,7 @@
     "notFoundTitle": "Page not found",
     "notFoundBody": "This page doesn't exist or has moved.",
     "serverTitle": "Something broke",
-    "serverBody": "That wasn't supposed to happen. Try again in a moment."
+    "serverBody": "That wasn't supposed to happen."
   },
   "placeholder": {
     "emptyTitle": "This screen is being built",

@@ -89,7 +89,7 @@ test('coach signs in with Persian digits and sees the dashboard', async ({ page 
   await expect(page).toHaveURL(/\/fa\/coach$/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText(/بخیر/);
   // three small numbers: sessions in the next 7 days, active clients, pending requests
-  for (const label of ['جلسه‌های ۷ روز آینده', 'شاگردان فعال', 'درخواست در انتظار']) {
+  for (const label of ['جلسه‌های ۷ روز آینده', 'شاگردهای فعال', 'درخواست در انتظار']) {
     await expect(page.getByText(label, { exact: true })).toBeVisible();
   }
   await expect(page.getByRole('heading', { name: 'امروز' })).toBeVisible();
@@ -187,7 +187,8 @@ test.describe('with a signed-in coach', () => {
     const newProgram = page.getByRole('link', { name: 'برنامه‌ی جدید' });
     await expect(newProgram).toHaveCount(1);
     await expect(newProgram).toHaveAttribute('href', `/fa/coach/clients/${clientId}/programs/new`);
-    await expect(page.getByRole('link', { name: 'برنامه‌ی تازه' })).toHaveCount(0);
+    // ...and the training panel has no second one
+    await expect(page.getByRole('region', { name: 'تمرین', exact: true }).getByRole('link', { name: 'برنامه‌ی جدید' })).toHaveCount(0);
   });
 
   test("edits the client's name and phone: a taken number is refused on the field, a new one is stored as E.164", async ({ page }) => {
@@ -261,7 +262,7 @@ test.describe('with a signed-in coach', () => {
     await expect(toggle).toBeChecked();
     await flip(page, 'حساب فعال');
     const confirm = page.getByRole('alertdialog');
-    await confirm.getByRole('button', { name: 'غیرفعال‌سازی' }).click();
+    await confirm.getByRole('button', { name: 'غیرفعال کردن' }).click();
     await expect(page.getByRole('region', { name: 'اعلان‌ها' })).toContainText('غیرفعال شد');
     expect((await prisma.user.findUniqueOrThrow({ where: { id: clientId } })).active).toBe(false);
     expect(await canLogin(browser, NEW_PHONE, tempPassword)).toBe(false);
@@ -432,17 +433,17 @@ test.describe('the client profile (/app/me)', () => {
     await page.goto('/fa/app/me');
     const form = page.locator('form').filter({ has: page.getByLabel('رمز فعلی') });
     await form.getByLabel('رمز فعلی').fill('not-the-password');
-    await form.getByLabel('رمز تازه', { exact: true }).fill('brand-new-pass-77');
-    await form.getByLabel('تکرار رمز تازه').fill('brand-new-pass-77');
+    await form.getByLabel('رمز جدید', { exact: true }).fill('brand-new-pass-77');
+    await form.getByLabel('تکرار رمز جدید').fill('brand-new-pass-77');
     await form.getByRole('button', { name: 'تغییر رمز' }).click();
     await expect(page.getByText('رمز عبور فعلی درست نیست.')).toBeVisible();
 
     await form.getByLabel('رمز فعلی').fill(tempPassword);
-    await form.getByLabel('تکرار رمز تازه').fill('different-one-88');
+    await form.getByLabel('تکرار رمز جدید').fill('different-one-88');
     await form.getByRole('button', { name: 'تغییر رمز' }).click();
-    await expect(page.getByText('تکرار رمز با رمز تازه یکی نیست.')).toBeVisible();
+    await expect(page.getByText('تکرار رمز با رمز جدید یکی نیست.')).toBeVisible();
 
-    await form.getByLabel('تکرار رمز تازه').fill('brand-new-pass-77');
+    await form.getByLabel('تکرار رمز جدید').fill('brand-new-pass-77');
     await form.getByRole('button', { name: 'تغییر رمز' }).click();
     await expect(page.getByText('رمزت عوض شد.')).toBeVisible();
 
@@ -481,7 +482,7 @@ test.describe('the dashboard', () => {
       await expect(li).toHaveAttribute('aria-label', /ساعت رزرو.*ساعت آزاد/);
     }
     // the window has open hours in it even on a Friday (the coach's day off): it is not seven days of zeros
-    await expect(week.getByText(/ساعت رزرو شده، (?!۰ ساعت)\S+ ساعت هنوز آزاد/)).toBeVisible();
+    await expect(week.getByText(/ساعت رزروشده، (?!۰ ساعت)\S+ ساعت هنوز آزاد/)).toBeVisible();
     // the small figure up top uses the same window and says so
     await expect(page.getByText('جلسه‌های ۷ روز آینده', { exact: true })).toBeVisible();
     await expect(page.getByText('جلسه‌های این هفته')).toHaveCount(0);
@@ -601,7 +602,7 @@ test.describe('the coach runs the session', () => {
     await expect(options.last()).toBeVisible();
     await expect(options.last()).not.toBeChecked(); // "free workout" is last; the next program day is preselected
     expect(await sheet.getByRole('radio', { checked: true }).count()).toBe(1);
-    await expect(sheet.getByText('نوبت این روز')).toBeVisible();
+    await expect(sheet.getByText('روز بعدی')).toBeVisible();
     await sheet.getByRole('button', { name: 'شروع', exact: true }).click();
 
     await page.waitForURL(new RegExp(`/fa/coach/clients/${target.id}/workouts/.+`), SLOW);
@@ -641,7 +642,7 @@ test.describe('the coach runs the session', () => {
     await page.getByRole('alertdialog').getByRole('button', { name: 'پایان تمرین' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'تمرین تمام شد' })).toBeVisible();
     await expect(page.getByText(`تمرین در دفتر ${target.name} ثبت شد.`)).toBeVisible();
-    await expect(page.getByRole('link', { name: 'دیدن در تاریخچه' })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'دیدن در سابقه' })).toHaveCount(0);
 
     await expect.poll(async () => (await prisma.booking.findUniqueOrThrow({ where: { id: bookingId } })).status).toBe('COMPLETED');
     expect((await prisma.workoutLog.findUniqueOrThrow({ where: { id: workoutId } })).finishedAt).not.toBeNull();

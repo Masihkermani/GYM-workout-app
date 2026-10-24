@@ -20,10 +20,11 @@ import {
   type SettingsField,
 } from '@/components/coach/schemas';
 import { requireCoach, requireUser } from '@/lib/auth';
+import { authThrottle } from '@/lib/auth-throttle';
 import { SESSION_COOKIE } from '@/lib/constants';
 import { prisma } from '@/lib/db';
 import { hashPassword, verifyPassword } from '@/lib/password';
-import { FailureLimiter } from '@/lib/rate-limit';
+import { matchesPhone } from '@/lib/password-policy';
 import { hashSessionToken } from '@/lib/session';
 
 /**
@@ -360,10 +361,10 @@ export async function updateProfileAction(_prev: ProfileState, formData: FormDat
   return { ok: true, savedAt: Date.now(), values };
 }
 
-const globalForLimiter = globalThis as unknown as { __daftarPasswordLimiter?: FailureLimiter };
-/** 5 wrong "current password" answers per account per 15 minutes (a stolen session cannot be used to guess it). */
-const passwordLimiter = (globalForLimiter.__daftarPasswordLimiter ??= new FailureLimiter(5, 15 * 60 * 1000));
-
+/**
+ * Change my password. The "current password" guess is reserved BEFORE the first await (5 per account per
+ * 15 minutes, lib/auth-throttle.ts), so a stolen session cannot use a parallel burst to brute-force it.
+ */
 export async function changePasswordAction(_prev: PasswordState, formData: FormData): Promise<PasswordState> {
   const user = await requireUser(localeOf(formData.get('locale')));
   const parsed = changePasswordSchema.safeParse({
@@ -372,14 +373,16 @@ export async function changePasswordAction(_prev: PasswordState, formData: FormD
     confirm: text(formData.get('confirm')),
   });
   if (!parsed.success) return { errors: fieldCodes<'current' | 'next' | 'confirm'>(parsed.error) };
+  // a policy refusal says nothing about the current password, so it costs no guess
+  if (matchesPhone(parsed.data.next, user.phone)) return { errors: { next: 'passwordWeak' } };
 
-  if (!passwordLimiter.check(user.id).allowed) return { errors: { form: 'rateLimited' } };
+  const guess = authThrottle.reservePasswordGuess(user.id);
+  if (!guess.allowed) return { errors: { form: 'rateLimited' } };
   const row = await prisma.user.findUnique({ where: { id: user.id }, select: { passwordHash: true } });
   if (!row || !(await verifyPassword(row.passwordHash, parsed.data.current))) {
-    const after = passwordLimiter.recordFailure(user.id);
-    return { errors: after.allowed ? { current: 'passwordWrong' } : { form: 'rateLimited' } };
+    return { errors: guess.afterFailure() ? { form: 'rateLimited' } : { current: 'passwordWrong' } };
   }
-  passwordLimiter.reset(user.id);
+  guess.succeed();
 
   const passwordHash = await hashPassword(parsed.data.next);
   const token = (await cookies()).get(SESSION_COOKIE)?.value;

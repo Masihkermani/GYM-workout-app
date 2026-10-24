@@ -232,16 +232,29 @@ model SetLog {
 
 ## Auth & authorization
 
-- Register: name, phone, password (≥ 8 chars). Phone normalised by `src/lib/phone.ts`
+- Register: name, phone, password (≥ 10 chars, not a common password, not the phone number; `src/lib/password-policy.ts`). Phone normalised by `src/lib/phone.ts`
   (accepts `0912…`, `912…`, `+98912…`, `0098912…`, Persian/Arabic digits, spaces/dashes → `+98912…`;
   other `+<country>` numbers kept as E.164). Blocked when `allowSignup = false`.
-- Login: phone + password. Constant-time verify. Simple rate limit: 5 failed attempts per phone per 15 min (in-memory map is acceptable for a single-instance deploy; note it in README).
+- Login: phone + password (8-character legacy passwords still sign in). Constant-time verify. Rate limit
+  (`src/lib/auth-throttle.ts`, in memory: acceptable for a single-instance deploy, noted in README): the attempt is
+  reserved before any await, on three counters: 5 per address+phone per 15 min, 30 per address per 15 min, 50 per
+  phone per hour. The address is the first `X-Forwarded-For` entry when `TRUST_PROXY=1`, else unknown (per-address
+  counters skipped). Sign-up: 10 per address per hour.
 - Session: 32 random bytes → base64url token in cookie `daftar_session` (httpOnly, sameSite=lax, secure in prod, 30 days); DB stores sha256.
 - `getCurrentUser()`, `requireUser()`, `requireCoach()` in `src/lib/auth.ts`. **Every** server action and
   page re-checks; middleware only redirects for UX. Clients may only read/write their own rows
   (bookings, programs where `clientId = me`, workouts, sets). Coach may read/write everything.
 - Clients may create/edit programs for themselves (`authorId = clientId = me`). They may **not** edit a
   program the coach authored, but may log workouts against it.
+- Response headers for every route come from `next.config.ts` (`src/lib/security-headers.ts`): CSP with
+  `default-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, `form-action 'self'` (scripts and styles keep
+  `'unsafe-inline'` because Next 15 inlines its bootstrap scripts; nonces would force dynamic rendering of every page),
+  nosniff, `Referrer-Policy: strict-origin-when-cross-origin`, a `Permissions-Policy` with camera, microphone and
+  geolocation off, `X-Frame-Options: DENY`. HSTS is set by the reverse proxy (README, Caddy block).
+- The coach's login phone is shown to a client only inside the cancel window of a CONFIRMED booking
+  (`ClientBookingFooter`, fetched by `/app/bookings` only when such a booking exists); it is not in the booking page.
+- Set numbers (`logSet`, `restoreSet`, `deleteSet`) are assigned under `pg_advisory_xact_lock(hashtext(workoutId))`;
+  free workouts are capped at 10 per client per rolling day.
 - SMS OTP is a future hook: `src/lib/otp.ts` exports an interface + a no-op dev provider; not wired to the UI.
 
 ## Booking rules (`src/lib/scheduling`)

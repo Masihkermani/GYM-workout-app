@@ -149,6 +149,13 @@ export const updateItemSchema = itemFieldsSchema.extend({ itemId: id });
 export const itemIdSchema = z.object({ itemId: id });
 export const reorderItemsSchema = z.object({ dayId: id, orderedIds: z.array(id).min(1).max(60) });
 
-export type ActionErrorCode = 'invalid' | 'forbidden' | 'notFound' | 'finished' | 'limit' | 'generic';
+export type ActionErrorCode =
+  | 'invalid'
+  | 'forbidden'
+  | 'notFound'
+  | 'finished'
+  | 'limit'
+  | 'dailyLimit'
+  | 'generic';
 
 export type ActionResult<T extends object = object> = ({ ok: true } & T) | { ok: false; error: ActionErrorCode };

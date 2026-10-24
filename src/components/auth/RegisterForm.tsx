@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 import { SubmitButton } from '@/components/ui/SubmitButton';
+import { MIN_NEW_PASSWORD_LENGTH } from '@/lib/password-policy';
 import type { AuthErrorCode } from '@/lib/validation';
 import { registerAction, type AuthFormState } from '@/server/auth';
 import { useFocusFirstError } from './useFocusFirstError';
@@ -18,7 +19,8 @@ export function RegisterForm() {
   const [state, action] = useActionState<AuthFormState, FormData>(registerAction, {});
   const formRef = useFocusFirstError<HTMLFormElement>(state);
   const e = state.errors ?? {};
-  const errorText = (code?: AuthErrorCode) => (code ? t(`errors.${code}`) : undefined);
+  const errorText = (code?: AuthErrorCode) =>
+    code ? t(`errors.${code}`, { minutes: state.retryAfterMinutes ?? 0 }) : undefined;
 
   return (
     <form ref={formRef} action={action} noValidate className="flex flex-col gap-5">
@@ -35,7 +37,7 @@ export function RegisterForm() {
       </Field>
 
       <Field label={t('register.password')} hint={t('register.passwordHint')} error={errorText(e.password)} required>
-        <PasswordInput name="password" autoComplete="new-password" minLength={8} />
+        <PasswordInput name="password" autoComplete="new-password" minLength={MIN_NEW_PASSWORD_LENGTH} />
       </Field>
 
       <SubmitButton size="lg" fullWidth>

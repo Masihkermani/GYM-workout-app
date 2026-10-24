@@ -168,10 +168,21 @@ Direct, warm, coach-to-client, short. Imperatives. Concrete numbers.
 - Yes: "3 sets left." / «۳ ست مانده.»
 - Banned words/phrases: unlock, unleash, elevate, journey, transform your, seamless, empower,
   revolutionize, "your fitness, reimagined", "take it to the next level", any emoji.
-- Persian register: informal-respectful «تو» is fine for the client app (the coach's voice); the coach panel uses neutral labels.
+- Persian register: three voices, never mixed on one screen. Client-facing strings use informal-respectful «تو» (the coach's voice).
+  Coach-only strings (`/coach/*`, `coach.json`) use «شما». A string that BOTH audiences read (the program builder, the live
+  logger, the booking and training errors) is neutral: nouns, infinitives or the impersonal passive, no «تو» and no «شما»
+  («ورودی نامعتبر است.», «انتقال این روز به جلو»). When a shared message really must tell the reader what to do, split it
+  into two keys and pass the audience from the component (`errors.notAllowed` / `errors.notAllowedCoach`).
+  The client's `/app/me` page reads `coach.profile.errors.*` («تو»), not `coach.errors.*` («شما»).
 - Persian gym vocabulary: client = **شاگرد**, coach = **مربی**, session = **جلسه**, set = **ست**,
   rep = **تکرار**, weight = **وزنه**, program = **برنامه‌ی تمرینی**, warm-up = **گرم‌کردن**, rest = **استراحت**,
   personal record = **رکورد**.
+- One word per concept: history = **سابقه** (never «تاریخچه»), a bookable time = **ساعت** (never «نوبت»), free = **آزاد** (never «خالی»),
+  too close to book = **خیلی نزدیک**, new = **جدید** (never «تازه»), body part = **ناحیه‌ی بدن**, characters = **حرف** (never «نویسه»).
+  Equipment names are the ones in the 1,324 Persian exercise names (`data/exercises/exercises.fa.json`): «سیم‌کش», «توپ فیتبال»,
+  «هالتر EZ»; `training.json › equipment` and `coach.json › taxonomy.equipment` must agree.
+- Participles: attached when they modify a noun or label a count («ثبت‌شده», «رزروشده», «انجام‌شده»; ZWNJ only after a joining letter);
+  compound infinitives keep a plain space («باز کردن», «فعال کردن»), except the glossary term «گرم‌کردن».
 
 ## Accessibility checklist (pre-delivery)
 

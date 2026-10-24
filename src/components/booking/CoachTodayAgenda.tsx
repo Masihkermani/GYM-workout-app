@@ -4,6 +4,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
+import { requireCoach } from '@/lib/auth';
 import { cn } from '@/lib/cn';
 import { prisma } from '@/lib/db';
 import { formatPhone } from '@/lib/phone';
@@ -23,6 +24,7 @@ const MARK: Record<string, string> = {
 
 /** Coach dashboard: today's sessions as a vertical timeline (time, client, stamp, quick actions). */
 export async function CoachTodayAgenda({ locale }: { locale: string }) {
+  await requireCoach(locale); // coach-only data: do not rely on the page that renders this being guarded
   const [t, settings] = await Promise.all([getTranslations({ locale, namespace: 'booking' }), getCoachSettings()]);
   const tz = settings.timezone;
   const now = new Date();

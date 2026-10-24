@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
+import { requireCoach } from '@/lib/auth';
 import { getRecentSetFeed } from '@/lib/training/queries';
 import { formatRelative } from '@/lib/training/relative';
 import { exerciseName } from '@/lib/training/types';
@@ -9,6 +10,7 @@ import { loggedSetLabel } from './sets';
 
 /** Coach dashboard: the latest exercises logged across all clients (client, exercise, best set, how long ago). */
 export async function RecentSetsFeed({ locale, limit = 5 }: { locale: string; limit?: number }) {
+  await requireCoach(locale); // coach-only data: do not rely on the page that renders this being guarded
   const [t, items] = await Promise.all([getTranslations({ locale, namespace: 'training' }), getRecentSetFeed(limit)]);
   if (items.length === 0) {
     return <EmptyState title={t('feed.emptyTitle')} description={t('feed.emptyBody')} />;

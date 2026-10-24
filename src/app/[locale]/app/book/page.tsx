@@ -9,8 +9,8 @@ import { requireUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { formatNumber } from '@/lib/format';
 import { MAX_LIVE_BOOKINGS, bookableWeekStarts, generateSlots } from '@/lib/scheduling';
-import { getCoachContact, loadSchedulingData } from '@/lib/scheduling/load';
-import { coachDisplayName, getCoachSettings } from '@/lib/settings';
+import { loadSchedulingData } from '@/lib/scheduling/load';
+import { getCoachSettings } from '@/lib/settings';
 import { addDaysToKey, todayKey, wallClockToUtc } from '@/lib/time';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -35,9 +35,8 @@ export default async function BookPage({ params }: { params: Promise<{ locale: s
   const from = wallClockToUtc(weekStarts[0], 0, tz);
   const to = wallClockToUtc(addDaysToKey(weekStarts[weekStarts.length - 1], 7), 0, tz);
 
-  const [data, coach, liveCount] = await Promise.all([
+  const [data, liveCount] = await Promise.all([
     loadSchedulingData(from, to),
-    getCoachContact(),
     prisma.booking.count({ where: { clientId: user.id, status: { in: ['PENDING', 'CONFIRMED'] }, startsAt: { gt: now } } }),
   ]);
 
@@ -89,7 +88,6 @@ export default async function BookPage({ params }: { params: Promise<{ locale: s
           requireApproval: settings.requireApproval,
           slotMinutes: settings.slotMinutes,
         }}
-        coach={{ name: coachDisplayName(settings, locale) || coach.name, phone: coach.phone }}
         liveCount={liveCount}
       />
     </div>

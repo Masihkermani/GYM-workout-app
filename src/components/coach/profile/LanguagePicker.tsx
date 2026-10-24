@@ -59,7 +59,7 @@ export function LanguagePicker() {
           );
         })}
       </div>
-      {error ? <Flash tone="error">{t('errors.generic')}</Flash> : null}
+      {error ? <Flash tone="error">{t('profile.errors.generic')}</Flash> : null}
     </div>
   );
 }

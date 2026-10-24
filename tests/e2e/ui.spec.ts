@@ -136,7 +136,7 @@ test('Dialog (alertdialog) closes from its action', async ({ page }) => {
   await page.locator('.theme-scope[data-theme=light]').getByRole('button', { name: 'باز کردن گفتگو' }).click();
   const dialog = page.getByRole('alertdialog');
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: 'نگه دار' }).click();
+  await dialog.getByRole('button', { name: 'نگهش دار' }).click();
   await expect(dialog).toBeHidden();
 });
 

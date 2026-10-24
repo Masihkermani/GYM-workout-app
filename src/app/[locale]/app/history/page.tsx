@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { requireUser } from '@/lib/auth';
 import { formatNumber } from '@/lib/format';
+import { parsePage } from '@/lib/pagination';
 import { getCoachSettings } from '@/lib/settings';
 import { listWorkoutSummaries } from '@/lib/training/queries';
 import { DirIcon } from '@/components/ui/DirIcon';
@@ -29,7 +30,7 @@ export default async function HistoryPage({
   const { page: pageParam } = await searchParams;
   setRequestLocale(locale);
   const user = await requireUser(locale);
-  const page = Math.max(1, Number.parseInt(pageParam ?? '1', 10) || 1);
+  const page = parsePage(pageParam);
   const [t, settings, { items, total }] = await Promise.all([
     getTranslations({ locale, namespace: 'training' }),
     getCoachSettings(),

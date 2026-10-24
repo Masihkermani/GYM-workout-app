@@ -17,6 +17,7 @@ import {
   type SlotRefusal,
 } from '@/lib/scheduling';
 import { countOffGridBookings, loadRules, loadSchedulingData } from '@/lib/scheduling/load';
+import { startsAtSchema } from '@/lib/scheduling/starts-at';
 import { addDaysToKey, diffDays, wallClockToUtc } from '@/lib/time';
 
 /**
@@ -37,7 +38,6 @@ const fail = (error: BookingErrorCode): { ok: false; error: BookingErrorCode } =
 
 const idSchema = z.string().min(1).max(64);
 const localeSchema = z.enum(['fa', 'en']);
-const startsAtSchema = z.number().int().min(0).max(8_640_000_000_000_000);
 const noteSchema = z.string().max(500).optional().nullable();
 const dateKeySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 

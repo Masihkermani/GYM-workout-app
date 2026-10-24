@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { requireCoach } from '@/lib/auth';
 import { cn } from '@/lib/cn';
 import { prisma } from '@/lib/db';
 import { formatNumber, formatWeekday } from '@/lib/format';
@@ -17,6 +18,7 @@ const MS_MINUTE = 60_000;
  * the day's capacity is taken.
  */
 export async function WeekOccupancy({ locale }: { locale: string }) {
+  await requireCoach(locale); // coach-only data: do not rely on the page that renders this being guarded
   const [t, settings] = await Promise.all([getTranslations({ locale, namespace: 'booking' }), getCoachSettings()]);
   const tz = settings.timezone;
   const now = new Date();

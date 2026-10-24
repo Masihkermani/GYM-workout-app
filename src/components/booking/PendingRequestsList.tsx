@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/Toast';
 import { Link } from '@/i18n/navigation';
 import type { ActionResult } from '@/lib/scheduling';
 import { confirmBooking, declineBooking } from '@/server/booking';
+import { coachErrorKey } from './errors';
 
 export interface PendingItem {
   id: string;
@@ -37,7 +38,7 @@ export function PendingRequestsList({ items, locale }: { items: PendingItem[]; l
         kind === 'confirm' ? confirmBooking({ locale, bookingId: id }) : declineBooking({ locale, bookingId: id });
       const res = await run;
       if (res.ok) toast({ message: t(`coach.toast.${kind}`), tone: 'success' });
-      else toast({ message: t(`errors.${res.error}`), tone: 'error' });
+      else toast({ message: t(coachErrorKey(res.error)), tone: 'error' });
     });
   };
 

@@ -98,7 +98,7 @@ test.describe('live workout (fa)', () => {
     await page.getByRole('button', { name: 'ویرایش ست ۲' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'حذف' }).click();
     await expect(sets.getByRole('img', { name: '۲ ست انجام شد' })).toBeVisible();
-    await page.getByRole('button', { name: 'برگردان' }).click();
+    await page.getByRole('button', { name: 'بازگرداندن' }).click();
     await expect(sets.getByRole('img', { name: '۳ ست انجام شد' })).toBeVisible();
 
     // finish -> summary with the stamp
@@ -108,7 +108,7 @@ test.describe('live workout (fa)', () => {
     await expect(page.getByText('انجام شد').first()).toBeVisible();
 
     // it is in history, with the sets
-    await page.getByRole('link', { name: 'دیدن در تاریخچه' }).click();
+    await page.getByRole('link', { name: 'دیدن در سابقه' }).click();
     await expect(page).toHaveURL(/\/fa\/app\/history\/.+/);
     await expect(page.getByText('۸ × ۳۰ کیلو').first()).toBeVisible();
 
@@ -210,7 +210,7 @@ test.describe('programs', () => {
     await expect(page.getByRole('status').filter({ hasText: /ذخیره شد/ })).toBeVisible({ timeout: 15_000 });
 
     // reorder with the accessible up/down buttons
-    await page.getByRole('button', { name: /را پایین‌تر ببر$/ }).first().click();
+    await page.getByRole('button', { name: /^انتقال .+ به پایین$/ }).first().click();
     await expect(page.getByRole('status').filter({ hasText: /ذخیره شد/ })).toBeVisible({ timeout: 15_000 });
 
     // survives a reload, with the Persian-digit value stored as 5

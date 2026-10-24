@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/Toast';
 import { updateProfileAction, type ProfileState } from '@/server/coach';
 import { GOAL_MAX, type CoachErrorCode } from '../schemas';
 import { useManualForm } from '../useManualForm';
+import { isProfileError } from './errors';
 
 export function ProfileForm({ name, goal }: { name: string; goal: string }) {
   const t = useTranslations('coach');
@@ -20,7 +21,9 @@ export function ProfileForm({ name, goal }: { name: string; goal: string }) {
   const { state, pending, onSubmit } = useManualForm<ProfileState>(updateProfileAction, {});
   const formRef = useFocusFirstError<HTMLFormElement>(state);
   const e = state.errors ?? {};
-  const err = (code?: CoachErrorCode) => (code ? t(`errors.${code}`) : undefined);
+  // /app/me is the client's page: client-voice wording, with the shared coach wording as a fallback
+  const err = (code?: CoachErrorCode) =>
+    !code ? undefined : isProfileError(code) ? t(`profile.errors.${code}`) : t(`errors.${code}`);
 
   useEffect(() => {
     if (state.ok) toast({ tone: 'success', message: t('profile.saved') });
