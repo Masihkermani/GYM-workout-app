@@ -67,7 +67,7 @@ npm install
 
 # 4. schema and dev data
 npm run db:migrate             # prisma migrate dev: applies prisma/migrations, incl. the booking_active_slot index
-npm run db:seed                # coach, 6 clients, 1,324 exercises, programs, workout history, bookings
+npm run db:seed                # DEMO data: coach, 6 clients, 1,324 exercises, programs, workout history, bookings
 
 # 5. run
 npm run dev                    # http://localhost:3000  ->  redirects to /fa
@@ -75,13 +75,17 @@ npm run dev                    # http://localhost:3000  ->  redirects to /fa
 
 ### Seeded accounts (development only)
 
+`npm run db:seed` is the **development** seed. It refuses to run when `NODE_ENV=production` (see
+[Deploy](#deploy-with-docker-compose-a-vps) for what to run there instead).
+
 | Who | Phone | Password |
 |---|---|---|
 | Coach / admin | `09120000000` | `coach-pass-1234` |
 | Clients 1 to 6 | `09120000001` … `09120000006` | `client-pass-1234` |
 
-**These passwords are public.** They exist so the app is usable on your laptop. Anywhere real: log in as the coach,
-change the password in Profile, then deactivate the demo clients (or never seed at all). Phone numbers can be
+**These passwords are public.** They exist so the app is usable on your laptop. Anywhere real, do not run the demo
+seed: use `npm run db:seed:base` and `npm run create-coach` (below). If a database ever got the demo accounts, deactivate
+them in the coach panel and change the coach's password in Profile. Phone numbers can be
 typed with Persian or Arabic digits, spaces or dashes; they are stored as E.164 (`+989120000000`). The seed is
 idempotent: running it again rebuilds the data that depends on "now" (availability, time off, programs, workouts,
 bookings) without duplicating anything.
@@ -96,10 +100,13 @@ bookings) without duplicating anything.
 | `npm run typecheck` | `tsc --noEmit --incremental false` (no shared build-info file, so parallel runs cannot see each other's stale state) |
 | `npm test` | Vitest unit tests (`tests/unit`); the database-backed suites run when `DATABASE_URL` points at a migrated database |
 | `npm run test:e2e` | Playwright (`tests/e2e`) against a dev server it starts, or one you point at with `E2E_BASE_URL` |
-| `npm run test:e2e:prod` | `next build`, then the same Playwright suite against `next start` (the real production server). Extra arguments go to Playwright |
+| `npm run test:e2e:prod` | `next build`, then the same Playwright suite against `next start` (the real production server). Extra arguments go to Playwright. `ui.spec.ts` drives the dev-only `/styleguide` and skips itself here: run it with `npm run test:e2e` |
+| `npm run qa:final` | Screenshots of every route and key sheet (fa/en × light/dark × 390/1280) into `.qa/final/` plus a `REPORT.txt`: `DATABASE_URL=… BASE_URL=http://localhost:3100 npm run qa:final` against a running production server on a seeded database |
 | `npm run db:migrate` | `prisma migrate dev` |
-| `npm run db:seed` | Seed (idempotent) |
-| `npm run db:reset` | `prisma migrate reset` + seed: **destructive, see below** |
+| `npm run db:seed` | Demo seed (idempotent), **development only**: refuses to run with `NODE_ENV=production` unless `SEED_DEMO=1` is set |
+| `npm run db:seed:base` | Production base data, no users (idempotent): the settings row, default weekly availability, the 1,324 exercises with Persian names. Never overwrites what the coach changed |
+| `npm run create-coach -- --phone 0912… --name "…" [--name-fa "…"]` | Creates (or promotes) the coach. Password from `COACH_PASSWORD` (at least 10 characters) or generated and printed once. Idempotent on the phone; see Deploy |
+| `npm run db:reset` | `prisma migrate reset` + demo seed: **destructive, see below** (refused first when the demo seed would be refused) |
 | `npm run i18n:check` | Compares message keys across locales; also flags Arabic ي/ك, a missing ZWNJ after «می» and mismatched ICU placeholders |
 
 Also: `node scripts/contrast-check.mjs` (WCAG audit of the colour tokens, both themes) and
@@ -120,6 +127,12 @@ that variable on an agent's behalf.** Never point it at a database with real dat
   `playwright install` in the sandbox. The suites expect the seeded database. Variables: `E2E_BASE_URL` (default
   `http://localhost:3100`), `E2E_PORT`, `PW_OUTPUT_DIR` (traces and screenshots, default `./test-results`),
   `DATABASE_URL` (so the tests that plant rows can reach the same database as the server).
+- `tests/e2e/a11y.spec.ts` runs axe-core (WCAG 2.0 A/AA, 2.1 AA, 2.2 AA) on every route of the route map as the right
+  role, in fa and en, light and dark, at 390 and 1280 px, plus the open booking, add-client, exercise-picker and
+  edit-set sheets. It needs `DATABASE_URL` (it plants an open workout and a throwaway empty client and removes them
+  again). Automated checks cover only part of WCAG; keyboard and screen-reader behaviour are checked by the other specs
+  and by hand.
+- Playwright runs with one worker: the specs share one database and some change global state on purpose.
 - **CI** (`.github/workflows/ci.yml`) runs on every push and pull request: Postgres 16 service, `npm ci`,
   `prisma migrate deploy`, lint, typecheck, unit tests, `i18n:check` and `next build`. It does **not** run the Playwright
   end-to-end tests yet; run `npm run test:e2e` (or `test:e2e:prod`) before a release.
@@ -145,13 +158,28 @@ cp .env.example .env
 docker compose up -d --build        # builds the image, starts db + app, migrations run automatically
 docker compose logs -f app          # "[daftar] applying database migrations" ... "Ready"
 
-# first time only: load the demo data and the 1,324-exercise library
+# first time only: the base data (settings, default hours, the 1,324-exercise library; no users) ...
 docker compose --profile tools run --rm seed
+
+# ... and your coach account. Pick the password yourself (10+ characters; not echoed, not stored in .env) ...
+read -rs COACH_PASSWORD && export COACH_PASSWORD
+docker compose --profile tools run --rm create-coach --phone 09121234567 --name "Your Name" --name-fa "نام شما"
+# ... or leave COACH_PASSWORD unset and the command generates one and prints it once. Store it right away.
 ```
 
-Then **change the seeded passwords at once** (log in as `09120000000` / `coach-pass-1234`, open Profile) and deactivate
-the demo clients. The compose file publishes the app on `127.0.0.1:3000` only, so nothing is exposed until you put a
-reverse proxy in front of it.
+**Production never gets the demo data.** `seed` runs `npm run db:seed:base`, which creates no users. The demo seed
+(`npm run db:seed`: a coach and six clients whose passwords are printed in this README) refuses to run when
+`NODE_ENV=production`, and the `seed` and `create-coach` containers set it. A demo or staging server that really wants
+those accounts says so explicitly: `docker compose --profile tools run --rm -e SEED_DEMO=1 seed npm run db:seed`.
+
+`create-coach` is idempotent on the phone number: run again, it updates the same account and leaves its password alone
+(`COACH_PASSWORD` or `--reset-password` changes it and signs the account out everywhere). It refuses passwords shorter
+than 10 characters, the two published demo passwords, one repeated character, and the phone number itself. A client who
+already registered with that number is promoted to coach (reactivated, with a new password and no old sessions). It also
+puts `--name` / `--name-fa` into the public settings, and warns if other active coach accounts exist.
+
+The compose file publishes the app on `127.0.0.1:3000` only, so nothing is exposed until you put a reverse proxy in
+front of it.
 
 ### HTTPS is required
 

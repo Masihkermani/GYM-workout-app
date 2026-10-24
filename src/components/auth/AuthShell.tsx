@@ -16,7 +16,11 @@ export async function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="page-x flex items-center justify-between gap-2 py-3">
-        <Link href="/" className="rounded-[var(--r)] py-2 text-lg font-extrabold font-expanded text-ink">
+        {/* 44px target; the negative start margin cancels the padding, so the wordmark stays where it was */}
+        <Link
+          href="/"
+          className="-ms-2 inline-flex min-h-11 min-w-11 items-center justify-center rounded-[var(--r)] px-2 text-lg font-extrabold font-expanded text-ink"
+        >
           {t('brand.name')}
         </Link>
         <div className="flex items-center gap-1">

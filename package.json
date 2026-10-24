@@ -17,8 +17,11 @@
     "test:e2e:prod": "node scripts/e2e-prod.mjs",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx --env-file-if-exists=.env prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force --skip-seed && npm run db:seed",
+    "db:seed:base": "tsx --env-file-if-exists=.env prisma/seed-base.ts",
+    "create-coach": "tsx --env-file-if-exists=.env prisma/create-coach.ts",
+    "db:reset": "tsx prisma/check-demo-seed.ts && prisma migrate reset --force --skip-seed && npm run db:seed",
     "i18n:check": "node scripts/i18n-check.mjs",
+    "qa:final": "tsx --env-file-if-exists=.env scripts/qa-final.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -38,6 +41,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/eslintrc": "^3.3.7",
     "@playwright/test": "1.56.1",
     "@tailwindcss/postcss": "^4.3.3",

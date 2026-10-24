@@ -68,7 +68,12 @@ export default async function BookingsPage({ params }: { params: Promise<{ local
             icon={CalendarDays}
             title={t('bookings.emptyUpcomingTitle')}
             description={t('bookings.emptyUpcomingBody')}
-            action={<ButtonLink href="/app/book">{t('bookings.bookNew')}</ButtonLink>}
+            // the header already carries the one plate-red "Book" on this screen
+            action={
+              <ButtonLink href="/app/book" variant="outline">
+                {t('bookings.bookNew')}
+              </ButtonLink>
+            }
           />
         ) : (
           <ul className="flex flex-col gap-3">

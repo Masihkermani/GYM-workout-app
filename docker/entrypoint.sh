@@ -1,7 +1,10 @@
 #!/bin/sh
 # Container entrypoint: apply pending database migrations, then start the server.
 # `prisma migrate deploy` only applies migrations that were already generated and committed
-# (prisma/migrations); it never resets or drops anything.
+# (prisma/migrations); it never resets or drops anything. It loads no data: the first-time base data
+# and the coach account come from the one-off tools containers (README, "Deploy"):
+#   docker compose --profile tools run --rm seed
+#   docker compose --profile tools run --rm create-coach --phone 0912… --name "…"
 set -eu
 
 if [ -z "${DATABASE_URL:-}" ]; then

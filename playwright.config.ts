@@ -13,6 +13,10 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
+  // One worker: the specs share one database and several change global state on purpose (the coach
+  // spec renames the Persian name of "Barbell bench press" and edits the settings while the training
+  // spec searches for that exercise by name). Spec files in two workers race on that state.
+  workers: 1,
   retries: 0,
   reporter: [['list']],
   use: {

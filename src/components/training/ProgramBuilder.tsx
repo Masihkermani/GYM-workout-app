@@ -783,7 +783,7 @@ function ItemRow({
                         : isRange && onPatch({ targetRepsMax: null })
                     }
                     className={cn(
-                      'min-h-11 px-3 text-sm font-semibold tx',
+                      'min-h-11 min-w-11 px-3 text-sm font-semibold tx',
                       on ? 'bg-ink text-paper' : 'bg-card text-ink hover:bg-paper-2',
                     )}
                   >

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { DEMO_COACH_PROFILE } from '../../prisma/demo-profile';
 
 // Seeded dev credentials (prisma/seed.ts).
 const CLIENT = { phone: '09120000001', password: 'client-pass-1234' };
@@ -45,16 +46,17 @@ test.describe('landing page', () => {
   test('the public page reads like a coach, not a template: no placeholder, sample or settings talk', async ({ page }) => {
     await page.goto('/fa');
     const fa = page.getByRole('main');
-    await expect(fa).toContainText('ده سال است مربی قدرتی‌ام');
-    await expect(fa).toContainText('سعادت‌آباد');
+    // the bio and the location are what the seed wrote (prisma/demo-profile.ts), shown whole
+    await expect(fa).toContainText(DEMO_COACH_PROFILE.bioFa);
+    await expect(fa).toContainText(DEMO_COACH_PROFILE.locationFa);
     await expect(fa).not.toContainText(/نمونه|تنظیمات|placeholder|sample/i);
     // hours between two Persian numbers say «تا» so the start reads first, at the right
     await expect(page.getByRole('table')).toContainText(/۰۷:۰۰ تا ۱۱:۰۰/);
 
     await page.goto('/en');
     const en = page.getByRole('main');
-    await expect(en).toContainText("I've coached strength for ten years");
-    await expect(en).toContainText('Saadat Abad');
+    await expect(en).toContainText(DEMO_COACH_PROFILE.bioEn);
+    await expect(en).toContainText(DEMO_COACH_PROFILE.locationEn);
     await expect(en).not.toContainText(/placeholder|sample|settings/i);
   });
 

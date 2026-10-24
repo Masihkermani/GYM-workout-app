@@ -112,7 +112,8 @@ export async function Shell({ kind, children }: { kind: 'client' | 'coach'; chil
       {/* coach, mobile: top bar + menu sheet */}
       {kind === 'coach' ? (
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-rule bg-paper px-4 md:hidden">
-          <Link href={home} className="text-xl font-extrabold font-expanded text-ink">
+          {/* 44px target; the negative inline margin cancels the padding, so the wordmark stays where it was */}
+          <Link href={home} className="-mx-2 inline-flex min-h-11 min-w-11 items-center justify-center px-2 text-xl font-extrabold font-expanded text-ink">
             {t('brand.name')}
           </Link>
           <MobileMenu title={t('nav.menu')}>

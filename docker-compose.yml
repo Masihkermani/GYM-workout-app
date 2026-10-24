@@ -7,10 +7,33 @@
 # (README, "Deploy"). The session cookie is `Secure` in production, so login does not work over plain
 # http except on localhost.
 #
-# Demo data (coach, clients, exercise library) is NOT loaded automatically. The first time:
-#   docker compose --profile tools run --rm seed
-# The seeded passwords are public: change them (README, "Seeded accounts").
+# Nothing is loaded automatically. The first time, after `up`:
+#   docker compose --profile tools run --rm seed            # settings, default hours, the 1,324 exercises (no users)
+#   docker compose --profile tools run --rm create-coach --phone 0912… --name "Your Name" --name-fa "نام شما"
+# create-coach takes the password from COACH_PASSWORD (at least 10 characters) or generates one and prints
+# it once. The demo seed (`npm run db:seed`: six clients with PUBLISHED passwords) refuses to run here,
+# because the tools containers set NODE_ENV=production; a demo or staging box can opt in with SEED_DEMO=1
+# (README, "Deploy").
 name: daftar
+
+# Shared by the one-off tools services below.
+x-tools: &tools
+  profiles: ["tools"]
+  build:
+    context: .
+    target: build
+    args:
+      npm_config_registry: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
+      PRISMA_ENGINES_MIRROR: ${PRISMA_ENGINES_MIRROR:-https://binaries.prisma.sh}
+  depends_on:
+    db:
+      condition: service_healthy
+    # healthy = the entrypoint has applied the migrations and the server answers
+    app:
+      condition: service_healthy
+  environment: &tools-env
+    NODE_ENV: production
+    DATABASE_URL: postgresql://${POSTGRES_USER:-daftar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-daftar}
 
 services:
   db:
@@ -50,24 +73,22 @@ services:
     ports:
       - "127.0.0.1:${APP_PORT:-3000}:3000"
 
-  # One-off tools container (profile "tools", never started by `up`): loads the demo data.
+  # One-off tools containers (profile "tools", never started by `up`). Both run the sources and tsx from
+  # the build stage with NODE_ENV=production, which is what makes the demo seed refuse to run.
+  #
+  # seed: the base data a production database needs and no users. Safe to run again.
   seed:
-    profiles: ["tools"]
-    build:
-      context: .
-      target: build
-      args:
-        npm_config_registry: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
-        PRISMA_ENGINES_MIRROR: ${PRISMA_ENGINES_MIRROR:-https://binaries.prisma.sh}
-    depends_on:
-      db:
-        condition: service_healthy
-      # healthy = the entrypoint has applied the migrations and the server answers
-      app:
-        condition: service_healthy
+    <<: *tools
+    command: ["npm", "run", "db:seed:base"]
+
+  # create-coach: creates (or promotes) the coach account. The arguments you give to
+  # `docker compose run` are appended to the entrypoint; COACH_PASSWORD is read from your shell.
+  create-coach:
+    <<: *tools
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-daftar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-daftar}
-    command: ["npm", "run", "db:seed"]
+      <<: *tools-env
+      COACH_PASSWORD: ${COACH_PASSWORD:-}
+    entrypoint: ["npm", "run", "create-coach", "--"]
 
 volumes:
   pgdata:

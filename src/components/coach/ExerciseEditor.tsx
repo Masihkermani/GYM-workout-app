@@ -10,12 +10,12 @@ import { Dialog } from '@/components/ui/Dialog';
 import { Field } from '@/components/ui/Field';
 import { Flash } from '@/components/ui/Flash';
 import { Input } from '@/components/ui/Input';
+import { Sheet } from '@/components/ui/Sheet';
 import { Textarea } from '@/components/ui/Textarea';
 import { useToast } from '@/components/ui/Toast';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { deleteExerciseAction, updateExerciseAction, type ExerciseState } from '@/server/coach';
 import { joinMeta } from './format';
-import { MountedSheet } from './MountedSheet';
 import type { ExerciseDetail } from './queries';
 import type { CoachErrorCode } from './schemas';
 import { STEPS_MAX_LINES } from './schemas';
@@ -85,7 +85,7 @@ export function ExerciseEditor({ exercise }: { exercise: ExerciseDetail }) {
 
   return (
     <>
-      <MountedSheet
+      <Sheet
         open={open}
         onOpenChange={(open) => {
           if (!open) close();
@@ -159,7 +159,7 @@ export function ExerciseEditor({ exercise }: { exercise: ExerciseDetail }) {
           </div>
           <button type="submit" className="sr-only" tabIndex={-1} aria-hidden="true" />
         </form>
-      </MountedSheet>
+      </Sheet>
 
       <Dialog
         open={confirmDelete}

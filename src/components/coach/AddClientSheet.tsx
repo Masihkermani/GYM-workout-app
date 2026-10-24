@@ -9,10 +9,10 @@ import { Field } from '@/components/ui/Field';
 import { Flash } from '@/components/ui/Flash';
 import { Input } from '@/components/ui/Input';
 import { PhoneInput } from '@/components/ui/PhoneInput';
+import { Sheet } from '@/components/ui/Sheet';
 import { formatPhone } from '@/lib/phone';
 import { createClientAction, type CreateClientState } from '@/server/coach';
 import { CopyButton } from './CopyButton';
-import { MountedSheet } from './MountedSheet';
 import type { CoachErrorCode } from './schemas';
 import { generateTempPassword } from './tempPassword';
 import { useManualForm } from './useManualForm';
@@ -38,7 +38,7 @@ function AddClientPanel({ open, onClose, onAnother }: { open: boolean; onClose: 
     : '';
 
   return (
-    <MountedSheet
+    <Sheet
       open={open}
       onOpenChange={(open) => {
         if (!open) onClose();
@@ -126,7 +126,7 @@ function AddClientPanel({ open, onClose, onAnother }: { open: boolean; onClose: 
           <button type="submit" className="sr-only" tabIndex={-1} aria-hidden="true" />
         </form>
       )}
-    </MountedSheet>
+    </Sheet>
   );
 }
 

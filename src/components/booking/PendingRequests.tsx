@@ -31,7 +31,7 @@ export async function PendingRequests({ locale }: { locale: string }) {
   }));
 
   return (
-    <div className="flex flex-col gap-3" data-testid="pending-requests" aria-label={t('coach.pendingTitle')}>
+    <div role="group" className="flex flex-col gap-3" data-testid="pending-requests" aria-label={t('coach.pendingTitle')}>
       <PendingRequestsList items={items} locale={locale} />
     </div>
   );

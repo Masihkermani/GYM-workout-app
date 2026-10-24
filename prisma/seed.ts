@@ -7,14 +7,17 @@
  *
  * Re-running keeps users/exercises/settings and rebuilds everything that depends on "now"
  * (availability, time off, programs, workouts, bookings) for the seeded clients only.
- * DEV ONLY: the passwords below are public. Change them anywhere real.
+ * DEV ONLY: the passwords below are public. Change them anywhere real. With NODE_ENV=production this
+ * refuses to run unless SEED_DEMO=1 (prisma/seed-guard.ts); production uses `npm run db:seed:base`
+ * and `npm run create-coach` instead.
  */
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { Prisma, PrismaClient, type BookingStatus, type Role, type User } from '@prisma/client';
 import { hashPassword } from '../src/lib/password';
 import { normalizePhone } from '../src/lib/phone';
 import { addDaysToKey, startOfWeekKey, todayKey, utcToZoned, wallClockToUtc, weekdayOfKey } from '../src/lib/time';
+import { DEMO_COACH_PROFILE } from './demo-profile';
+import { assertDemoSeedAllowed, DemoSeedRefusedError } from './seed-guard';
+import { DEFAULT_WINDOWS, fixMojibake, seedExercises } from './seed-shared';
 
 const prisma = new PrismaClient();
 
@@ -316,57 +319,6 @@ const CLIENTS: ClientSpec[] = [
 ];
 
 // ------------------------------------------------------------------------------------- utilities
-const fixMojibake = (s: string) => s.replace(/в°/g, '°'); // "в°" -> "°" (UTF-8 read as cp1251 in the source data)
-const capitalise = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
-
-interface RawExercise {
-  id: string;
-  name: string;
-  bodyPart: string;
-  equipment: string;
-  target: string;
-  secondaryMuscles: string[];
-  steps: string[];
-}
-
-async function seedExercises(): Promise<Map<string, string>> {
-  const root = join(__dirname, '..', 'data', 'exercises');
-  const raw = JSON.parse(readFileSync(join(root, 'exercises.en.json'), 'utf8')) as RawExercise[];
-  const faPath = join(root, 'exercises.fa.json');
-  const fa: Record<string, string> = existsSync(faPath) ? JSON.parse(readFileSync(faPath, 'utf8')) : {};
-
-  const rows = raw.map((e) => ({
-    sourceId: e.id,
-    nameEn: capitalise(fixMojibake(e.name)),
-    nameFa: fa[e.id] ?? null,
-    bodyPart: e.bodyPart,
-    equipment: e.equipment,
-    target: e.target,
-    secondaryMuscles: e.secondaryMuscles,
-    stepsEn: e.steps,
-    stepsFa: [] as string[],
-  }));
-
-  // insert what is missing (never overwrites coach edits on re-run) ...
-  await prisma.exercise.createMany({ data: rows, skipDuplicates: true });
-
-  // ... and fill Persian names that are still empty, in one statement
-  const withFa = rows.filter((r) => r.nameFa);
-  for (let i = 0; i < withFa.length; i += 500) {
-    const chunk = withFa.slice(i, i + 500);
-    await prisma.$executeRaw`
-      UPDATE "Exercise" AS e SET "nameFa" = v.name
-      FROM (VALUES ${Prisma.join(chunk.map((r) => Prisma.sql`(${r.sourceId}, ${r.nameFa})`))}) AS v(id, name)
-      WHERE e."sourceId" = v.id AND e."nameFa" IS NULL`;
-  }
-
-  const all = await prisma.exercise.findMany({ select: { id: true, sourceId: true, nameEn: true } });
-  const byName = new Map<string, string>();
-  for (const e of all) byName.set(e.nameEn.toLowerCase(), e.id);
-  console.log(`  exercises: ${all.length} (${withFa.length} with Persian names${withFa.length === 0 ? ': exercises.fa.json not found or empty' : ''})`);
-  return byName;
-}
-
 function exerciseId(byName: Map<string, string>, datasetName: string): string {
   const id = byName.get(fixMojibake(datasetName).toLowerCase());
   if (!id) throw new Error(`seed: exercise "${datasetName}" not found in the library`);
@@ -374,15 +326,8 @@ function exerciseId(byName: Map<string, string>, datasetName: string): string {
 }
 
 // slots ---------------------------------------------------------------------------------------
-const WINDOWS: Record<number, [number, number][]> = {
-  // JS weekday -> [startMinute, endMinute][]; Friday (5) is off
-  6: [[420, 660], [960, 1260]],
-  0: [[420, 660], [960, 1260]],
-  1: [[420, 660], [960, 1260]],
-  2: [[420, 660], [960, 1260]],
-  3: [[420, 660], [960, 1260]],
-  4: [[480, 720]],
-};
+// JS weekday -> [startMinute, endMinute][]; Friday (5) is off
+const WINDOWS = DEFAULT_WINDOWS;
 const SLOT_MINUTES = 60;
 
 function slotMinutesFor(weekday: number): number[] {
@@ -395,24 +340,14 @@ function slotMinutesFor(weekday: number): number[] {
 
 // ------------------------------------------------------------------------------------------ main
 async function main() {
+  assertDemoSeedAllowed(); // before anything touches the database
   console.log('Seeding Daftar (dev data)…');
   const now = new Date();
   const today = todayKey(TZ, now);
 
   // settings --------------------------------------------------------------------------------
   const settingsData = {
-    coachName: 'Coach Arash Kamali',
-    coachNameFa: 'مربی آرش کمالی',
-    bioEn:
-      "I've coached strength for ten years, mostly with people who are just starting out or coming back " +
-      'from an injury: good movement first, heavier weight after. Sessions are one-to-one in my small ' +
-      'studio in Saadat Abad, so only one person trains with me at a time.',
-    bioFa:
-      'ده سال است مربی قدرتی‌ام. بیشتر با کسانی کار می‌کنم که تازه شروع کرده‌اند یا بعد از آسیب‌دیدگی به ' +
-      'تمرین برمی‌گردند؛ اول حرکت درست، بعد وزنه‌ی بیشتر. جلسه‌ها در استودیوی کوچکی در سعادت‌آباد است ' +
-      'و هر ساعت فقط یک نفر پیش من تمرین می‌کند.',
-    locationEn: 'Private training studio, Saadat Abad, Tehran. Ground floor, entrance from the side street.',
-    locationFa: 'استودیوی خصوصی تمرین، سعادت‌آباد، تهران. طبقه‌ی همکف، ورودی از کوچه.',
+    ...DEMO_COACH_PROFILE,
     timezone: TZ,
     slotMinutes: SLOT_MINUTES,
     bufferMinutes: 0,
@@ -498,7 +433,11 @@ async function main() {
   });
 
   // exercise library ------------------------------------------------------------------------
-  const exerciseByName = await seedExercises();
+  const exercises = await seedExercises(prisma);
+  const exerciseByName = exercises.byName;
+  console.log(
+    `  exercises: ${exercises.total} (${exercises.withFa} with Persian names${exercises.withFa === 0 ? ': exercises.fa.json not found or empty' : ''})`,
+  );
 
   // wipe what depends on "now" for the seeded clients ---------------------------------------
   const clientIds = clients.map((c) => c.id);
@@ -813,7 +752,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error(e instanceof DemoSeedRefusedError ? e.message : e);
     process.exitCode = 1;
   })
   .finally(() => prisma.$disconnect());

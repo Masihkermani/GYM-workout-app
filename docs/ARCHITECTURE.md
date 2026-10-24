@@ -293,7 +293,14 @@ Coach `/[locale]/coach`:
 - Keys must exist in **both** locales; `npm run i18n:check` (script in `scripts/i18n-check.mjs`) fails on missing/extra keys.
 - Exercise names: `nameFa ?? nameEn` in fa; `nameEn` in en.
 
-## Seed (`npm run db:seed`)
+## Seed (`npm run db:seed`, development only)
+
+`db:seed` refuses to run when `NODE_ENV=production` unless `SEED_DEMO=1` (`prisma/seed-guard.ts`; `db:reset` checks the same
+first, before it drops anything). Production uses `npm run db:seed:base` (`prisma/seed-base.ts`: settings row, default
+availability when there are no rules, the exercise library; no users; never overwrites coach edits) and
+`npm run create-coach -- --phone … --name …` (`prisma/coach-bootstrap.ts`: creates or promotes the COACH user, password from
+`COACH_PASSWORD` (>= 10 characters) or generated and printed once, idempotent on the phone). The shared pieces live in
+`prisma/seed-shared.ts`.
 
 - Coach: phone `09120000000`, password `coach-pass-1234` (dev only; README says change it).
 - 6 clients with Persian names, phones `0912000000{1..6}`, password `client-pass-1234`.
@@ -304,7 +311,8 @@ Coach `/[locale]/coach`:
 ## Scripts
 
 `dev`, `build`, `start`, `lint`, `typecheck` (`tsc --noEmit --incremental false`), `test` (vitest), `test:e2e` (playwright),
-`test:e2e:prod` (build, then playwright against `next start`), `db:migrate`, `db:seed`, `db:reset`, `i18n:check`.
+`test:e2e:prod` (build, then playwright against `next start`), `db:migrate`, `db:seed` (demo, dev only), `db:seed:base`,
+`create-coach`, `db:reset`, `i18n:check`.
 
 Deployment: `Dockerfile` + `docker-compose.yml` (standalone output, `prisma migrate deploy` on start), CI in `.github/workflows/ci.yml`; see README.
 

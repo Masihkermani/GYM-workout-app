@@ -17,11 +17,7 @@ export interface EditSetValues {
   isWarmup: boolean;
 }
 
-/**
- * Fix or remove a logged set. Keep it mounted and toggle `open` (the Sheet must see open go false ->
- * true; mounting it already open is closed again by React Strict Mode's double effect in dev). The
- * fields reload from `initial` each time it opens.
- */
+/** Fix or remove a logged set. Keep it mounted and toggle `open`; the fields reload from `initial` each time it opens. */
 export function EditSetSheet({
   open,
   onOpenChange,

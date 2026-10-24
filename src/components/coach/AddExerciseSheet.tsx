@@ -9,9 +9,9 @@ import { Field } from '@/components/ui/Field';
 import { Flash } from '@/components/ui/Flash';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Sheet } from '@/components/ui/Sheet';
 import { useToast } from '@/components/ui/Toast';
 import { createExerciseAction, type ExerciseState } from '@/server/coach';
-import { MountedSheet } from './MountedSheet';
 import type { CoachErrorCode } from './schemas';
 import { useManualForm } from './useManualForm';
 
@@ -66,7 +66,7 @@ function AddExercisePanel({
   );
 
   return (
-    <MountedSheet
+    <Sheet
       open={open}
       onOpenChange={(open) => {
         if (!open) onClose();
@@ -98,7 +98,7 @@ function AddExercisePanel({
         {select('target', targets, e.target, t('exercises.add.target'))}
         <button type="submit" className="sr-only" tabIndex={-1} aria-hidden="true" />
       </form>
-    </MountedSheet>
+    </Sheet>
   );
 }
 

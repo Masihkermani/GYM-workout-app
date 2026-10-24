@@ -285,23 +285,26 @@ test('a client cannot hold more than 3 upcoming sessions', async ({ page }) => {
   const client = await db();
   test.skip(!client, 'needs DATABASE_URL pointing at the server database');
   await cleanup();
-  // client 1 already has 2 confirmed sessions in the seed: plant a third
+  // The seed lays bookings out relative to "now" (and Friday is the coach's day off), so client 1 holds two
+  // or three live sessions depending on the day it ran: top her up to the cap instead of assuming a count.
   const user = await client!.user.findUniqueOrThrow({ where: { phone: '+989120000001' } });
   const live = await client!.booking.count({
     where: { clientId: user.id, status: { in: ['PENDING', 'CONFIRMED'] }, startsAt: { gt: new Date() } },
   });
-  test.skip(live !== 2, `seed drifted: expected 2 live bookings for client 1, found ${live}`);
-  const startsAt = new Date(Date.now() + 40 * 24 * 3_600_000);
-  startsAt.setUTCMinutes(0, 0, 0);
-  await client!.booking.create({
-    data: {
-      clientId: user.id,
-      startsAt,
-      endsAt: new Date(startsAt.getTime() + 3_600_000),
-      status: 'CONFIRMED',
-      clientNote: 'e2e-cap',
-    },
-  });
+  expect(live, 'the seed leaves client 1 at or below the cap of three').toBeLessThanOrEqual(3);
+  for (let i = 0; i < 3 - live; i++) {
+    const startsAt = new Date(Date.now() + (40 + i) * 24 * 3_600_000); // beyond the booking horizon, one hour each
+    startsAt.setUTCMinutes(0, 0, 0);
+    await client!.booking.create({
+      data: {
+        clientId: user.id,
+        startsAt,
+        endsAt: new Date(startsAt.getTime() + 3_600_000),
+        status: 'CONFIRMED',
+        clientNote: 'e2e-cap',
+      },
+    });
+  }
   await login(page, 'fa', { phone: '09120000001', password: CLIENT.password });
   await page.goto('/fa/app/book');
   await expect(page.getByText('۳ از ۳ جلسه‌ی پیش‌رو')).toBeVisible();
