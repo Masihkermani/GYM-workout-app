@@ -1,0 +1,1586 @@
+[
+  {
+    "ourId": "0003",
+    "ourName": "air bike",
+    "everkineticId": "0284",
+    "everkineticTitle": "Air Bike",
+    "confidence": "high",
+    "reason": "air bike"
+  },
+  {
+    "ourId": "0024",
+    "ourName": "barbell bench front squat",
+    "everkineticId": "0139",
+    "everkineticTitle": "Front Squat to Bench with Barbells",
+    "confidence": "high",
+    "reason": "barbell front squat to bench"
+  },
+  {
+    "ourId": "0025",
+    "ourName": "barbell bench press",
+    "everkineticId": "0042",
+    "everkineticTitle": "Bench Press",
+    "confidence": "high",
+    "reason": "same barbell flat bench press"
+  },
+  {
+    "ourId": "0026",
+    "ourName": "barbell bench squat",
+    "everkineticId": "0133",
+    "everkineticTitle": "Squat to Bench with Barbell",
+    "confidence": "high",
+    "reason": "barbell squat to bench"
+  },
+  {
+    "ourId": "0030",
+    "ourName": "barbell close-grip bench press",
+    "everkineticId": "0049",
+    "everkineticTitle": "Close Grip Barbell Bench Press",
+    "confidence": "high",
+    "reason": "close-grip barbell bench press"
+  },
+  {
+    "ourId": "0031",
+    "ourName": "barbell curl",
+    "everkineticId": "0211",
+    "everkineticTitle": "Biceps Curls with Barbell",
+    "confidence": "high",
+    "reason": "barbell curl"
+  },
+  {
+    "ourId": "0032",
+    "ourName": "barbell deadlift",
+    "everkineticId": "0099",
+    "everkineticTitle": "Barbell Dead Lifts",
+    "confidence": "high",
+    "reason": "barbell deadlift"
+  },
+  {
+    "ourId": "0033",
+    "ourName": "barbell decline bench press",
+    "everkineticId": "0051",
+    "everkineticTitle": "Decline Barbell Bench Press",
+    "confidence": "high",
+    "reason": "barbell decline bench press"
+  },
+  {
+    "ourId": "0035",
+    "ourName": "barbell decline close grip to skull press",
+    "everkineticId": "0168",
+    "everkineticTitle": "Decline Close Grip Bench to Skull Crusher",
+    "confidence": "high",
+    "reason": "decline close-grip bench to skull"
+  },
+  {
+    "ourId": "0036",
+    "ourName": "barbell decline wide-grip press",
+    "everkineticId": "0083",
+    "everkineticTitle": "Wide Grip Decline Bench Press",
+    "confidence": "high",
+    "reason": "wide-grip decline barbell press"
+  },
+  {
+    "ourId": "0037",
+    "ourName": "barbell decline wide-grip pullover",
+    "everkineticId": "0064",
+    "everkineticTitle": "Wide Grip Decline Barbell Pullover",
+    "confidence": "high",
+    "reason": "wide-grip decline barbell pullover"
+  },
+  {
+    "ourId": "0038",
+    "ourName": "barbell drag curl",
+    "everkineticId": "0222",
+    "everkineticTitle": "Drag Curl with Barbell",
+    "confidence": "high",
+    "reason": "barbell drag curl"
+  },
+  {
+    "ourId": "0040",
+    "ourName": "barbell front raise and pullover",
+    "everkineticId": "0058",
+    "everkineticTitle": "Barbell Front Raise and Pullover",
+    "confidence": "high",
+    "reason": "barbell front raise and pullover"
+  },
+  {
+    "ourId": "0041",
+    "ourName": "barbell front raise",
+    "everkineticId": "0007",
+    "everkineticTitle": "Front Barbell Raises",
+    "confidence": "high",
+    "reason": "barbell front raise"
+  },
+  {
+    "ourId": "0042",
+    "ourName": "barbell front squat",
+    "everkineticId": "0138",
+    "everkineticTitle": "Front Squat with Barbell",
+    "confidence": "high",
+    "reason": "barbell front squat"
+  },
+  {
+    "ourId": "0043",
+    "ourName": "barbell full squat",
+    "everkineticId": "0122",
+    "everkineticTitle": "Barbell Squat",
+    "confidence": "high",
+    "reason": "barbell back squat, full depth"
+  },
+  {
+    "ourId": "0044",
+    "ourName": "barbell good morning",
+    "everkineticId": "0101",
+    "everkineticTitle": "Barbell Good Mornings",
+    "confidence": "high",
+    "reason": "barbell good morning"
+  },
+  {
+    "ourId": "0046",
+    "ourName": "barbell hack squat",
+    "everkineticId": "0125",
+    "everkineticTitle": "Hack Squat with barbell",
+    "confidence": "high",
+    "reason": "barbell hack squat (bar behind legs)"
+  },
+  {
+    "ourId": "0047",
+    "ourName": "barbell incline bench press",
+    "everkineticId": "0043",
+    "everkineticTitle": "Incline Bench Press",
+    "confidence": "high",
+    "reason": "same barbell incline bench press"
+  },
+  {
+    "ourId": "0051",
+    "ourName": "barbell jefferson squat",
+    "everkineticId": "0141",
+    "everkineticTitle": "Jefferson Squats with Barbell",
+    "confidence": "high",
+    "reason": "jefferson squat"
+  },
+  {
+    "ourId": "0052",
+    "ourName": "barbell jm bench press",
+    "everkineticId": "0175",
+    "everkineticTitle": "JM Press",
+    "confidence": "high",
+    "reason": "JM press"
+  },
+  {
+    "ourId": "0054",
+    "ourName": "barbell lunge",
+    "everkineticId": "0114",
+    "everkineticTitle": "Barbell Lunges",
+    "confidence": "high",
+    "reason": "barbell lunge"
+  },
+  {
+    "ourId": "0063",
+    "ourName": "barbell narrow stance squat",
+    "everkineticId": "0146",
+    "everkineticTitle": "Narrow Stance Squat with Barbell",
+    "confidence": "high",
+    "reason": "narrow-stance barbell squat"
+  },
+  {
+    "ourId": "0065",
+    "ourName": "barbell one arm floor press",
+    "everkineticId": "0070",
+    "everkineticTitle": "One Arm Barbell Floor Press",
+    "confidence": "high",
+    "reason": "one-arm barbell floor press"
+  },
+  {
+    "ourId": "0066",
+    "ourName": "barbell one arm side deadlift",
+    "everkineticId": "0150",
+    "everkineticTitle": "One Arm Side Deadlift with Barbell",
+    "confidence": "high",
+    "reason": "one-arm side deadlift"
+  },
+  {
+    "ourId": "0067",
+    "ourName": "barbell one arm snatch",
+    "everkineticId": "0148",
+    "everkineticTitle": "One Arm Snatch with Barbell",
+    "confidence": "high",
+    "reason": "one-arm barbell snatch"
+  },
+  {
+    "ourId": "0068",
+    "ourName": "barbell one leg squat",
+    "everkineticId": "0132",
+    "everkineticTitle": "Single Leg Squat with Barbell",
+    "confidence": "high",
+    "reason": "one-leg barbell squat"
+  },
+  {
+    "ourId": "0069",
+    "ourName": "barbell overhead squat",
+    "everkineticId": "0151",
+    "everkineticTitle": "Overhead Squat with Barbell",
+    "confidence": "high",
+    "reason": "barbell overhead squat"
+  },
+  {
+    "ourId": "0070",
+    "ourName": "barbell preacher curl",
+    "everkineticId": "0239",
+    "everkineticTitle": "Preacher Curl with Barbell",
+    "confidence": "high",
+    "reason": "barbell preacher curl"
+  },
+  {
+    "ourId": "0076",
+    "ourName": "barbell rear delt row",
+    "everkineticId": "0028",
+    "everkineticTitle": "Rear Deltoid Row Barbell",
+    "confidence": "high",
+    "reason": "barbell rear delt row"
+  },
+  {
+    "ourId": "0077",
+    "ourName": "barbell rear lunge v. 2",
+    "everkineticId": "0128",
+    "everkineticTitle": "Rear Lunges with Barbell",
+    "confidence": "high",
+    "reason": "barbell rear (reverse) lunge"
+  },
+  {
+    "ourId": "0078",
+    "ourName": "barbell rear lunge",
+    "everkineticId": "0128",
+    "everkineticTitle": "Rear Lunges with Barbell",
+    "confidence": "high",
+    "reason": "barbell rear (reverse) lunge"
+  },
+  {
+    "ourId": "0085",
+    "ourName": "barbell romanian deadlift",
+    "everkineticId": "0118",
+    "everkineticTitle": "Romanian Dead Lift",
+    "confidence": "high",
+    "reason": "barbell romanian deadlift"
+  },
+  {
+    "ourId": "0088",
+    "ourName": "barbell seated calf raise",
+    "everkineticId": "0272",
+    "everkineticTitle": "Seated Calf Raise with Barbell",
+    "confidence": "high",
+    "reason": "seated barbell calf raise"
+  },
+  {
+    "ourId": "0089",
+    "ourName": "barbell seated close-grip concentration curl",
+    "everkineticId": "0242",
+    "everkineticTitle": "Seated Close Grip Concentration Curls with Barbell",
+    "confidence": "high",
+    "reason": "barbell seated close-grip concentration curl"
+  },
+  {
+    "ourId": "0091",
+    "ourName": "barbell seated overhead press",
+    "everkineticId": "0004",
+    "everkineticTitle": "Seated Military Press",
+    "confidence": "high",
+    "reason": "seated barbell overhead press on bench"
+  },
+  {
+    "ourId": "0092",
+    "ourName": "barbell seated overhead triceps extension",
+    "everkineticId": "0193",
+    "everkineticTitle": "Seated Overhead Triceps Extension with Barbell",
+    "confidence": "high",
+    "reason": "seated overhead barbell triceps extension"
+  },
+  {
+    "ourId": "0095",
+    "ourName": "barbell shrug",
+    "everkineticId": "0030",
+    "everkineticTitle": "Barbell Shrugs",
+    "confidence": "high",
+    "reason": "barbell shrug"
+  },
+  {
+    "ourId": "0101",
+    "ourName": "barbell speed squat",
+    "everkineticId": "0154",
+    "everkineticTitle": "Speed Squats with Barbell",
+    "confidence": "high",
+    "reason": "barbell speed squat"
+  },
+  {
+    "ourId": "0106",
+    "ourName": "barbell standing close grip curl",
+    "everkineticId": "0219",
+    "everkineticTitle": "Close Grip Standing Biceps Curls with Barbell",
+    "confidence": "high",
+    "reason": "barbell standing close-grip curl"
+  },
+  {
+    "ourId": "0109",
+    "ourName": "barbell standing overhead triceps extension",
+    "everkineticId": "0201",
+    "everkineticTitle": "Standing Overhead Triceps Extension with Barbell",
+    "confidence": "high",
+    "reason": "standing overhead barbell triceps extension"
+  },
+  {
+    "ourId": "0111",
+    "ourName": "barbell standing rocking leg calf raise",
+    "everkineticId": "0278",
+    "everkineticTitle": "Rocking Standing Calf Raise with Barbell",
+    "confidence": "high",
+    "reason": "barbell rocking standing calf raise"
+  },
+  {
+    "ourId": "0113",
+    "ourName": "barbell standing wide-grip curl",
+    "everkineticId": "0250",
+    "everkineticTitle": "Wide Grip Standing Biceps Curl with Barbell",
+    "confidence": "high",
+    "reason": "wide-grip standing barbell curl"
+  },
+  {
+    "ourId": "0114",
+    "ourName": "barbell step-up",
+    "everkineticId": "0134",
+    "everkineticTitle": "Step Ups with Barbell",
+    "confidence": "high",
+    "reason": "barbell step-up"
+  },
+  {
+    "ourId": "0118",
+    "ourName": "barbell reverse grip bent over row",
+    "everkineticId": "0026",
+    "everkineticTitle": "Reverse Grips Bent Over Barbell Rows",
+    "confidence": "high",
+    "reason": "reverse-grip barbell bent-over row"
+  },
+  {
+    "ourId": "0119",
+    "ourName": "barbell upright row v. 2",
+    "everkineticId": "0014",
+    "everkineticTitle": "Upright Barbell Rows",
+    "confidence": "high",
+    "reason": "barbell upright row"
+  },
+  {
+    "ourId": "0120",
+    "ourName": "barbell upright row",
+    "everkineticId": "0014",
+    "everkineticTitle": "Upright Barbell Rows",
+    "confidence": "high",
+    "reason": "barbell upright row"
+  },
+  {
+    "ourId": "0121",
+    "ourName": "barbell upright row v. 3",
+    "everkineticId": "0014",
+    "everkineticTitle": "Upright Barbell Rows",
+    "confidence": "high",
+    "reason": "barbell upright row"
+  },
+  {
+    "ourId": "0124",
+    "ourName": "barbell wide squat",
+    "everkineticId": "0160",
+    "everkineticTitle": "Wide Stance Squat with Barbell",
+    "confidence": "high",
+    "reason": "wide-stance barbell squat"
+  },
+  {
+    "ourId": "0150",
+    "ourName": "cable bar lateral pulldown",
+    "everkineticId": "0097",
+    "everkineticTitle": "Wide Grip Lat Pull Down",
+    "confidence": "high",
+    "reason": "wide-grip cable lat pulldown to upper chest"
+  },
+  {
+    "ourId": "0162",
+    "ourName": "cable front raise",
+    "everkineticId": "0008",
+    "everkineticTitle": "Front Cable Raises",
+    "confidence": "high",
+    "reason": "cable front raise"
+  },
+  {
+    "ourId": "0165",
+    "ourName": "cable hammer curl (with rope)",
+    "everkineticId": "0216",
+    "everkineticTitle": "Hammer Curls with Rope and Cable",
+    "confidence": "high",
+    "reason": "cable hammer curl with rope"
+  },
+  {
+    "ourId": "0168",
+    "ourName": "cable hip adduction",
+    "everkineticId": "0135",
+    "everkineticTitle": "Hip Adduction",
+    "confidence": "high",
+    "reason": "cable hip adduction"
+  },
+  {
+    "ourId": "0171",
+    "ourName": "cable incline fly",
+    "everkineticId": "0060",
+    "everkineticTitle": "Incline Cable Fly's",
+    "confidence": "high",
+    "reason": "cable incline fly"
+  },
+  {
+    "ourId": "0173",
+    "ourName": "cable incline triceps extension",
+    "everkineticId": "0164",
+    "everkineticTitle": "Incline Triceps Extension with Cable",
+    "confidence": "high",
+    "reason": "cable incline triceps extension"
+  },
+  {
+    "ourId": "0176",
+    "ourName": "cable kneeling triceps extension",
+    "everkineticId": "0176",
+    "everkineticTitle": "Kneeling Triceps Concentration Extension with Cable",
+    "confidence": "high",
+    "reason": "kneeling cable triceps extension"
+  },
+  {
+    "ourId": "0182",
+    "ourName": "cable lying close-grip curl",
+    "everkineticId": "0233",
+    "everkineticTitle": "Lying Close Grip Biceps Curls with Cable",
+    "confidence": "high",
+    "reason": "cable lying close-grip curl"
+  },
+  {
+    "ourId": "0186",
+    "ourName": "cable lying triceps extension v. 2",
+    "everkineticId": "0165",
+    "everkineticTitle": "Lying Tricep Extension with Cable",
+    "confidence": "high",
+    "reason": "cable lying triceps extension"
+  },
+  {
+    "ourId": "0195",
+    "ourName": "cable preacher curl",
+    "everkineticId": "0217",
+    "everkineticTitle": "Preacher Curl with Cable",
+    "confidence": "high",
+    "reason": "cable preacher curl"
+  },
+  {
+    "ourId": "0197",
+    "ourName": "cable pulldown (pro lat bar)",
+    "everkineticId": "0097",
+    "everkineticTitle": "Wide Grip Lat Pull Down",
+    "confidence": "high",
+    "reason": "wide-grip cable lat pulldown to upper chest"
+  },
+  {
+    "ourId": "0198",
+    "ourName": "cable pulldown",
+    "everkineticId": "0097",
+    "everkineticTitle": "Wide Grip Lat Pull Down",
+    "confidence": "high",
+    "reason": "wide-grip cable lat pulldown to upper chest"
+  },
+  {
+    "ourId": "0200",
+    "ourName": "cable pushdown (with rope attachment)",
+    "everkineticId": "0206",
+    "everkineticTitle": "Triceps Pushdown with Rope and Cable",
+    "confidence": "high",
+    "reason": "cable rope pushdown"
+  },
+  {
+    "ourId": "0201",
+    "ourName": "cable pushdown",
+    "everkineticId": "0205",
+    "everkineticTitle": "Triceps Pushdown with Cable",
+    "confidence": "high",
+    "reason": "cable straight-bar pushdown"
+  },
+  {
+    "ourId": "0207",
+    "ourName": "cable reverse-grip pushdown",
+    "everkineticId": "0189",
+    "everkineticTitle": "Reverse Grip Triceps Pushdown",
+    "confidence": "high",
+    "reason": "reverse-grip cable pushdown"
+  },
+  {
+    "ourId": "0212",
+    "ourName": "cable seated crunch",
+    "everkineticId": "0288",
+    "everkineticTitle": "Seated Ab Crunch with Cable",
+    "confidence": "high",
+    "reason": "seated cable crunch"
+  },
+  {
+    "ourId": "0215",
+    "ourName": "cable seated rear lateral raise",
+    "everkineticId": "0035",
+    "everkineticTitle": "Seated Rear Lateral Cable Raise",
+    "confidence": "high",
+    "reason": "seated cable rear lateral raise"
+  },
+  {
+    "ourId": "0220",
+    "ourName": "cable shrug",
+    "everkineticId": "0009",
+    "everkineticTitle": "Cable Shoulder Shrugs",
+    "confidence": "high",
+    "reason": "cable shrug"
+  },
+  {
+    "ourId": "0238",
+    "ourName": "cable straight arm pulldown",
+    "everkineticId": "0092",
+    "everkineticTitle": "Straight Arm Push Down",
+    "confidence": "high",
+    "reason": "straight-arm cable pulldown"
+  },
+  {
+    "ourId": "0241",
+    "ourName": "cable triceps pushdown (v-bar)",
+    "everkineticId": "0207",
+    "everkineticTitle": "Triceps Pushdown with V Bar and Cable",
+    "confidence": "high",
+    "reason": "cable v-bar pushdown"
+  },
+  {
+    "ourId": "0245",
+    "ourName": "cable underhand pulldown",
+    "everkineticId": "0093",
+    "everkineticTitle": "Underhand Pull downs",
+    "confidence": "high",
+    "reason": "underhand cable pulldown"
+  },
+  {
+    "ourId": "0246",
+    "ourName": "cable upright row",
+    "everkineticId": "0015",
+    "everkineticTitle": "Upright Cable Row",
+    "confidence": "high",
+    "reason": "cable upright row"
+  },
+  {
+    "ourId": "0251",
+    "ourName": "chest dip",
+    "everkineticId": "0054",
+    "everkineticTitle": "Chest Dips",
+    "confidence": "high",
+    "reason": "chest dip on parallel bars"
+  },
+  {
+    "ourId": "0253",
+    "ourName": "chin-ups (narrow parallel grip)",
+    "everkineticId": "0090",
+    "everkineticTitle": "Narrow Parallel Grip Chin-ups",
+    "confidence": "high",
+    "reason": "narrow parallel-grip chin-up"
+  },
+  {
+    "ourId": "0262",
+    "ourName": "cross body crunch",
+    "everkineticId": "0289",
+    "everkineticTitle": "Cross Body Crunch",
+    "confidence": "high",
+    "reason": "cross-body crunch"
+  },
+  {
+    "ourId": "0274",
+    "ourName": "crunch floor",
+    "everkineticId": "0291",
+    "everkineticTitle": "Crunches",
+    "confidence": "high",
+    "reason": "floor crunch"
+  },
+  {
+    "ourId": "0277",
+    "ourName": "decline crunch",
+    "everkineticId": "0292",
+    "everkineticTitle": "Decline Crunch",
+    "confidence": "high",
+    "reason": "decline crunch"
+  },
+  {
+    "ourId": "0284",
+    "ourName": "donkey calf raise",
+    "everkineticId": "0275",
+    "everkineticTitle": "Donkey Calf Raises",
+    "confidence": "high",
+    "reason": "donkey calf raise"
+  },
+  {
+    "ourId": "0285",
+    "ourName": "dumbbell alternate biceps curl",
+    "everkineticId": "0223",
+    "everkineticTitle": "Alternating Bicep Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "alternating dumbbell curl"
+  },
+  {
+    "ourId": "0287",
+    "ourName": "dumbbell arnold press v. 2",
+    "everkineticId": "0006",
+    "everkineticTitle": "Arnold Press",
+    "confidence": "high",
+    "reason": "seated dumbbell Arnold press"
+  },
+  {
+    "ourId": "0289",
+    "ourName": "dumbbell bench press",
+    "everkineticId": "0055",
+    "everkineticTitle": "Bench Press Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell flat bench press"
+  },
+  {
+    "ourId": "0291",
+    "ourName": "dumbbell bench squat",
+    "everkineticId": "0136",
+    "everkineticTitle": "Squat to Bench with Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell squat to bench"
+  },
+  {
+    "ourId": "0294",
+    "ourName": "dumbbell biceps curl",
+    "everkineticId": "0224",
+    "everkineticTitle": "Biceps Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell biceps curl"
+  },
+  {
+    "ourId": "0297",
+    "ourName": "dumbbell concentration curl",
+    "everkineticId": "0220",
+    "everkineticTitle": "Concentration Curls with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell concentration curl"
+  },
+  {
+    "ourId": "0298",
+    "ourName": "dumbbell cross body hammer curl",
+    "everkineticId": "0221",
+    "everkineticTitle": "Cross Body Hammer Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell cross-body hammer curl"
+  },
+  {
+    "ourId": "0299",
+    "ourName": "dumbbell cuban press",
+    "everkineticId": "0300",
+    "everkineticTitle": "Cuban Dumbbell Press",
+    "confidence": "high",
+    "reason": "dumbbell cuban press"
+  },
+  {
+    "ourId": "0300",
+    "ourName": "dumbbell deadlift",
+    "everkineticId": "0107",
+    "everkineticTitle": "Dumbbell Dead Lifts",
+    "confidence": "high",
+    "reason": "dumbbell deadlift"
+  },
+  {
+    "ourId": "0301",
+    "ourName": "dumbbell decline bench press",
+    "everkineticId": "0052",
+    "everkineticTitle": "Decline Dumbbell Bench Press",
+    "confidence": "high",
+    "reason": "dumbbell decline bench press"
+  },
+  {
+    "ourId": "0302",
+    "ourName": "dumbbell decline fly",
+    "everkineticId": "0053",
+    "everkineticTitle": "Decline Dumbbell Fly's",
+    "confidence": "high",
+    "reason": "dumbbell decline fly"
+  },
+  {
+    "ourId": "0306",
+    "ourName": "dumbbell decline triceps extension",
+    "everkineticId": "0169",
+    "everkineticTitle": "Decline Triceps Extension with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell decline triceps extension"
+  },
+  {
+    "ourId": "0308",
+    "ourName": "dumbbell fly",
+    "everkineticId": "0056",
+    "everkineticTitle": "Dumbbell Flys",
+    "confidence": "high",
+    "reason": "dumbbell flat bench fly"
+  },
+  {
+    "ourId": "0312",
+    "ourName": "dumbbell hammer curl v. 2",
+    "everkineticId": "0227",
+    "everkineticTitle": "Biceps Hammer Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell hammer curl"
+  },
+  {
+    "ourId": "0313",
+    "ourName": "dumbbell hammer curl",
+    "everkineticId": "0227",
+    "everkineticTitle": "Biceps Hammer Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell hammer curl"
+  },
+  {
+    "ourId": "0314",
+    "ourName": "dumbbell incline bench press",
+    "everkineticId": "0061",
+    "everkineticTitle": "Dumbbell Incline Bench Press",
+    "confidence": "high",
+    "reason": "dumbbell incline bench press"
+  },
+  {
+    "ourId": "0319",
+    "ourName": "dumbbell incline fly",
+    "everkineticId": "0062",
+    "everkineticTitle": "Incline Dumbbell Fly's",
+    "confidence": "high",
+    "reason": "dumbbell incline fly"
+  },
+  {
+    "ourId": "0321",
+    "ourName": "dumbbell incline hammer press",
+    "everkineticId": "0059",
+    "everkineticTitle": "Hammer Grip Incline Bench Press",
+    "confidence": "high",
+    "reason": "dumbbell incline hammer-grip press"
+  },
+  {
+    "ourId": "0322",
+    "ourName": "dumbbell incline inner biceps curl",
+    "everkineticId": "0231",
+    "everkineticTitle": "Incline Inner Biceps Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell incline inner biceps curl"
+  },
+  {
+    "ourId": "0330",
+    "ourName": "dumbbell incline triceps extension",
+    "everkineticId": "0209",
+    "everkineticTitle": "Incline Triceps Extensions with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell incline triceps extension"
+  },
+  {
+    "ourId": "0334",
+    "ourName": "dumbbell lateral raise",
+    "everkineticId": "0018",
+    "everkineticTitle": "Lateral Dumbbell Raises",
+    "confidence": "high",
+    "reason": "dumbbell lateral raise"
+  },
+  {
+    "ourId": "0336",
+    "ourName": "dumbbell lunge",
+    "everkineticId": "0115",
+    "everkineticTitle": "Dumbbell Lunges",
+    "confidence": "high",
+    "reason": "dumbbell lunge"
+  },
+  {
+    "ourId": "0337",
+    "ourName": "dumbbell lying extension (across face)",
+    "everkineticId": "0182",
+    "everkineticTitle": "Lying Triceps Extension Across Face with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell lying extension across face"
+  },
+  {
+    "ourId": "0345",
+    "ourName": "dumbbell lying one arm rear lateral raise",
+    "everkineticId": "0037",
+    "everkineticTitle": "Lying One Arm Rear Lateral Raise",
+    "confidence": "high",
+    "reason": "lying one-arm dumbbell rear lateral raise"
+  },
+  {
+    "ourId": "0346",
+    "ourName": "dumbbell lying one arm supinated triceps extension",
+    "everkineticId": "0187",
+    "everkineticTitle": "Single Arm Supinated Triceps Extension with Dumbbell",
+    "confidence": "high",
+    "reason": "lying one-arm supinated dumbbell triceps extension"
+  },
+  {
+    "ourId": "0348",
+    "ourName": "dumbbell lying rear lateral raise",
+    "everkineticId": "0023",
+    "everkineticTitle": "Lying Rear Lateral Raise",
+    "confidence": "high",
+    "reason": "dumbbell lying rear lateral raise"
+  },
+  {
+    "ourId": "0351",
+    "ourName": "dumbbell lying triceps extension",
+    "everkineticId": "0181",
+    "everkineticTitle": "Lying Triceps Extension with Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell lying triceps extension"
+  },
+  {
+    "ourId": "0360",
+    "ourName": "dumbbell one arm shoulder press v. 2",
+    "everkineticId": "0038",
+    "everkineticTitle": "One Arm Dumbbell Shoulder Press",
+    "confidence": "high",
+    "reason": "one-arm dumbbell shoulder press"
+  },
+  {
+    "ourId": "0361",
+    "ourName": "dumbbell one arm shoulder press",
+    "everkineticId": "0038",
+    "everkineticTitle": "One Arm Dumbbell Shoulder Press",
+    "confidence": "high",
+    "reason": "one-arm dumbbell shoulder press"
+  },
+  {
+    "ourId": "0363",
+    "ourName": "dumbbell one arm upright row",
+    "everkineticId": "0039",
+    "everkineticTitle": "One Arm Upright Row",
+    "confidence": "high",
+    "reason": "one-arm dumbbell upright row"
+  },
+  {
+    "ourId": "0374",
+    "ourName": "dumbbell prone incline curl",
+    "everkineticId": "0225",
+    "everkineticTitle": "Prone Incline Biceps Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell prone incline curl"
+  },
+  {
+    "ourId": "0381",
+    "ourName": "dumbbell rear lunge",
+    "everkineticId": "0129",
+    "everkineticTitle": "Rear Lunges with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell rear lunge"
+  },
+  {
+    "ourId": "0390",
+    "ourName": "dumbbell seated biceps curl (on stability ball)",
+    "everkineticId": "0255",
+    "everkineticTitle": "Biceps Curl Seated on Stability Ball with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell seated curl on stability ball"
+  },
+  {
+    "ourId": "0393",
+    "ourName": "dumbbell seated inner biceps curl",
+    "everkineticId": "0244",
+    "everkineticTitle": "Seated Inner Biceps Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell seated inner biceps curl"
+  },
+  {
+    "ourId": "0400",
+    "ourName": "dumbbell seated one leg calf raise",
+    "everkineticId": "0276",
+    "everkineticTitle": "Seated One Leg Calf Raise with Dumbbell",
+    "confidence": "high",
+    "reason": "seated one-leg dumbbell calf raise"
+  },
+  {
+    "ourId": "0405",
+    "ourName": "dumbbell seated shoulder press",
+    "everkineticId": "0012",
+    "everkineticTitle": "Dumbbell Shoulder Press",
+    "confidence": "high",
+    "reason": "seated dumbbell shoulder press, palms forward"
+  },
+  {
+    "ourId": "0406",
+    "ourName": "dumbbell shrug",
+    "everkineticId": "0005",
+    "everkineticTitle": "Shoulder Shrugs",
+    "confidence": "high",
+    "reason": "dumbbell shrug"
+  },
+  {
+    "ourId": "0407",
+    "ourName": "dumbbell side bend",
+    "everkineticId": "0294",
+    "everkineticTitle": "Side Bend with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell side bend"
+  },
+  {
+    "ourId": "0413",
+    "ourName": "dumbbell squat",
+    "everkineticId": "0130",
+    "everkineticTitle": "Squats using Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell squat"
+  },
+  {
+    "ourId": "0422",
+    "ourName": "dumbbell standing one arm curl (over incline bench)",
+    "everkineticId": "0248",
+    "everkineticTitle": "Standing One Arm Curl Over Incline Bench with Dumbbell",
+    "confidence": "high",
+    "reason": "standing one-arm dumbbell curl over incline bench"
+  },
+  {
+    "ourId": "0423",
+    "ourName": "dumbbell standing one arm extension",
+    "everkineticId": "0200",
+    "everkineticTitle": "Standing One Arm Triceps Extension with Dumbbell",
+    "confidence": "high",
+    "reason": "standing one-arm dumbbell triceps extension"
+  },
+  {
+    "ourId": "0430",
+    "ourName": "dumbbell standing triceps extension",
+    "everkineticId": "0198",
+    "everkineticTitle": "Standing Triceps Extension",
+    "confidence": "high",
+    "reason": "dumbbell standing two-hand overhead triceps extension"
+  },
+  {
+    "ourId": "0431",
+    "ourName": "dumbbell step-up",
+    "everkineticId": "0137",
+    "everkineticTitle": "Step Ups with Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell step-up"
+  },
+  {
+    "ourId": "0433",
+    "ourName": "dumbbell straight arm pullover",
+    "everkineticId": "0079",
+    "everkineticTitle": "Straight Arm Dumbbell Pullover",
+    "confidence": "high",
+    "reason": "dumbbell straight-arm pullover"
+  },
+  {
+    "ourId": "0436",
+    "ourName": "dumbbell tate press",
+    "everkineticId": "0203",
+    "everkineticTitle": "Tate Press with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell tate press"
+  },
+  {
+    "ourId": "0437",
+    "ourName": "dumbbell upright row",
+    "everkineticId": "0016",
+    "everkineticTitle": "Dumbbell Upright Rows",
+    "confidence": "high",
+    "reason": "dumbbell upright row"
+  },
+  {
+    "ourId": "0439",
+    "ourName": "dumbbell zottman curl",
+    "everkineticId": "0251",
+    "everkineticTitle": "Zottman Curl with Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell zottman curl"
+  },
+  {
+    "ourId": "0446",
+    "ourName": "ez barbell close-grip curl",
+    "everkineticId": "0218",
+    "everkineticTitle": "Close Grip EZ Bar Curl with Barbell",
+    "confidence": "high",
+    "reason": "ez-bar close-grip curl"
+  },
+  {
+    "ourId": "0447",
+    "ourName": "ez barbell curl",
+    "everkineticId": "0226",
+    "everkineticTitle": "EZ Bar Curl with Barbell",
+    "confidence": "high",
+    "reason": "ez-bar curl"
+  },
+  {
+    "ourId": "0466",
+    "ourName": "gironda sternum chin",
+    "everkineticId": "0088",
+    "everkineticTitle": "Gironda Sternum Chins",
+    "confidence": "high",
+    "reason": "gironda sternum chin"
+  },
+  {
+    "ourId": "0484",
+    "ourName": "hip raise (bent knee)",
+    "everkineticId": "0287",
+    "everkineticTitle": "Bent Knee Hip Raise",
+    "confidence": "high",
+    "reason": "bent-knee hip raise"
+  },
+  {
+    "ourId": "0488",
+    "ourName": "hyperextension (on bench)",
+    "everkineticId": "0103",
+    "everkineticTitle": "Hyperextensions",
+    "confidence": "high",
+    "reason": "hyperextension on hyperextension bench"
+  },
+  {
+    "ourId": "0489",
+    "ourName": "hyperextension",
+    "everkineticId": "0103",
+    "everkineticTitle": "Hyperextensions",
+    "confidence": "high",
+    "reason": "hyperextension on hyperextension bench"
+  },
+  {
+    "ourId": "0575",
+    "ourName": "lever bicep curl",
+    "everkineticId": "0253",
+    "everkineticTitle": "Bicep Curl with Machine",
+    "confidence": "high",
+    "reason": "biceps curl machine"
+  },
+  {
+    "ourId": "0585",
+    "ourName": "lever leg extension",
+    "everkineticId": "0142",
+    "everkineticTitle": "Leg Extensions",
+    "confidence": "high",
+    "reason": "leg extension machine"
+  },
+  {
+    "ourId": "0586",
+    "ourName": "lever lying leg curl",
+    "everkineticId": "0117",
+    "everkineticTitle": "Lying Leg Curl Machine",
+    "confidence": "high",
+    "reason": "lying leg curl machine"
+  },
+  {
+    "ourId": "0592",
+    "ourName": "lever preacher curl",
+    "everkineticId": "0236",
+    "everkineticTitle": "Preacher Curl with Machine",
+    "confidence": "high",
+    "reason": "preacher curl machine"
+  },
+  {
+    "ourId": "0594",
+    "ourName": "lever seated calf raise",
+    "everkineticId": "0279",
+    "everkineticTitle": "Seated Calf Raise using Machine",
+    "confidence": "high",
+    "reason": "seated calf raise machine"
+  },
+  {
+    "ourId": "0596",
+    "ourName": "lever seated fly",
+    "everkineticId": "0047",
+    "everkineticTitle": "Butterfly Machine",
+    "confidence": "high",
+    "reason": "pec-deck / seated fly machine"
+  },
+  {
+    "ourId": "0599",
+    "ourName": "lever seated leg curl",
+    "everkineticId": "0119",
+    "everkineticTitle": "Seated Leg Curl",
+    "confidence": "high",
+    "reason": "seated leg curl machine"
+  },
+  {
+    "ourId": "0603",
+    "ourName": "lever shoulder press",
+    "everkineticId": "0003",
+    "everkineticTitle": "Seated Shoulder Press Machine",
+    "confidence": "high",
+    "reason": "seated machine shoulder press"
+  },
+  {
+    "ourId": "0605",
+    "ourName": "lever standing calf raise",
+    "everkineticId": "0282",
+    "everkineticTitle": "Standing Calf Raises using Machine",
+    "confidence": "high",
+    "reason": "standing calf raise machine"
+  },
+  {
+    "ourId": "0607",
+    "ourName": "lever triceps extension",
+    "everkineticId": "0210",
+    "everkineticTitle": "Triceps Extensions using Machine",
+    "confidence": "high",
+    "reason": "triceps extension machine"
+  },
+  {
+    "ourId": "0650",
+    "ourName": "pull-in (on stability ball)",
+    "everkineticId": "0296",
+    "everkineticTitle": "Exercise Ball Pull In",
+    "confidence": "high",
+    "reason": "pull-in on stability ball"
+  },
+  {
+    "ourId": "0652",
+    "ourName": "pull-up",
+    "everkineticId": "0087",
+    "everkineticTitle": "Pull Ups",
+    "confidence": "high",
+    "reason": "pull-up"
+  },
+  {
+    "ourId": "0662",
+    "ourName": "push-up",
+    "everkineticId": "0077",
+    "everkineticTitle": "Push Ups",
+    "confidence": "high",
+    "reason": "standard push-up"
+  },
+  {
+    "ourId": "0739",
+    "ourName": "sled 45° leg press",
+    "everkineticId": "0127",
+    "everkineticTitle": "Leg Press",
+    "confidence": "high",
+    "reason": "leg press machine vs sled 45 degree leg press"
+  },
+  {
+    "ourId": "0743",
+    "ourName": "sled hack squat",
+    "everkineticId": "0123",
+    "everkineticTitle": "Hack Squat Machine",
+    "confidence": "high",
+    "reason": "hack squat machine vs sled hack squat"
+  },
+  {
+    "ourId": "0744",
+    "ourName": "sled lying squat",
+    "everkineticId": "0144",
+    "everkineticTitle": "Lying Squat",
+    "confidence": "high",
+    "reason": "lying squat on sled"
+  },
+  {
+    "ourId": "0748",
+    "ourName": "smith bench press",
+    "everkineticId": "0078",
+    "everkineticTitle": "Smith Machine Bench Press",
+    "confidence": "high",
+    "reason": "smith bench press"
+  },
+  {
+    "ourId": "0751",
+    "ourName": "smith close-grip bench press",
+    "everkineticId": "0195",
+    "everkineticTitle": "Smith Machine Close Grip Bench Press",
+    "confidence": "high",
+    "reason": "smith close-grip bench press"
+  },
+  {
+    "ourId": "0752",
+    "ourName": "smith deadlift",
+    "everkineticId": "0100",
+    "everkineticTitle": "Smith Machine Dead Lifts",
+    "confidence": "high",
+    "reason": "smith deadlift"
+  },
+  {
+    "ourId": "0755",
+    "ourName": "smith hack squat",
+    "everkineticId": "0126",
+    "everkineticTitle": "Smith Machine Hack Squat",
+    "confidence": "high",
+    "reason": "smith hack squat"
+  },
+  {
+    "ourId": "0757",
+    "ourName": "smith incline bench press",
+    "everkineticId": "0081",
+    "everkineticTitle": "Smith Machine Incline Bench Press",
+    "confidence": "high",
+    "reason": "smith incline bench press"
+  },
+  {
+    "ourId": "0762",
+    "ourName": "smith rear delt row",
+    "everkineticId": "0022",
+    "everkineticTitle": "Smith Machine Rear Deltoid Row",
+    "confidence": "high",
+    "reason": "smith rear delt row"
+  },
+  {
+    "ourId": "0763",
+    "ourName": "smith reverse calf raises",
+    "everkineticId": "0280",
+    "everkineticTitle": "Smith Machine Reverse Calf Raises",
+    "confidence": "high",
+    "reason": "smith reverse calf raise"
+  },
+  {
+    "ourId": "0767",
+    "ourName": "smith shrug",
+    "everkineticId": "0041",
+    "everkineticTitle": "Smith Machine Shoulder Shrugs",
+    "confidence": "high",
+    "reason": "smith shrug"
+  },
+  {
+    "ourId": "0770",
+    "ourName": "smith squat",
+    "everkineticId": "0124",
+    "everkineticTitle": "Smith Machine Squats",
+    "confidence": "high",
+    "reason": "smith squat"
+  },
+  {
+    "ourId": "0775",
+    "ourName": "smith upright row",
+    "everkineticId": "0013",
+    "everkineticTitle": "Smith Machine Upright Row",
+    "confidence": "high",
+    "reason": "smith upright row"
+  },
+  {
+    "ourId": "0861",
+    "ourName": "cable seated row",
+    "everkineticId": "0025",
+    "everkineticTitle": "Seated Cable Rows",
+    "confidence": "high",
+    "reason": "seated cable row"
+  },
+  {
+    "ourId": "0868",
+    "ourName": "cable curl",
+    "everkineticId": "0212",
+    "everkineticTitle": "Standing Biceps Curl with Cable",
+    "confidence": "high",
+    "reason": "standing cable curl"
+  },
+  {
+    "ourId": "0869",
+    "ourName": "lever shoulder press v. 2",
+    "everkineticId": "0003",
+    "everkineticTitle": "Seated Shoulder Press Machine",
+    "confidence": "high",
+    "reason": "seated machine shoulder press"
+  },
+  {
+    "ourId": "0968",
+    "ourName": "band alternating biceps curl",
+    "everkineticId": "0261",
+    "everkineticTitle": "Quick Alternating Biceps Curls with Band",
+    "confidence": "high",
+    "reason": "alternating band biceps curl"
+  },
+  {
+    "ourId": "1004",
+    "ourName": "band squat",
+    "everkineticId": "0155",
+    "everkineticTitle": "Squats with Exercise Bands",
+    "confidence": "high",
+    "reason": "band squat"
+  },
+  {
+    "ourId": "1285",
+    "ourName": "dumbbell one arm bench fly",
+    "everkineticId": "0071",
+    "everkineticTitle": "One Arm Flat Bench Fly’s",
+    "confidence": "high",
+    "reason": "one-arm dumbbell bench fly"
+  },
+  {
+    "ourId": "1299",
+    "ourName": "lever incline chest press",
+    "everkineticId": "0084",
+    "everkineticTitle": "Incline Chest Press",
+    "confidence": "high",
+    "reason": "seated incline chest press machine"
+  },
+  {
+    "ourId": "1300",
+    "ourName": "lever decline chest press",
+    "everkineticId": "0085",
+    "everkineticTitle": "Decline Chest Press",
+    "confidence": "high",
+    "reason": "seated decline chest press machine"
+  },
+  {
+    "ourId": "1314",
+    "ourName": "back extension on exercise ball",
+    "everkineticId": "0104",
+    "everkineticTitle": "Back Extension on Stability Ball",
+    "confidence": "high",
+    "reason": "back extension on exercise ball"
+  },
+  {
+    "ourId": "1316",
+    "ourName": "barbell bent arm pullover",
+    "everkineticId": "0045",
+    "everkineticTitle": "Bent Arm Pullover",
+    "confidence": "high",
+    "reason": "barbell bent-arm pullover on flat bench"
+  },
+  {
+    "ourId": "1326",
+    "ourName": "chin-up",
+    "everkineticId": "0089",
+    "everkineticTitle": "Chin Ups",
+    "confidence": "high",
+    "reason": "chin-up"
+  },
+  {
+    "ourId": "1368",
+    "ourName": "ankle circles",
+    "everkineticId": "0270",
+    "everkineticTitle": "Ankle Circles",
+    "confidence": "high",
+    "reason": "ankle circles"
+  },
+  {
+    "ourId": "1371",
+    "ourName": "barbell seated calf raise",
+    "everkineticId": "0272",
+    "everkineticTitle": "Seated Calf Raise with Barbell",
+    "confidence": "high",
+    "reason": "seated barbell calf raise"
+  },
+  {
+    "ourId": "1372",
+    "ourName": "barbell standing calf raise",
+    "everkineticId": "0281",
+    "everkineticTitle": "Standing Barbell Calf Raise",
+    "confidence": "high",
+    "reason": "barbell standing calf raise"
+  },
+  {
+    "ourId": "1391",
+    "ourName": "sled calf press on leg press",
+    "everkineticId": "0273",
+    "everkineticTitle": "Calves Press on Leg Machine",
+    "confidence": "high",
+    "reason": "calf press on leg press"
+  },
+  {
+    "ourId": "1394",
+    "ourName": "smith reverse calf raises",
+    "everkineticId": "0280",
+    "everkineticTitle": "Smith Machine Reverse Calf Raises",
+    "confidence": "high",
+    "reason": "smith reverse calf raise"
+  },
+  {
+    "ourId": "1461",
+    "ourName": "barbell full squat (back pov)",
+    "everkineticId": "0122",
+    "everkineticTitle": "Barbell Squat",
+    "confidence": "high",
+    "reason": "barbell back squat, full depth"
+  },
+  {
+    "ourId": "1462",
+    "ourName": "barbell full squat (side pov)",
+    "everkineticId": "0122",
+    "everkineticTitle": "Barbell Squat",
+    "confidence": "high",
+    "reason": "barbell back squat, full depth"
+  },
+  {
+    "ourId": "1463",
+    "ourName": "sled 45° leg press (side pov)",
+    "everkineticId": "0127",
+    "everkineticTitle": "Leg Press",
+    "confidence": "high",
+    "reason": "leg press machine vs sled 45 degree leg press"
+  },
+  {
+    "ourId": "1464",
+    "ourName": "sled 45° leg press (back pov)",
+    "everkineticId": "0127",
+    "everkineticTitle": "Leg Press",
+    "confidence": "high",
+    "reason": "leg press machine vs sled 45 degree leg press"
+  },
+  {
+    "ourId": "1479",
+    "ourName": "lever incline chest press v. 2",
+    "everkineticId": "0084",
+    "everkineticTitle": "Incline Chest Press",
+    "confidence": "high",
+    "reason": "seated incline chest press machine"
+  },
+  {
+    "ourId": "1614",
+    "ourName": "lever preacher curl v. 2",
+    "everkineticId": "0236",
+    "everkineticTitle": "Preacher Curl with Machine",
+    "confidence": "high",
+    "reason": "preacher curl machine"
+  },
+  {
+    "ourId": "1629",
+    "ourName": "barbell standing wide grip biceps curl",
+    "everkineticId": "0250",
+    "everkineticTitle": "Wide Grip Standing Biceps Curl with Barbell",
+    "confidence": "high",
+    "reason": "wide-grip standing barbell curl"
+  },
+  {
+    "ourId": "1634",
+    "ourName": "cable lying bicep curl",
+    "everkineticId": "0232",
+    "everkineticTitle": "Lying Bicep Cable Curl",
+    "confidence": "high",
+    "reason": "cable lying biceps curl"
+  },
+  {
+    "ourId": "1636",
+    "ourName": "cable overhead curl",
+    "everkineticId": "0238",
+    "everkineticTitle": "Overhead Curl with Cable",
+    "confidence": "high",
+    "reason": "cable overhead curl"
+  },
+  {
+    "ourId": "1652",
+    "ourName": "dumbbell bicep curl on exercise ball with leg raised",
+    "everkineticId": "0263",
+    "everkineticTitle": "Bicep Curl on Stability Ball with Leg Raised",
+    "confidence": "high",
+    "reason": "dumbbell curl on stability ball, leg raised"
+  },
+  {
+    "ourId": "1654",
+    "ourName": "dumbbell biceps curl reverse",
+    "everkineticId": "0257",
+    "everkineticTitle": "Biceps Curl Reverse with Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell reverse biceps curl"
+  },
+  {
+    "ourId": "1655",
+    "ourName": "dumbbell biceps curl squat",
+    "everkineticId": "0256",
+    "everkineticTitle": "Biceps Curl Squat with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell biceps curl squat"
+  },
+  {
+    "ourId": "1656",
+    "ourName": "dumbbell biceps curl v sit on bosu ball",
+    "everkineticId": "0269",
+    "everkineticTitle": "Biceps Curl V Sit on Dome with Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell curl v-sit on bosu ball"
+  },
+  {
+    "ourId": "1657",
+    "ourName": "dumbbell cross body hammer curl v. 2",
+    "everkineticId": "0221",
+    "everkineticTitle": "Cross Body Hammer Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell cross-body hammer curl"
+  },
+  {
+    "ourId": "1677",
+    "ourName": "dumbbell seated bicep curl",
+    "everkineticId": "0243",
+    "everkineticTitle": "Seated Bicep Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell seated biceps curl"
+  },
+  {
+    "ourId": "1680",
+    "ourName": "dumbbell standing one arm curl over incline bench",
+    "everkineticId": "0248",
+    "everkineticTitle": "Standing One Arm Curl Over Incline Bench with Dumbbell",
+    "confidence": "high",
+    "reason": "standing one-arm dumbbell curl over incline bench"
+  },
+  {
+    "ourId": "1684",
+    "ourName": "dumbbell step up single leg balance with bicep curl",
+    "everkineticId": "0266",
+    "everkineticTitle": "Step Up Single Leg Balance with Bicep Curl using Dumbbells",
+    "confidence": "high",
+    "reason": "step-up single-leg balance with curl"
+  },
+  {
+    "ourId": "1765",
+    "ourName": "dumbbell upright row (back pov)",
+    "everkineticId": "0016",
+    "everkineticTitle": "Dumbbell Upright Rows",
+    "confidence": "high",
+    "reason": "dumbbell upright row"
+  },
+  {
+    "ourId": "2136",
+    "ourName": "dumbbell cuban press v. 2",
+    "everkineticId": "0300",
+    "everkineticTitle": "Cuban Dumbbell Press",
+    "confidence": "high",
+    "reason": "dumbbell cuban press"
+  },
+  {
+    "ourId": "2137",
+    "ourName": "dumbbell arnold press",
+    "everkineticId": "0006",
+    "everkineticTitle": "Arnold Press",
+    "confidence": "high",
+    "reason": "seated dumbbell Arnold press"
+  },
+  {
+    "ourId": "2186",
+    "ourName": "ez barbell decline triceps extension",
+    "everkineticId": "0170",
+    "everkineticTitle": "Decline EZ Bar Triceps Extension with Barbell",
+    "confidence": "high",
+    "reason": "ez-bar decline triceps extension"
+  },
+  {
+    "ourId": "2294",
+    "ourName": "dumbbell zottman preacher curl",
+    "everkineticId": "0252",
+    "everkineticTitle": "Zottman Preacher Curl with Dumbbells",
+    "confidence": "high",
+    "reason": "dumbbell zottman preacher curl"
+  },
+  {
+    "ourId": "2318",
+    "ourName": "lever shoulder press v. 3",
+    "everkineticId": "0003",
+    "everkineticTitle": "Seated Shoulder Press Machine",
+    "confidence": "high",
+    "reason": "seated machine shoulder press"
+  },
+  {
+    "ourId": "2321",
+    "ourName": "dumbbell standing inner biceps curl v. 2",
+    "everkineticId": "0246",
+    "everkineticTitle": "Standing Inner Biceps Curl with Dumbbell",
+    "confidence": "high",
+    "reason": "dumbbell standing inner biceps curl"
+  },
+  {
+    "ourId": "2330",
+    "ourName": "cable lat pulldown full range of motion",
+    "everkineticId": "0097",
+    "everkineticTitle": "Wide Grip Lat Pull Down",
+    "confidence": "high",
+    "reason": "wide-grip cable lat pulldown to upper chest"
+  },
+  {
+    "ourId": "2616",
+    "ourName": "cable lateral pulldown with v-bar",
+    "everkineticId": "0096",
+    "everkineticTitle": "V Bar Pull Down",
+    "confidence": "high",
+    "reason": "cable pulldown with v-bar"
+  }
+]
