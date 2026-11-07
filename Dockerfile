@@ -73,7 +73,9 @@ COPY --from=build --chown=daftar:daftar /app/prisma/schema.prisma /app/prisma/sc
 COPY --from=build --chown=daftar:daftar /app/prisma/migrations /app/prisma/migrations
 COPY --from=prisma-cli --chown=daftar:daftar /prisma-cli /opt/prisma-cli
 COPY --chown=daftar:daftar docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+ && mkdir -p /data/media \
+ && chown daftar:daftar /data/media
 
 USER daftar
 EXPOSE 3000

@@ -106,6 +106,7 @@ bookings) without duplicating anything.
 | `npm run db:seed` | Demo seed (idempotent), **development only**: refuses to run with `NODE_ENV=production` unless `SEED_DEMO=1` is set |
 | `npm run db:seed:base` | Production base data, no users (idempotent): the settings row, default weekly availability, the 1,324 exercises with Persian names. Never overwrites what the coach changed |
 | `npm run create-coach -- --phone 0912… --name "…" [--name-fa "…"]` | Creates (or promotes) the coach. Password from `COACH_PASSWORD` (at least 10 characters) or generated and printed once. Idempotent on the phone; see Deploy |
+| `npm run media:import -- --dir <folder> --source <name> --license "<text>" --i-have-a-license [--apply]` | Imports a **purchased** demonstration pack (files named `<exerciseId>-<anything>.gif/jpg/png/webp`, the ExerciseDB number kept in `Exercise.sourceId`). Dry run unless `--apply`; refuses without the flag; see Exercise demonstrations |
 | `npm run db:reset` | `prisma migrate reset` + demo seed: **destructive, see below** (refused first when the demo seed would be refused) |
 | `npm run i18n:check` | Compares message keys across locales; also flags Arabic ي/ك, a missing ZWNJ after «می» and mismatched ICU placeholders |
 
@@ -265,6 +266,33 @@ docker compose exec -T db psql -U daftar daftar < daftar-2026-10-23.sql   # rest
 > engine download inside a container) has not been built end to end yet: do a first `docker compose build` on the
 > server and check `docker compose logs app`.
 
+### Exercise demonstrations
+
+Every exercise can show how it is done: a demonstration (a flipbook of frames, one image or one animation) plus the
+steps, in a sheet that opens from the live logger, the exercise picker, the program builder, the program cards, the
+workout history and the coach's exercise library. Stored in `ExerciseMedia`; an exercise without one shows a neutral
+placeholder and still shows its steps.
+
+- **Bundled drawings**: `data/exercise-media/open-media.json` lists the open-licensed line art (files in
+  `public/exercise-media/`). `db:seed` and `db:seed:base` sync it idempotently (rows are identified by exercise + first
+  frame; rows no longer in the file are removed; coach and licensed rows are never touched). A missing file is skipped.
+- **Persian steps**: `data/exercises/steps.fa.json` (`{ "<sourceId>": ["step", ...] }`, same number of steps as the
+  English ones; `steps.fa.part*.json` are merged while it does not exist) fills `Exercise.stepsFa` by the same seeds,
+  **only where it is still empty**, so a coach's edit is never overwritten. To roll out a corrected translation to rows
+  already seeded, edit them in the coach editor (or clear `stepsFa` and re-seed). Until a Persian version exists the
+  sheet shows the English steps with the note «راهنما فعلاً به انگلیسی است».
+- **Coach uploads** (coach exercise editor, "Demonstrations"): 1 to 8 JPG/PNG/WebP images as a frame sequence, or one
+  animated GIF/WebP; 8 MB per file, 24 MB per upload. The type is decided from the file's bytes, never its name or
+  `Content-Type`. Everything is re-encoded with `sharp` (auto-oriented, longest side 960 px, WebP, animation kept)
+  and **all metadata (EXIF, GPS, XMP, ICC) is dropped**; the original is never stored. Files get random names under
+  `MEDIA_DIR` (default `./storage/media`, the `media` volume in docker-compose, git- and docker-ignored; back it up
+  with the database) and are served by `/media/<32 hex>.webp` (strict key check, `Cache-Control: public, max-age=31536000,
+  immutable`). The coach can reorder or remove frames, choose which demonstration is shown first and delete one.
+- **Licensed pack** (`npm run media:import`): for when you buy a licence for a picture pack. It needs
+  `--i-have-a-license`, is a dry run until `--apply`, runs the same pipeline and creates `LICENSED` rows carrying the
+  licence text you pass; running it again with the same `--source` replaces that source's rows. Do not import
+  pictures you do not hold a licence for.
+
 ## GitHub Pages
 
 Only the **design preview** is static: GitHub Pages can serve `docs/index.html` (Settings → Pages → deploy from the
@@ -293,6 +321,14 @@ are used under the MIT License below. **No images or GIFs from that dataset are 
 and is not MIT-licensed, so Daftar ships exercise text only, with no visual media. The Persian names in
 `exercises.fa.json` were written for this project. The same notice, with the dataset's media exception, is in
 [`data/exercises/LICENSE-exercises.md`](data/exercises/LICENSE-exercises.md).
+
+**Exercise illustrations** (`public/exercise-media/`, listed in `data/exercise-media/open-media.json`): line drawings
+from **[Everkinetic](https://github.com/everkinetic/data)** by Greg Priday, licensed under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). **The images were modified**: the background was
+removed (transparent) and the strokes can be recoloured (the app draws them in the theme's ink colour). Every screen that shows them
+carries the credit «Illustration: Everkinetic (CC BY-SA 4.0)» / «تصویر: اورکینتیک (CC BY-SA 4.0)» linking to the
+licence, and the modified versions stay under CC BY-SA 4.0 (ShareAlike). Demonstrations a coach uploads are the coach's
+own responsibility and carry no credit. No image from openGym, free-exercise-db or the Gym visual dataset is used.
 
 <details>
 <summary>MIT License (exercise text)</summary>

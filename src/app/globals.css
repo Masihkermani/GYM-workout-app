@@ -469,6 +469,84 @@ html[lang="fa"] .label-caps {
     animation: spin 800ms linear infinite;
   }
 
+  /* ---- exercise demonstration (src/components/media) ---------------------------------------------
+     A fixed-ratio stage on --card holding the frames of a flipbook, stacked: the active one is opaque and a
+     change crossfades in 200ms. Recolourable line art (black strokes on alpha) is drawn as a CSS mask filled
+     with --ink, so it turns chalk-white in dark mode. Under prefers-reduced-motion the same markup becomes a
+     static row/grid of all frames, with no JS and no layout shift. */
+  .demo-stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    color: var(--ink);
+  }
+  .demo-frame {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 200ms var(--ease);
+  }
+  .demo-frame[data-active="true"] {
+    opacity: 1;
+  }
+  .demo-frame > img,
+  .demo-frame > canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .demo-mask {
+    position: absolute;
+    inset: 4%;
+    background-color: var(--ink);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+  .demo-thumb {
+    position: relative;
+    flex: none;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    background: var(--card);
+    color: var(--ink-3);
+  }
+  .demo-thumb > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .demo-thumb > .demo-mask {
+    inset: 8%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .demo-stage[data-flip="true"] {
+      display: grid;
+      grid-template-columns: repeat(var(--demo-cols, 2), minmax(0, 1fr));
+      gap: 1px;
+      aspect-ratio: auto;
+      background: var(--rule);
+    }
+    .demo-stage[data-flip="true"] > .demo-frame {
+      position: relative;
+      inset: auto;
+      aspect-ratio: 4 / 3;
+      opacity: 1;
+      background: var(--card);
+    }
+    .demo-stage[data-flip="true"] .demo-controls {
+      display: none;
+    }
+  }
+
   /* Theme toggle icon: show the sun when dark is active (click = go light), the moon otherwise. */
   .theme-sun {
     display: none;

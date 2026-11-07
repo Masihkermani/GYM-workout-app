@@ -45,6 +45,7 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Everything except API routes, Next internals and files with an extension.
-  matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)'],
+  // Everything except API routes, Next internals, the demonstration files (/media, a route handler outside
+  // [locale]) and files with an extension.
+  matcher: ['/((?!api|trpc|_next|_vercel|media(?:/|$)|.*\\..*).*)'],
 };

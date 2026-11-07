@@ -19,6 +19,8 @@ import { dayToCardData } from '@/lib/training/card';
 import { defaultDayTitle } from '@/lib/training/day-title';
 import type { ProgramDTO, ProgramDayDTO, ProgramItemDTO } from '@/lib/training/dto';
 import type { ActionErrorCode } from '@/lib/training/schemas';
+import { ExerciseInfoButton } from '@/components/media/ExerciseInfoButton';
+import { ThumbCreditNote } from '@/components/media/MediaCredit';
 import { exerciseName, type ExerciseDTO } from '@/lib/training/types';
 import {
   addDayAction,
@@ -643,6 +645,7 @@ function DayEditor({
           ))}
         </ol>
       )}
+      <ThumbCreditNote thumbs={day.items.map((i) => i.exercise.thumb)} />
 
       <div>
         <Button variant="ink" onClick={onAddItem}>
@@ -717,6 +720,7 @@ function ItemRow({
     <li className="border-[1.5px] border-rule-strong bg-card" onBlur={onBlur}>
       <div className="flex items-start gap-2 border-b border-rule py-1.5 ps-3 pe-1">
         <span className="num mt-2.5 w-6 shrink-0 text-xl text-ink-2">{formatNumber(number, locale, { grouping: false })}</span>
+        <ExerciseInfoButton exercise={item.exercise} thumb={item.exercise.thumb} variant="thumb" size={44} />
         <button
           type="button"
           onClick={onChange}

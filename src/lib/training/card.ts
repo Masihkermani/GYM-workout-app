@@ -1,8 +1,8 @@
 import type { TrainingCardData, TrainingCardRow, TrainingCardSet } from '@/components/training/TrainingCard';
-import { exerciseName, type ExerciseNameSource } from './types';
+import { exerciseName, type ExerciseDTO, type ExerciseNameSource } from './types';
 
 export interface CardItemInput {
-  exercise: ExerciseNameSource;
+  exercise: ExerciseNameSource | ExerciseDTO;
   targetSets: number;
   targetRepsMin: number;
   targetRepsMax?: number | null;
@@ -28,6 +28,7 @@ export function dayToCardData(opts: {
     rows: opts.items.map(
       (it): TrainingCardRow => ({
         exerciseName: exerciseName(it.exercise, opts.locale),
+        exercise: 'id' in it.exercise && 'equipment' in it.exercise ? (it.exercise as ExerciseDTO) : undefined,
         targetSets: it.targetSets,
         targetRepsMin: it.targetRepsMin,
         targetRepsMax: it.targetRepsMax ?? null,

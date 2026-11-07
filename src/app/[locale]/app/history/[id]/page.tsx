@@ -11,6 +11,8 @@ import { getCoachSettings } from '@/lib/settings';
 import { round1 } from '@/lib/training/e1rm';
 import { dayToCardData } from '@/lib/training/card';
 import { getWorkoutDetail } from '@/lib/training/queries';
+import { ExerciseInfoButton } from '@/components/media/ExerciseInfoButton';
+import { ThumbCreditNote } from '@/components/media/MediaCredit';
 import { exerciseName } from '@/lib/training/types';
 import { formatClock } from '@/components/training/clock';
 import { ExerciseSubName } from '@/components/training/ExerciseSubName';
@@ -44,6 +46,7 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
     ...dayToCardData({ clientName: w.clientName, dayTitle: w.dayTitle ?? t('workout.free'), date: new Date(w.startedAt), items: [], locale }),
     rows: w.exercises.map((e) => ({
       exerciseName: exerciseName(e.exercise, locale),
+      exercise: e.exercise,
       targetSets: e.target?.sets ?? 0,
       targetRepsMin: e.target?.repsMin ?? 0,
       targetRepsMax: e.target?.repsMax ?? null,
@@ -110,11 +113,14 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
             w.exercises.map((e) => {
               return (
                 <section key={e.exercise.id} className="flex flex-col gap-2" aria-labelledby={`ex-${e.exercise.id}`}>
-                  <div>
-                    <h2 id={`ex-${e.exercise.id}`} className="text-xl">
-                      <bdi>{exerciseName(e.exercise, locale)}</bdi>
-                    </h2>
-                    <ExerciseSubName exercise={e.exercise} locale={locale} />
+                  <div className="flex items-center gap-3">
+                    <ExerciseInfoButton exercise={e.exercise} thumb={e.exercise.thumb} variant="thumb" size={48} />
+                    <div className="min-w-0">
+                      <h2 id={`ex-${e.exercise.id}`} className="text-xl">
+                        <bdi>{exerciseName(e.exercise, locale)}</bdi>
+                      </h2>
+                      <ExerciseSubName exercise={e.exercise} locale={locale} />
+                    </div>
                   </div>
                   <div className="overflow-x-auto border-[1.5px] border-rule-strong bg-card">
                     <table className="w-full text-start">
@@ -158,6 +164,7 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
               );
             })
           )}
+          <ThumbCreditNote thumbs={w.exercises.map((e) => e.exercise.thumb)} />
           <WorkoutDetailActions workoutId={w.id} note={w.note} />
         </div>
 

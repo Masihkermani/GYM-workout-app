@@ -12,8 +12,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   devIndicators: false,
-  // @node-rs/argon2 ships a native binding; keep it out of the server bundle.
-  serverExternalPackages: ['@node-rs/argon2'],
+  // @node-rs/argon2 and sharp ship native bindings; keep them out of the server bundle.
+  serverExternalPackages: ['@node-rs/argon2', 'sharp'],
+  // The coach uploads exercise demonstrations through a server action: up to 24 MB per upload (MAX_UPLOAD_BYTES
+  // in src/lib/media/constants.ts) plus the form fields.
+  experimental: { serverActions: { bodySizeLimit: '26mb' } },
   // CSP, nosniff, referrer and permissions policy, no framing: src/lib/security-headers.ts (HSTS is the proxy's job).
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders({ dev: process.env.NODE_ENV !== 'production' }) }];

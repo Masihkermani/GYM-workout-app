@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useId, useMemo, useReducer, useRef, useState } from 'react';
 import { ArrowRight, CircleAlert, Clock, Loader2, Plus, RotateCw, Square } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { ExerciseInfoButton } from '@/components/media/ExerciseInfoButton';
+import { ThumbCreditNote } from '@/components/media/MediaCredit';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { DirIcon } from '@/components/ui/DirIcon';
@@ -731,11 +733,14 @@ export function WorkoutLogger({
           <>
             {/* current exercise ---------------------------------------------------------- */}
             <section aria-labelledby={nameId} className="flex flex-col gap-2 md:gap-3">
-              <div>
-                <h2 id={nameId} className="text-2xl">
-                  <bdi>{exerciseName(ex, locale)}</bdi>
-                </h2>
-                <ExerciseSubName exercise={ex} locale={locale} className="hidden md:block" />
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 id={nameId} className="text-2xl">
+                    <bdi>{exerciseName(ex, locale)}</bdi>
+                  </h2>
+                  <ExerciseSubName exercise={ex} locale={locale} className="hidden md:block" />
+                </div>
+                <ExerciseInfoButton key={ex.id} exercise={ex} thumb={ex.thumb} variant="thumb" size={64} />
               </div>
               <dl className="grid gap-1 text-base">
                 {target ? (
@@ -911,6 +916,8 @@ export function WorkoutLogger({
             </Button>
           </div>
         )}
+
+        <ThumbCreditNote thumbs={exercises.map((e) => e.exercise.thumb)} />
 
         <p role="status" aria-live="polite" className="sr-only">
           {live}

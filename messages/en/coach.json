@@ -35,7 +35,15 @@
     "inUse": "This exercise has logged sets or program entries, so it can't be deleted. Archive it instead.",
     "notFound": "That item no longer exists.",
     "rateLimited": "Too many failed attempts. Try again in a few minutes.",
-    "generic": "Something went wrong. Try again."
+    "generic": "Something went wrong. Try again.",
+    "mediaEmpty": "Choose at least one image.",
+    "mediaTooMany": "At most 8 images per demonstration.",
+    "mediaTooLarge": "A file is over 8 MB, or the upload is over 24 MB.",
+    "mediaType": "Only JPG, PNG, WebP and GIF images are accepted.",
+    "mediaCorrupt": "One of the files can't be read as an image.",
+    "mediaAnimated": "An animated GIF or WebP must be uploaded on its own.",
+    "mediaTooLong": "That animation has too many frames (at most 150).",
+    "mediaLimit": "This exercise already has 6 demonstrations. Delete one first."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -183,7 +191,8 @@
       "bodyPart": "Body part",
       "equipment": "Equipment",
       "target": "Target muscle",
-      "flags": "Labels"
+      "flags": "Labels",
+      "demo": "Demo"
     },
     "flag": {
       "custom": "Custom",
@@ -217,7 +226,36 @@
       "delete": "Delete",
       "deleteTitle": "Delete “{name}”?",
       "deleteBody": "Only custom exercises with no sets and no program entries can be deleted. This can't be undone.",
-      "deleteConfirm": "Delete exercise"
+      "deleteConfirm": "Delete exercise",
+      "media": {
+        "title": "Demonstrations",
+        "hint": "Upload 2 to 8 photos or drawings (JPG, PNG, WebP) to play as a flipbook, or one animated GIF or WebP. Up to 8 MB per file and 24 MB per upload. Location data and other metadata are removed.",
+        "choose": "Choose files",
+        "files": "{count, plural, one {# file chosen} other {# files chosen}}",
+        "upload": "Upload demonstration",
+        "uploading": "Uploading…",
+        "uploaded": "Demonstration added.",
+        "none": "No demonstration yet. Clients see a placeholder until you add one.",
+        "primaryTag": "Shown first",
+        "makePrimary": "Show this one first",
+        "deleteMedia": "Delete this demonstration",
+        "kindFrames": "Flipbook, {count, plural, one {# frame} other {# frames}}",
+        "kindGif": "Animation",
+        "kindImage": "Image",
+        "sourceBundled": "Bundled drawing",
+        "sourceCoach": "Yours",
+        "sourceLicensed": "Licensed",
+        "frame": "Frame {n, number}",
+        "moveEarlier": "Move frame {n, number} earlier",
+        "moveLater": "Move frame {n, number} later",
+        "removeFrame": "Remove frame {n, number}",
+        "deleteTitle": "Delete this demonstration?",
+        "deleteBody": "The pictures are removed and clients no longer see them. This can't be undone.",
+        "deleteConfirm": "Delete demonstration",
+        "deleted": "Demonstration deleted.",
+        "tooBig": "A file is over 8 MB or the files together are over 24 MB.",
+        "rowLabel": "Demonstration {n, number}"
+      }
     },
     "add": {
       "button": "Custom exercise",

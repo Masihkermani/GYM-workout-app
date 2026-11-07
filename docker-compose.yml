@@ -74,6 +74,10 @@ services:
       # the X-Forwarded-For that proxy sets, which is what the per-address login and sign-up limits key on
       # (README, "Sessions, cookies and limits"). TRUST_PROXY=0 in .env switches that off.
       TRUST_PROXY: ${TRUST_PROXY:-1}
+      # uploaded exercise demonstrations (the `media` volume below); /data/media is owned by the app user in the image
+      MEDIA_DIR: /data/media
+    volumes:
+      - media:/data/media
     ports:
       - "127.0.0.1:${APP_PORT:-3000}:3000"
 
@@ -96,3 +100,4 @@ services:
 
 volumes:
   pgdata:
+  media:

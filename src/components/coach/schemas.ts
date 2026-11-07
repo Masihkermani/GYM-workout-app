@@ -29,6 +29,15 @@ export const COACH_ERROR_CODES = [
   'notFound',
   'rateLimited',
   'generic',
+  // demonstrations (src/server/media.ts)
+  'mediaEmpty',
+  'mediaTooMany',
+  'mediaTooLarge',
+  'mediaType',
+  'mediaCorrupt',
+  'mediaAnimated',
+  'mediaTooLong',
+  'mediaLimit',
 ] as const;
 export type CoachErrorCode = (typeof COACH_ERROR_CODES)[number];
 

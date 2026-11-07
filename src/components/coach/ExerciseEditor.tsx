@@ -6,6 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useFocusFirstError } from '@/components/auth/useFocusFirstError';
 import { Button } from '@/components/ui/Button';
+import { ExerciseMediaManager } from './ExerciseMediaManager';
 import { Dialog } from '@/components/ui/Dialog';
 import { Field } from '@/components/ui/Field';
 import { Flash } from '@/components/ui/Flash';
@@ -159,6 +160,8 @@ export function ExerciseEditor({ exercise }: { exercise: ExerciseDetail }) {
           </div>
           <button type="submit" className="sr-only" tabIndex={-1} aria-hidden="true" />
         </form>
+
+        <ExerciseMediaManager exerciseId={exercise.id} exerciseName={displayName} initial={exercise.media} />
       </Sheet>
 
       <Dialog

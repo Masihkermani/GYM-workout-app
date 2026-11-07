@@ -1,4 +1,5 @@
 /** Shapes shared by the pure training maths, the server layer and the client components. */
+import type { ExerciseThumbDTO } from '@/lib/media/dto';
 
 /** The minimum a set needs for the maths. Everything else is extra. */
 export interface SetLike {
@@ -53,6 +54,8 @@ export interface ExerciseDTO {
   bodyPart: string;
   equipment: string;
   target: string;
+  /** The primary demonstration as a small picture; absent/null when the exercise has none. */
+  thumb?: ExerciseThumbDTO | null;
 }
 
 /** `3 x 8-10 @ 30` as stored on a ProgramItem. */

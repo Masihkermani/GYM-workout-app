@@ -1,4 +1,6 @@
 import { getTranslations } from 'next-intl/server';
+import { ExerciseThumb } from '@/components/media/ExerciseThumb';
+import { ThumbCreditNote } from '@/components/media/MediaCredit';
 import { DirIcon } from '@/components/ui/DirIcon';
 import { Stamp } from '@/components/ui/Stamp';
 import { Link } from '@/i18n/navigation';
@@ -51,6 +53,9 @@ export async function ExercisesTable({ items, locale, baseQuery }: ExercisesTabl
           <caption className="sr-only">{t('exercises.title')}</caption>
           <thead className="border-b-[1.5px] border-rule-strong text-sm">
             <tr>
+              <th scope="col" className="w-16 px-3 py-2.5 text-start font-bold">
+                <span className="sr-only">{t('exercises.col.demo')}</span>
+              </th>
               <th scope="col" className="min-h-11 px-3 py-2.5 text-start font-bold">
                 {t('exercises.col.name')}
               </th>
@@ -71,6 +76,9 @@ export async function ExercisesTable({ items, locale, baseQuery }: ExercisesTabl
           <tbody>
             {items.map((item) => (
               <tr key={item.id} className="relative border-b border-rule last:border-b-0 tx hover:bg-paper-2">
+                <td className="w-16 px-3 py-1.5">
+                  <ExerciseThumb thumb={item.thumb} size={44} />
+                </td>
                 <th scope="row" className="max-w-[22rem] px-3 py-1.5 text-start font-normal">
                   <Link
                     href={editHref(item.id)}
@@ -102,6 +110,7 @@ export async function ExercisesTable({ items, locale, baseQuery }: ExercisesTabl
               aria-label={t('exercises.editAria', { name: locale === 'fa' ? (item.nameFa ?? item.nameEn) : item.nameEn })}
               className="flex min-h-16 items-center gap-3 px-3 py-2.5 after:absolute after:inset-0 after:content-['']"
             >
+              <ExerciseThumb thumb={item.thumb} size={48} />
               <span className="min-w-0 flex-1">
                 <ExerciseName item={item} locale={locale} missing={t('exercises.noPersian')} />
                 <span className="mt-0.5 block truncate text-sm text-ink-2">
@@ -114,6 +123,7 @@ export async function ExercisesTable({ items, locale, baseQuery }: ExercisesTabl
           </li>
         ))}
       </ul>
+      <ThumbCreditNote thumbs={items.map((i) => i.thumb)} />
     </>
   );
 }

@@ -1,4 +1,6 @@
 import { useTranslations } from 'next-intl';
+import { ExerciseInfoButton } from '@/components/media/ExerciseInfoButton';
+import type { ExerciseDTO } from '@/lib/training/types';
 import { Tally } from '@/components/ui/Tally';
 import { cn } from '@/lib/cn';
 import { sepFor } from './sep';
@@ -18,6 +20,8 @@ import { formatDate, formatNumber, formatSet } from '@/lib/format';
 export type TrainingCardSet = { reps: number; weightKg: number; isPr?: boolean };
 export type TrainingCardRow = {
   exerciseName: string;
+  /** When given, the name opens the exercise's "how to" sheet. */
+  exercise?: ExerciseDTO;
   targetSets: number;
   targetRepsMin: number;
   targetRepsMax?: number | null;
@@ -98,7 +102,13 @@ export function TrainingCard({ data, locale }: { data: TrainingCardData; locale:
               <li key={`${row.exerciseName}-${i}`} className="border-b border-rule px-4 py-3 last:border-b-0">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="min-w-0 text-base font-bold">
-                    <bdi>{row.exerciseName}</bdi>
+                    {row.exercise ? (
+                      <ExerciseInfoButton exercise={row.exercise} variant="text" className="font-bold no-underline">
+                        <bdi>{row.exerciseName}</bdi>
+                      </ExerciseInfoButton>
+                    ) : (
+                      <bdi>{row.exerciseName}</bdi>
+                    )}
                   </p>
                   {hasTarget ? (
                     <p className="num shrink-0 text-lg text-ink-2">

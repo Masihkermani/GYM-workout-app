@@ -93,13 +93,17 @@ export function useModalDialog(open: boolean, onOpenChange: (open: boolean) => v
   return {
     ref,
     // Esc: keep React in charge of the state.
+    // `cancel` / `close` of a dialog nested in this one (the exercise "how to" sheet inside the picker) reach
+    // these handlers through React's tree; they are not about this dialog.
     onCancel: (e: SyntheticEvent<HTMLDialogElement>) => {
+      if (e.target !== e.currentTarget) return;
       e.preventDefault();
       onOpenChange(false);
     },
     // Native close (e.g. <form method="dialog">) while still "open" in React. Closes that our own
     // effect cleanup caused are not user intent: skip them (see closeFromCleanup).
-    onClose: () => {
+    onClose: (e: SyntheticEvent<HTMLDialogElement>) => {
+      if (e.target !== e.currentTarget) return;
       if (closeFromCleanup.current > 0) {
         closeFromCleanup.current -= 1;
         return;

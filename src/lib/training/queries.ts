@@ -2,6 +2,7 @@ import 'server-only';
 import { cache } from 'react';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
+import { THUMB_MEDIA_SELECT, toThumbDTO } from '@/lib/media/dto';
 import { getCoachSettings } from '@/lib/settings';
 import { formatDate } from '@/lib/format';
 import { todayKey, utcToZoned } from '@/lib/time';
@@ -34,10 +35,11 @@ export const EXERCISE_SELECT = {
   bodyPart: true,
   equipment: true,
   target: true,
+  media: THUMB_MEDIA_SELECT,
 } satisfies Prisma.ExerciseSelect;
 
 export type ExerciseRow = Prisma.ExerciseGetPayload<{ select: typeof EXERCISE_SELECT }>;
-export const toExerciseDTO = (e: ExerciseRow): ExerciseDTO => ({ ...e });
+export const toExerciseDTO = ({ media, ...e }: ExerciseRow): ExerciseDTO => ({ ...e, thumb: toThumbDTO(media[0]) });
 
 // ---------------------------------------------------------------------------------------- history
 

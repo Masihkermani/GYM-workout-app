@@ -1,6 +1,7 @@
 import 'server-only';
 import type { BookingStatus, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
+import { THUMB_MEDIA_SELECT, toMediaDTO, toThumbDTO, type ExerciseThumbDTO, type MediaDTO } from '@/lib/media/dto';
 import { DASHBOARD_WINDOW_DAYS, rollingRange } from '@/lib/scheduling/week';
 import { utcToZoned } from '@/lib/time';
 import { matchesClient, searchTokens, tokenVariants } from './search';
@@ -189,6 +190,8 @@ export interface ExerciseListItem {
   target: string;
   isCustom: boolean;
   archived: boolean;
+  /** primary demonstration as a small picture, null = none */
+  thumb: ExerciseThumbDTO | null;
 }
 
 export function exerciseWhere(q: ExercisesQuery): Prisma.ExerciseWhereInput {
@@ -247,9 +250,10 @@ export async function listExercises(q: ExercisesQuery): Promise<{ items: Exercis
       target: true,
       isCustom: true,
       archived: true,
+      media: THUMB_MEDIA_SELECT,
     },
   });
-  const byId = new Map(rows.map((r) => [r.id, r]));
+  const byId = new Map(rows.map(({ media, ...r }) => [r.id, { ...r, thumb: toThumbDTO(media[0]) }]));
   const items = ids.flatMap((id) => byId.get(id) ?? []);
   return { items, total: names.length };
 }
@@ -258,6 +262,7 @@ export interface ExerciseDetail extends ExerciseListItem {
   stepsEn: string[];
   stepsFa: string[];
   usage: { sets: number; items: number };
+  media: MediaDTO[];
 }
 
 export async function getExerciseDetail(id: string): Promise<ExerciseDetail | null> {
@@ -275,12 +280,13 @@ export async function getExerciseDetail(id: string): Promise<ExerciseDetail | nu
       archived: true,
       stepsEn: true,
       stepsFa: true,
+      media: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] },
       _count: { select: { sets: true, items: true } },
     },
   });
   if (!e) return null;
-  const { _count, ...rest } = e;
-  return { ...rest, usage: { sets: _count.sets, items: _count.items } };
+  const { _count, media, ...rest } = e;
+  return { ...rest, thumb: toThumbDTO(media[0]), usage: { sets: _count.sets, items: _count.items }, media: media.map(toMediaDTO) };
 }
 
 export interface Taxonomy {

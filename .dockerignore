@@ -37,3 +37,6 @@ docker-compose*.yml
 *.log
 *.tsbuildinfo
 .DS_Store
+
+# uploaded demonstrations live in the media volume, never in the image
+storage

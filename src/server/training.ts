@@ -35,6 +35,7 @@ import {
 } from '@/lib/training/schemas';
 import type { ExerciseContext, ProgramItemDTO, SessionOptionsDTO, WorkoutSummaryDTO } from '@/lib/training/dto';
 import type { ExerciseDTO, SetDTO } from '@/lib/training/types';
+import { thumbsFor } from '@/lib/media/queries';
 import {
   EXERCISE_SELECT,
   getExerciseContexts,
@@ -620,7 +621,8 @@ export async function searchExercisesAction(input: {
       WHERE ${Prisma.join(where, ' AND ')}
       ORDER BY ${rank}, length("nameEn"), "nameEn"
       LIMIT ${limit}`);
-    return { ok: true, exercises: rows };
+    const thumbs = await thumbsFor(rows.map((r) => r.id));
+    return { ok: true, exercises: rows.map((r) => ({ ...r, thumb: thumbs.get(r.id) ?? null })) };
   });
 }
 

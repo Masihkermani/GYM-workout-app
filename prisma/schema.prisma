@@ -1,4 +1,4 @@
-// Daftar data model. Frozen after Phase 1 (see docs/ARCHITECTURE.md).
+// Daftar data model (see docs/ARCHITECTURE.md). Additive since Phase 1: ExerciseMedia (exercise demonstrations).
 // The init migration also carries a raw-SQL partial unique index, `booking_active_slot`,
 // which Prisma cannot express in this file.
 
@@ -128,7 +128,42 @@ model Exercise {
   createdAt        DateTime @default(now())
   items            ProgramItem[]
   sets             SetLog[]
+  media            ExerciseMedia[]
   @@index([nameEn])
+}
+
+/// How an exercise is done, as pictures. FRAMES = 2-8 stills played as a flipbook, GIF = one animated
+/// image (stored as animated WebP), IMAGE = one still. `frames` holds either a public URL path
+/// ("/exercise-media/everkinetic/0042/1.webp", bundled with the app) or a storage key under MEDIA_DIR
+/// (served from /media/<key>). `order` 0 is the primary demonstration shown first.
+enum MediaKind {
+  FRAMES
+  GIF
+  IMAGE
+}
+
+enum MediaSource {
+  BUNDLED_OPEN   // open-licensed art shipped in the repo (Everkinetic, CC BY-SA 4.0): re-imported by the seed
+  COACH          // uploaded by the coach in the exercise editor
+  LICENSED       // imported from a purchased pack (npm run media:import)
+}
+
+model ExerciseMedia {
+  id           String      @id @default(cuid())
+  exerciseId   String
+  exercise     Exercise    @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  kind         MediaKind
+  frames       String[]
+  source       MediaSource
+  author       String?
+  license      String?
+  licenseUrl   String?
+  sourceUrl    String?
+  modified     Boolean     @default(false)
+  recolorable  Boolean     @default(false)   // line art on a transparent background: drawn with a CSS mask in the ink colour
+  order        Int         @default(0)
+  createdAt    DateTime    @default(now())
+  @@index([exerciseId])
 }
 
 model Program {

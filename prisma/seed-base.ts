@@ -22,6 +22,9 @@ async function main() {
   if (withFa === 0 || total < expected) {
     throw new Error('the exercise library is incomplete: check data/exercises/exercises.en.json and exercises.fa.json');
   }
+  const { stepsFa, media } = r.exercises;
+  console.log(`  persian steps: ${stepsFa.found ? `${stepsFa.filled} filled (${stepsFa.entries} in file, ${stepsFa.skipped} skipped)` : 'steps.fa.json not found'}`);
+  console.log(`  demonstrations: ${media.found ? `${media.created} added, ${media.updated} updated, ${media.removed} removed (${media.entries} in open-media.json, ${media.skipped} skipped)` : 'open-media.json not found'}`);
   console.log('Done. Next: npm run create-coach -- --phone 0912… --name "…" [--name-fa "…"]');
 }
 
