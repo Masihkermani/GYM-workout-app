@@ -1,7 +1,8 @@
 Exercise text (names, body parts, equipment, targets, muscles, English instruction steps) comes from
 hasaneyldrm/exercises-dataset (originating from ExerciseDB v1 by AscendAPI), under the MIT License below.
 No media (images/GIFs) from that dataset is included: that media belongs to Gym visual and is not MIT.
-Persian translations in exercises.fa.json were written for this project.
+Persian translations in exercises.fa.json (names) and steps.fa.json (instruction steps for 1,246 exercises) were
+written for this project from the MIT-licensed English text above.
 
 MIT License
 
